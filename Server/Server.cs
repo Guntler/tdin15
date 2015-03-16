@@ -6,11 +6,8 @@ using System.Runtime.Remoting;
 /// </summary>
 class Server
 {
-    private static Database db;
-    private static double exchangeValue;
+
     static void Main(string[] args) {
-        db = new Database();
-        exchangeValue = 1.00;
         RemotingConfiguration.Configure("Server.exe.config", false);
         Console.WriteLine("Press Return to terminate.");
         Console.ReadLine();
@@ -21,6 +18,5 @@ class Server
     /// </summary>
     static void OnProcessExit(object sender, EventArgs e) {
         Console.WriteLine("Shutting down server...");
-        db.saveData();
     }
 }
