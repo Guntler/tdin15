@@ -27,6 +27,10 @@ public class API : MarshalByRefObject, IAPI
         //maybe ask clients for their database files
     }
 
+    public override object InitializeLifetimeService()
+    {
+        return null;
+    }
 
     #region Interface functions
 
@@ -41,15 +45,15 @@ public class API : MarshalByRefObject, IAPI
         else return true;
     }
 
-    public int registerUser(string Name, string Username, string Password)
+    public int registerUser(User us)
     {
 
-        if (UserTable.ContainsKey(Username))
+        if (UserTable.ContainsKey(us.nickname))
             return 1; //username already exists
         else
         {
-            User aux = new User(Name, Username, Password);
-            UserTable.Add(Username, aux);
+            UserTable.Add(us.nickname, us);
+            Console.WriteLine("User registered:\n" + us);
             return 0;
         }
     }

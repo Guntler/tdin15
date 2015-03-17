@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+[Serializable]
 /// <summary>
 /// The object class to be stored/transfered through the system
 /// </summary>
@@ -21,6 +22,7 @@ public class Diginote
     }
 }
 
+[Serializable]
 /// <summary>
 /// name refers to the complete user name
 /// nickname is the data valued used to check User credentials (username)
@@ -43,6 +45,11 @@ public class User
         this.wallet = new List<Diginote>();
     }
 
+    public override string ToString()
+    {
+        return "Name: " + this.name + "\nNickname: " + this.nickname + "\nPassword: " + this.password + "\n";
+    }
+
 }
 
 public interface IAPI
@@ -50,20 +57,20 @@ public interface IAPI
 
     #region User
 
-    public bool validateUser(string username, string pass);
+    bool validateUser(string username, string pass);
 
-    public int registerUser(string Name, string Username, string Password)
+    int registerUser(User us);
 
-    public int updateUser(string Username, string OldPassword, User Updated);
+    int updateUser(string Username, string OldPassword, User Updated);
 
     #endregion User
 
     #region Actions
-    public bool sellOrder(int quantity);
+    bool sellOrder(int quantity);
 
-    public bool buyOrder(int quantity);
+    bool buyOrder(int quantity);
 
-    public bool changeExchangeValue(double value);
+    bool changeExchangeValue(double value);
 
     #endregion Actions
 }

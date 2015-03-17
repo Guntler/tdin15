@@ -1,0 +1,11 @@
+C:\Users\Pedro\documents\visual studio 2013\Projects\Diginote Exchange System\Client\bin\Debug\Client.exe.config
+C:\Users\Pedro\documents\visual studio 2013\Projects\Diginote Exchange System\Client\bin\Debug\Client.exe
+C:\Users\Pedro\documents\visual studio 2013\Projects\Diginote Exchange System\Client\bin\Debug\Client.pdb
+C:\Users\Pedro\documents\visual studio 2013\Projects\Diginote Exchange System\Client\obj\Debug\Client.csprojResolveAssemblyReference.cache
+C:\Users\Pedro\documents\visual studio 2013\Projects\Diginote Exchange System\Client\obj\Debug\Client.Properties.Resources.resources
+C:\Users\Pedro\documents\visual studio 2013\Projects\Diginote Exchange System\Client\obj\Debug\Client.csproj.GenerateResource.Cache
+C:\Users\Pedro\documents\visual studio 2013\Projects\Diginote Exchange System\Client\obj\Debug\Client.exe
+C:\Users\Pedro\documents\visual studio 2013\Projects\Diginote Exchange System\Client\obj\Debug\Client.pdb
+C:\Users\Pedro\documents\visual studio 2013\Projects\Diginote Exchange System\Client\bin\Debug\Common.dll
+C:\Users\Pedro\documents\visual studio 2013\Projects\Diginote Exchange System\Client\bin\Debug\Common.pdb
+C:\Users\Pedro\documents\visual studio 2013\Projects\Diginote Exchange System\Client\obj\Debug\Client.Client.resources

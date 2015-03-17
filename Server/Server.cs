@@ -4,7 +4,7 @@ using System.Runtime.Remoting;
 /// <summary>
 /// Server setup and execution as is from the teacher's example
 /// </summary>
-class Server
+class Program
 {
 
     static void Main(string[] args) {
