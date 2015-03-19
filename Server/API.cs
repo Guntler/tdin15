@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Data.SQLite;
 
 /// <summary>
 /// Class used to store all persistant information
@@ -16,6 +17,7 @@ public class API : MarshalByRefObject, IAPI
     List<Diginote> registared_Coins;
     Dictionary<string, User> UserTable;
     string filePath = "Transactions.txt";
+    SQLiteConnection m_dbConnection;
 
     private double exchangeValue { get; set; }
 
@@ -24,7 +26,15 @@ public class API : MarshalByRefObject, IAPI
         this.registared_Coins = new List<Diginote>();
         this.UserTable = new Dictionary<string, User>();
         this.exchangeValue = 1.00;
+        m_dbConnection = new SQLiteConnection("Data Source=../../../database.db;Version=3;");
+        m_dbConnection.Open();
+
         //maybe ask clients for their database files
+    }
+
+    ~API()
+    {
+        m_dbConnection.Close();
     }
 
     public override object InitializeLifetimeService()
@@ -53,7 +63,17 @@ public class API : MarshalByRefObject, IAPI
         else
         {
             UserTable.Add(us.nickname, us);
-            Console.WriteLine("User registered:\n" + us);
+            string sql = "Insert into User (name, nickname, password) values ('" + us.name + "','" + us.nickname + "','" + us.password + "')";
+            SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
+            command.ExecuteNonQuery();
+
+            sql = "select * from User";
+            command = new SQLiteCommand(sql, m_dbConnection);
+            SQLiteDataReader reader = command.ExecuteReader();
+            while (reader.Read())
+                Console.WriteLine("Name: " + reader["name"] + "\tnickname: " + reader["nickname"] + "\tpassword: " + reader["password"]);
+
+           //Console.WriteLine("User registered:\n" + us);
             return 0;
         }
     }
