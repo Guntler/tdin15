@@ -9,3 +9,14 @@ C:\Users\Pedro\documents\visual studio 2013\Projects\Diginote Exchange System\Cl
 C:\Users\Pedro\documents\visual studio 2013\Projects\Diginote Exchange System\Client\bin\Debug\Common.dll
 C:\Users\Pedro\documents\visual studio 2013\Projects\Diginote Exchange System\Client\bin\Debug\Common.pdb
 C:\Users\Pedro\documents\visual studio 2013\Projects\Diginote Exchange System\Client\obj\Debug\Client.Client.resources
+C:\Users\pbpdi_000\Documents\tdin15\Client\bin\Debug\Client.exe.config
+C:\Users\pbpdi_000\Documents\tdin15\Client\obj\Debug\Client.exe
+C:\Users\pbpdi_000\Documents\tdin15\Client\obj\Debug\Client.pdb
+C:\Users\pbpdi_000\Documents\tdin15\Client\bin\Debug\Client.exe
+C:\Users\pbpdi_000\Documents\tdin15\Client\bin\Debug\Client.pdb
+C:\Users\pbpdi_000\Documents\tdin15\Client\bin\Debug\Common.dll
+C:\Users\pbpdi_000\Documents\tdin15\Client\bin\Debug\Common.pdb
+C:\Users\pbpdi_000\Documents\tdin15\Client\obj\Debug\Client.csprojResolveAssemblyReference.cache
+C:\Users\pbpdi_000\Documents\tdin15\Client\obj\Debug\Client.Client.resources
+C:\Users\pbpdi_000\Documents\tdin15\Client\obj\Debug\Client.Properties.Resources.resources
+C:\Users\pbpdi_000\Documents\tdin15\Client\obj\Debug\Client.csproj.GenerateResource.Cache
