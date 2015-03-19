@@ -195,9 +195,7 @@ FakesAssemblies/
 
 # Visual Studio 6 workspace options file
 
-# Game jam stuff
-API/obj/
-API/bin/
+# TDIN-specific
 Client/obj/
 Client/bin/
 Common/obj/
