@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,18 +15,22 @@ using System.Data.SQLite;
 /// </summary>
 public class API : MarshalByRefObject, IAPI
 {
-    List<Diginote> registared_Coins;
-    Dictionary<string, User> UserTable;
+    List<Diginote> RegisteredNotes;
+    Dictionary<string, User> RegisteredUsers;
+    private List<DOrder> RegisteredOrders;
+    private List<DTransaction> RegisteredTransactions;
     string filePath = "Transactions.txt";
     SQLiteConnection m_dbConnection;
 
-    private double exchangeValue { get; set; }
+    public double ExchangeValue { get; set; }
 
     public API()
     {
-        this.registared_Coins = new List<Diginote>();
-        this.UserTable = new Dictionary<string, User>();
-        this.exchangeValue = 1.00;
+        RegisteredOrders = new List<DOrder>();
+        RegisteredNotes = new List<Diginote>();
+        RegisteredTransactions = new List<DTransaction>();
+        RegisteredUsers = new Dictionary<string, User>();
+        ExchangeValue = 1.00;
         m_dbConnection = new SQLiteConnection("Data Source=../../../database.db;Version=3;");
         m_dbConnection.Open();
 
@@ -46,55 +51,95 @@ public class API : MarshalByRefObject, IAPI
 
     #region User
 
-    public bool validateUser(string username, string pass)
+    public bool ValidateUser(string username, string pass)
     {
-        if (!UserTable.ContainsKey(username)) //user does not exist
+        if (!RegisteredUsers.ContainsKey(username)) //user does not exist
             return false;
-        else if (UserTable[username].password != pass) //credentials dont match
+        else if (RegisteredUsers[username].password != pass) //credentials dont match
             return false;
         else return true;
     }
 
-    public int registerUser(User us)
+    public int RegisterUser(User us)
     {
 
-        if (UserTable.ContainsKey(us.nickname))
+        if (RegisteredUsers.ContainsKey(us.Nickname))
             return 1; //username already exists
         else
         {
-            UserTable.Add(us.nickname, us);
-            string sql = "Insert into User (name, nickname, password) values ('" + us.name + "','" + us.nickname + "','" + us.password + "')";
+            string sql = "Insert into User (name, Nickname, password) values ('" + us.name + "','" + us.Nickname + "','" + us.password + "')";
             SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
             command.ExecuteNonQuery();
+            
+            sql = @"select last_insert_rowid()";
+            command = new SQLiteCommand(sql, m_dbConnection);
+            us.Id = (long)command.ExecuteScalar();
+            Console.WriteLine(@"New id: " + us.Id);
+
+            RegisteredUsers.Add(us.Nickname, us);
 
             sql = "select * from User";
             command = new SQLiteCommand(sql, m_dbConnection);
             SQLiteDataReader reader = command.ExecuteReader();
-            while (reader.Read())
-                Console.WriteLine("Name: " + reader["name"] + "\tnickname: " + reader["nickname"] + "\tpassword: " + reader["password"]);
+            /*while (reader.Read())
+                Console.WriteLine("Name: " + reader["name"] + "\tnickname: " + reader["Nickname"] + "\tpassword: " + reader["password"]);*/
 
            //Console.WriteLine("User registered:\n" + us);
             return 0;
         }
     }
 
+    public void RemoveUserByName(string nickname)
+    {
+        RegisteredUsers.Remove(nickname);
+        string sql = "delete from User where Nickname = '" + nickname + "'";
+        SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
+        command.ExecuteNonQuery();
+
+        sql = "select * from User where Nickname = '" + nickname + "'";
+        command = new SQLiteCommand(sql, m_dbConnection);
+        SQLiteDataReader reader = command.ExecuteReader();
+        while (reader.Read())
+        {
+            Console.WriteLine("Could not remove User " + nickname);
+        }
+
+        Console.WriteLine("Successfuly removed User " + nickname);
+    }
+
+    public User GetUserByName(string nickname)
+    {
+        string sql = "select * from User where Nickname = '" + nickname+"'";
+        SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
+        SQLiteDataReader reader = command.ExecuteReader();
+        while (reader.Read())
+        {
+            User user = new User(reader["name"].ToString(), reader["Nickname"].ToString(), reader["password"].ToString());
+            Console.WriteLine("Found: " + "Name: " + reader["name"] + "\tnickname: " + reader["Nickname"] + "\tpassword: " + reader["password"]);
+            return user;
+        }
+
+        Console.WriteLine("No users matched the query " + nickname);
+        return null;
+    }
+
     /// <summary>
     /// Updates User entry in dictionary, username must be the same, must keep oldpassword until operation is concluded
     /// </summary>
-    public int updateUser(string Username, string OldPassword, User Updated)
+    public int UpdateUser(string username, string oldPassword, User updated)
     {
-        if (!UserTable.ContainsKey(Username)) //username does not exists
+        if (!RegisteredUsers.ContainsKey(username)) //username does not exists
             return 1;
         else
         {
-            User entry = UserTable[Username];
-            if (entry.password != OldPassword) //incorrect credentials
+            User entry = RegisteredUsers[username];
+            if (entry.password != oldPassword) //incorrect credentials
             {
                 return 2;
             }
             else
             {
-                UserTable[Username] = Updated;
+                RegisteredUsers[username] = updated;
                 return 0;
             }
         }
@@ -102,18 +147,251 @@ public class API : MarshalByRefObject, IAPI
 
     #endregion User
 
+    #region Diginote
+
+    /**
+     * TODO Add Error Checking
+     */
+    public void RegisterDiginote(User owner)
+    {
+        if (GetUserByName(owner.Nickname) == null)
+        {
+            Console.WriteLine(@"The user appointed as owner of this Diginote does not exist.");
+            return;
+        }
+
+        Diginote note = new Diginote(owner);
+
+        string sql = "Insert into Diginote (owner) values ('" + owner.Nickname + "')";
+
+        SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
+        command.ExecuteNonQuery();
+
+        sql = @"select last_insert_rowid()";
+        command = new SQLiteCommand(sql, m_dbConnection);
+        note.Id = (long)command.ExecuteScalar();
+        Console.WriteLine(@"New note id: " + note.Id);
+        
+        RegisteredNotes.Add(note);
+    }
+
+    public Diginote GetDiginote(long id)
+    {
+        string sql = "select * from Diginote where id = '" + id + "'";
+        SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
+        SQLiteDataReader reader = command.ExecuteReader();
+        while (reader.Read())
+        {
+            Diginote note = null;
+            User owner = GetUserByName(reader["id"].ToString());
+            if(owner!=null)
+                note = new Diginote(owner);
+            else
+            {
+                Console.WriteLine(@"The user specified as the owner no longer exists.");
+                return null;
+            }
+            Console.WriteLine(@"Found: " + note.ToString());
+            return note;
+        }
+
+        Console.WriteLine(@"No notes matched the query " + id);
+        return null;
+    }
+
+    public void DeleteDiginote(long id)
+    {
+        RegisteredNotes.RemoveAll(c => c.Id == id);
+        string sql = "Delete from Diginote where id = '" + id + "'";
+        SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
+        command.ExecuteNonQuery();
+
+        sql = "Select * from Diginote where id = '" + id + "'";
+        command = new SQLiteCommand(sql, m_dbConnection);
+        SQLiteDataReader reader = command.ExecuteReader();
+        while (reader.Read())
+        {
+            Console.WriteLine("Could not remove Diginote " + id);
+        }
+
+        Console.WriteLine("Successfuly removed Diginote " + id);
+    }
+
+    #endregion Diginote
+
+    #region Order
+
+    public void RegisterOrder(DOrder order)
+    {
+        string sql = "Insert into DOrder (type,status,source,value,amount) values ('"
+                        + (int)order.Type + "','" + (int)order.Status + "','" + order.Source.Nickname + "','" + order.Value + "','"
+                        + order.Amount + "')";
+
+        SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
+        if(command.ExecuteNonQuery()<0)
+            Console.WriteLine("Error registering an Order.");
+        else
+            Console.WriteLine("Successfully registered an Order.");
+
+        sql = @"select last_insert_rowid()";
+        command = new SQLiteCommand(sql, m_dbConnection);
+        order.Id = (long)command.ExecuteScalar();
+        Console.WriteLine(@"New order id: " + order.Id);
+
+        RegisteredOrders.Add(order);
+    }
+
+    public DOrder GetOrder(long id)
+    {
+        string sql = "select * from DOrder where id = '" + id + "'";
+        SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
+        SQLiteDataReader reader = command.ExecuteReader();
+        while (reader.Read())
+        {
+            DOrder order = null;
+            User source = GetUserByName(reader["source"].ToString());
+            OrderType type;
+            if (!OrderType.TryParse(reader["type"].ToString(), out type))
+            {
+                Console.WriteLine(@"Type of order was in an incorrect format.");
+                return null;
+            }
+
+            OrderStatus status;
+            if (!OrderStatus.TryParse(reader["status"].ToString(), out status))
+            {
+                Console.WriteLine(@"Type of order was in an incorrect format.");
+                return null;
+            }
+
+            //NOTE: Double.tryparse may cause problems - refer to here if anything happens
+            if (source == null)
+            {
+                Console.WriteLine(@"The user specified as the owner no longer exists.");
+                return null;
+            }
+
+            int amount = Convert.ToInt32(reader["amount"].ToString());
+            double value;
+            if (!Double.TryParse(reader["value"].ToString(), out value))
+            {
+                Console.WriteLine(@"Could not parse value of Order.");
+                return null;
+            }
+
+            long orderId = Convert.ToInt64(reader["id"].ToString());
+            order = new DOrder(source, amount, value, type) { Id = orderId, Status = status };
+
+            Console.WriteLine(@"Found: " + order.ToString());
+            return order;
+        }
+
+        Console.WriteLine(@"No orders matched the query " + id);
+        return null;
+    }
+
+    public void DeleteOrder(DOrder order)
+    {
+        RegisteredOrders.RemoveAll(c => c.Id == order.Id);
+        string sql = "Delete from DOrder where id = '" + order.Id + "'";
+        SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
+        command.ExecuteNonQuery();
+
+        sql = "select * from DOrder where id = '" + order.Id + "'";
+        command = new SQLiteCommand(sql, m_dbConnection);
+        SQLiteDataReader reader = command.ExecuteReader();
+        while (reader.Read())
+        {
+            Console.WriteLine("Could not remove Order " + order.Id);
+        }
+
+        Console.WriteLine("Successfuly removed Order " + order.Id);
+    }
+
+    #endregion Order
+
+    #region Transaction
+
+    public void RegisterTransaction(DTransaction transaction)
+    {
+        string sql = "Insert into DTransaction (id,destination,value) values ('"
+                        + transaction.Order.Id + "','" + transaction.Destination.Nickname + "','" + transaction.Value + "')";
+
+        SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
+        if (command.ExecuteNonQuery() < 0)
+            Console.WriteLine("Error registering a Transaction.");
+        else
+            Console.WriteLine("Successfully registered a Transaction.");
+
+        RegisteredTransactions.Add(transaction);
+    }
+
+    public DTransaction GetTransaction(long id)
+    {
+        string sql = "select * from DTransaction where id = '" + id + "'";
+        SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
+        SQLiteDataReader reader = command.ExecuteReader();
+        while (reader.Read())
+        {
+            DTransaction trans = null;
+            User dest = GetUserByName(reader["destination"].ToString());
+
+            DOrder order = GetOrder(Convert.ToInt64(reader["id"].ToString()));
+            if (order == null)
+            {
+                Console.WriteLine(@"The Order of this Transaction could not be found.");
+                return null;
+            }
+
+            if (dest == null)
+            {
+                Console.WriteLine(@"The user specified as the Destination no longer exists.");
+                return null;
+            }
+
+            trans = new DTransaction(dest, Double.Parse(reader["value"].ToString()), order);
+
+            Console.WriteLine(@"Found: " + trans.ToString());
+            return trans;
+        }
+
+        Console.WriteLine(@"No Transactions matched the query " + id);
+        return null;
+    }
+
+    public void DeleteTransaction(DTransaction transaction)
+    {
+        RegisteredTransactions.RemoveAll(c => c.Order.Id == transaction.Order.Id);
+
+        string sql = "Delete from DTransaction where id = '" + transaction.Order.Id + "'";
+        SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
+        command.ExecuteNonQuery();
+
+        sql = "select * from DTransaction where id = '" + transaction.Order.Id + "'";
+        command = new SQLiteCommand(sql, m_dbConnection);
+        SQLiteDataReader reader = command.ExecuteReader();
+        while (reader.Read())
+        {
+            Console.WriteLine("Could not remove Transaction pertaining to Order " + transaction.Order.Id);
+        }
+
+        Console.WriteLine("Successfuly removed Transaction pertaining to Order " + transaction.Order.Id);
+    }
+
+    #endregion Transaction
+
     #region Actions
-    public bool sellOrder(int quantity)
+    public bool SellOrder(int quantity)
     {
         return false;
     }
 
-    public bool buyOrder(int quantity)
+    public bool BuyOrder(int quantity)
     {
         return false;
     }
 
-    public bool changeExchangeValue(double value)
+    public bool ChangeExchangeValue(double value)
     {
         return false;
     }

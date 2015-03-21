@@ -1,4 +1,0 @@
-C:\Users\Pedro\Documents\Visual Studio 2013\Projects\Diginote Exchange System\Common\bin\Debug\Common.dll
-C:\Users\Pedro\Documents\Visual Studio 2013\Projects\Diginote Exchange System\Common\bin\Debug\Common.pdb
-C:\Users\Pedro\Documents\Visual Studio 2013\Projects\Diginote Exchange System\Common\obj\Debug\Common.dll
-C:\Users\Pedro\Documents\Visual Studio 2013\Projects\Diginote Exchange System\Common\obj\Debug\Common.pdb

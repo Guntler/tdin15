@@ -11,28 +11,79 @@ using System.Threading.Tasks;
 public class Diginote
 {
     private static int idCounter = 0;
-    private int id;
+    public long Id { get; set; }
     public int value { get; set; }
-    Diginote() { 
-        this.id = ++idCounter; this.value = 1; 
+    public User Owner { get; set; }
+    public Diginote(User owner) { 
+        Id = ++idCounter; this.value = 1;
+        Owner = owner;
     }
+}
 
-    public int getId() { 
-        return this.id; 
+public enum OrderStatus { Active,Fulfilled,Cancelled };
+
+public enum OrderType { Buy,Sell };
+
+[Serializable]
+/// <summary>
+/// The object class referring to a purchase/sale order 
+/// </summary>
+/**
+ * TODO MISSING DATE
+ */
+public class DOrder
+{
+    public long Id { get; set; }
+    public double Value { get; set; }
+    public OrderType Type { get; set; }
+    public OrderStatus Status { get; set; }
+    public int Amount { get; set; }
+    public User Source { get; set; }
+
+    //TODO: order status should maybe be active by default in the SQL file instead of in its constructor
+    public DOrder(User source, int amount,double value,OrderType type)
+    {
+        Source = source;
+        Value = value;
+        Amount = amount;
+        Status = OrderStatus.Active;
+        Type = type;
+    }
+}
+
+[Serializable]
+/// <summary>
+/// The object class referring to a concluded or cancelled Order
+/// </summary>
+/**
+ * TODO MISSING DATE
+ * TODO Destination MUST be different from Source
+ */
+public class DTransaction
+{
+    public DOrder Order { get; set; }
+    public double Value { get; set; }
+    public User Destination { get; set; }
+    public DTransaction(User destination, double value, DOrder order)
+    {
+        Destination = destination;
+        Value = value;
+        Order = order;
     }
 }
 
 [Serializable]
 /// <summary>
 /// name refers to the complete user name
-/// nickname is the data valued used to check User credentials (username)
+/// Nickname is the data valued used to check User credentials (username)
 /// use password to confirm data information
 /// </summary>
 public class User
 {
+    public long Id { get; set; }
     public string name { get; set; }
 
-    public string nickname { get; set; }
+    public string Nickname { get; set; }
 
     public string password { get; set; }
 
@@ -40,14 +91,14 @@ public class User
 
     public User(string name, string username, string password) {
         this.name = name;
-        this.nickname = username;
+        this.Nickname = username;
         this.password = password;
         this.wallet = new List<Diginote>();
     }
 
     public override string ToString()
     {
-        return "Name: " + this.name + "\nNickname: " + this.nickname + "\nPassword: " + this.password + "\n";
+        return "Name: " + this.name + "\nNickname: " + this.Nickname + "\nPassword: " + this.password + "\n";
     }
 
 }
@@ -57,20 +108,55 @@ public interface IAPI
 
     #region User
 
-    bool validateUser(string username, string pass);
+    bool ValidateUser(string username, string pass);
 
-    int registerUser(User us);
+    int RegisterUser(User us);
 
-    int updateUser(string Username, string OldPassword, User Updated);
+    User GetUserByName(string name);
+
+    void RemoveUserByName(string name);
+
+    int UpdateUser(string username, string oldPassword, User updated);
 
     #endregion User
 
+    #region Diginote
+
+    void RegisterDiginote(User owner);
+
+    Diginote GetDiginote(long id);
+
+    void DeleteDiginote(long id);
+
+    #endregion Diginote
+
+    #region Order
+
+    void RegisterOrder(DOrder order);
+
+    DOrder GetOrder(long id);
+
+    void DeleteOrder(DOrder order);
+
+    #endregion Order
+
+    #region Transaction
+
+    void RegisterTransaction(DTransaction transaction);
+
+    DTransaction GetTransaction(long id);
+
+    void DeleteTransaction(DTransaction transaction);
+
+    #endregion Transaction
+
     #region Actions
-    bool sellOrder(int quantity);
 
-    bool buyOrder(int quantity);
+    bool SellOrder(int quantity);
 
-    bool changeExchangeValue(double value);
+    bool BuyOrder(int quantity);
+
+    bool ChangeExchangeValue(double value);
 
     #endregion Actions
 }
