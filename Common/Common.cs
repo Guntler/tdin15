@@ -110,7 +110,7 @@ public interface IAPI
 
     bool ValidateUser(string username, string pass);
 
-    int RegisterUser(User us);
+    int RegisterUser(ref User us);
 
     User GetUserByName(string name);
 
@@ -132,7 +132,7 @@ public interface IAPI
 
     #region Order
 
-    void RegisterOrder(DOrder order);
+    void RegisterOrder(ref DOrder order);
 
     DOrder GetOrder(long id);
 

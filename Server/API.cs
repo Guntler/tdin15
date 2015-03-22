@@ -60,7 +60,7 @@ public class API : MarshalByRefObject, IAPI
         else return true;
     }
 
-    public int RegisterUser(User us)
+    public int RegisterUser(ref User us)
     {
 
         if (RegisteredUsers.ContainsKey(us.Nickname))
@@ -221,7 +221,7 @@ public class API : MarshalByRefObject, IAPI
 
     #region Order
 
-    public void RegisterOrder(DOrder order)
+    public void RegisterOrder(ref DOrder order)
     {
         string sql = "Insert into DOrder (type,status,source,value,amount) values ('"
                         + (int)order.Type + "','" + (int)order.Status + "','" + order.Source.Nickname + "','" + order.Value + "','"
@@ -248,6 +248,7 @@ public class API : MarshalByRefObject, IAPI
         SQLiteDataReader reader = command.ExecuteReader();
         while (reader.Read())
         {
+            Console.WriteLine("In read order");
             DOrder order = null;
             User source = GetUserByName(reader["source"].ToString());
             OrderType type;

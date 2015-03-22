@@ -25,7 +25,7 @@ namespace Client
         private void button1_Click(object sender, EventArgs e)
         {
             User aux = new User(textBox1.Text, textBox2.Text, textBox3.Text);
-            int result = api.RegisterUser(aux);
+            int result = api.RegisterUser(ref aux);
             MessageBox.Show("Hello World! Here is the output of the register action: "+result);
             api.GetUserByName(textBox2.Text);
             api.GetUserByName("NONEEE");
@@ -38,9 +38,10 @@ namespace Client
             api.RegisterDiginote(aux);
 
             DOrder tempOrder = new DOrder(aux, 5, 5.0, OrderType.Buy);
-            api.RegisterOrder(tempOrder);
+            api.RegisterOrder(ref tempOrder);
             api.DeleteOrder(tempOrder);
-            api.RegisterOrder(tempOrder);
+            api.RegisterOrder(ref tempOrder);
+
 
             DTransaction tempTrans = new DTransaction(aux,5.0,tempOrder);
             api.RegisterTransaction(tempTrans);
