@@ -20,6 +20,7 @@ namespace Client
             RemotingConfiguration.Configure("Client.exe.config", false);
             InitializeComponent();
             api = (IAPI)RemoteNew.New(typeof(IAPI));
+            ExchangePanel.Parent = this;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -50,13 +51,26 @@ namespace Client
 
             api.GetOrder(tempOrder.Id);
             api.GetTransaction(tempTrans.Order.Id);
+            //clear text
+            textBox1.Text = "";
+            textBox2.Text = "";
+            textBox3.Text = "";
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
             //login user
             if (api.ValidateUser(textBox4.Text, textBox5.Text))
-                MessageBox.Show("User login valid!");
+            {
+                MessageBox.Show("User login valid!", "Form1");
+                loginPanel.Visible = false;
+                registerPanel.Visible = false;
+                ExchangePanel.Visible = true;
+            }
+            else
+            {
+                MessageBox.Show("User login invalid!");
+            }
         }
     }
 }
