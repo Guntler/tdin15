@@ -21,6 +21,7 @@ public class API : MarshalByRefObject, IAPI
     private List<DTransaction> RegisteredTransactions;
     string filePath = "Transactions.txt";
     SQLiteConnection m_dbConnection;
+    public List<DOrder> ActiveOrders { get; private set; }
 
     public double ExchangeValue { get; set; }
 
@@ -33,7 +34,7 @@ public class API : MarshalByRefObject, IAPI
         ExchangeValue = 1.00;
         m_dbConnection = new SQLiteConnection("Data Source=../../../database.db;Version=3;");
         m_dbConnection.Open();
-
+        this.ActiveOrders = this.GetActiveOrders(); ;
         //maybe ask clients for their database files
     }
 
@@ -53,7 +54,8 @@ public class API : MarshalByRefObject, IAPI
 
     public bool ValidateUser(string username, string pass)
     {
-        return GetUserByName(username)!=null && GetUserByName(username).password.Equals(pass);
+        var user = GetUserByName(username);
+        return user!=null && user.password.Equals(pass);
         /*if (!RegisteredUsers.ContainsKey(username)) //user does not exist
             return false;
         else if (RegisteredUsers[username].password != pass) //credentials dont match
@@ -225,7 +227,7 @@ public class API : MarshalByRefObject, IAPI
     public void RegisterOrder(ref DOrder order)
     {
         string sql = "Insert into DOrder (type,status,source,value,amount) values ('"
-                        + (int)order.Type + "','" + (int)order.Status + "','" + order.Source.Nickname + "','" + order.Value + "','"
+                        + ((int)order.Type)+1 + "','" + ((int)order.Status)+1 + "','" + order.Source.Nickname + "','" + order.Value + "','"
                         + order.Amount + "')";
 
         SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
@@ -290,6 +292,54 @@ public class API : MarshalByRefObject, IAPI
 
         Console.WriteLine(@"No orders matched the query " + id);
         return null;
+    }
+
+    private List<DOrder> GetActiveOrders()
+    {
+        string sql = "select * from DOrder where status = 1 ORDER BY id";
+        SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
+        SQLiteDataReader reader = command.ExecuteReader();
+        List<DOrder> orders = new List<DOrder>();
+        while (reader.Read())
+        {
+            DOrder order = null;
+            User source = GetUserByName(reader["source"].ToString());
+            OrderType type;
+            if (!OrderType.TryParse(reader["type"].ToString(), out type))
+            {
+                Console.WriteLine(@"Type of order was in an incorrect format.");
+                return null;
+            }
+
+            OrderStatus status;
+            if (!OrderStatus.TryParse(reader["status"].ToString(), out status))
+            {
+                Console.WriteLine(@"Type of order was in an incorrect format.");
+                return null;
+            }
+
+            //NOTE: Double.tryparse may cause problems - refer to here if anything happens
+            if (source == null)
+            {
+                Console.WriteLine(@"The user specified as the owner no longer exists.");
+                return null;
+            }
+
+            int amount = Convert.ToInt32(reader["amount"].ToString());
+            double value;
+            if (!Double.TryParse(reader["value"].ToString(), out value))
+            {
+                Console.WriteLine(@"Could not parse value of Order.");
+                return null;
+            }
+
+            long orderId = Convert.ToInt64(reader["id"].ToString());
+            order = new DOrder(source, amount, value, type) { Id = orderId, Status = status };
+
+            orders.Add(order);
+        }
+
+        return orders;
     }
 
     public void DeleteOrder(DOrder order)

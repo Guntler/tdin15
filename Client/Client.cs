@@ -31,7 +31,6 @@ namespace Client
             api.GetUserByName("NONEEE");
             api.GetUserByName(textBox2.Text);
             
-
             //api.removeUserByName(textBox2.Text);
 
             api.RegisterDiginote(aux);
@@ -52,6 +51,10 @@ namespace Client
 
             api.GetOrder(tempOrder.Id);
             api.GetTransaction(tempTrans.Order.Id);
+
+            List<DOrder> orders = api.ActiveOrders;
+            MessageBox.Show("Number of orders:"+orders.Count);
+
             //clear text
             textBox1.Text = "";
             textBox2.Text = "";

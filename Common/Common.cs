@@ -105,6 +105,7 @@ public class User
 
 public interface IAPI
 {
+    List<DOrder> ActiveOrders { get; }
 
     #region User
 
@@ -135,7 +136,7 @@ public interface IAPI
     void RegisterOrder(ref DOrder order);
 
     DOrder GetOrder(long id);
-
+    
     void DeleteOrder(DOrder order);
 
     #endregion Order
