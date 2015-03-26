@@ -157,7 +157,7 @@ public interface IAPI
 
     #region User
 
-    bool ValidateUser(string username, string pass);
+    User ValidateUser(string username, string pass);
 
     int RegisterUser(ref User us);
 

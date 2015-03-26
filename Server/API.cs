@@ -80,10 +80,11 @@ public class API : MarshalByRefObject, IAPI
 
     #region User
 
-    public bool ValidateUser(string username, string pass)
+    public User ValidateUser(string username, string pass)
     {
         var user = GetUserByName(username);
-        return user!=null && user.password.Equals(pass);
+        return user.password.Equals(pass) ? user : null;
+
         /*if (!RegisteredUsers.ContainsKey(username)) //user does not exist
             return false;
         else if (RegisteredUsers[username].password != pass) //credentials dont match
