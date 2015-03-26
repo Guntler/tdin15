@@ -15,6 +15,8 @@ namespace Client
     public partial class Client : Form
     {
         IAPI api;
+        List<DOrder> orders;
+
         public Client()
         {
             RemotingConfiguration.Configure("Client.exe.config", false);
@@ -55,8 +57,9 @@ namespace Client
                 api.GetOrder(tempOrder.Id);
                 api.GetTransaction(tempTrans.Order.Id);
 
-                List<DOrder> orders = api.ActiveOrders;
-                MessageBox.Show("Number of orders:"+orders.Count);
+                //Só se vai buscar as orders no login bem sucedido
+                //orders = api.ActiveOrders;
+                //MessageBox.Show("Number of orders:"+orders.Count);
             }
             catch (Exception error)
             {
@@ -76,14 +79,28 @@ namespace Client
             if (api.ValidateUser(textBox4.Text, textBox5.Text))
             {
                 MessageBox.Show("User login valid!", "Form1");
-                loginPanel.Visible = false;
-                registerPanel.Visible = false;
-                ExchangePanel.Visible = true;
+                orders = api.ActiveOrders;
+                showExchangePanel();
             }
             else
             {
                 MessageBox.Show("User login invalid!");
             }
+        }
+
+        private void showExchangePanel()
+        {
+            loginPanel.Visible = false;
+            registerPanel.Visible = false;
+            ExchangePanel.Visible = true;
+            //IAPI.getActiveTransactions();
+        }
+
+        private void showInitialPanel()
+        {
+            loginPanel.Visible = true;
+            registerPanel.Visible = true;
+            ExchangePanel.Visible = false;
         }
     }
 }
