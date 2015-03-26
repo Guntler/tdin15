@@ -184,6 +184,8 @@ public interface IAPI
     void RegisterOrder(ref DOrder order);
 
     DOrder GetOrder(long id);
+
+    void EditOrder(DOrder order);
     
     void DeleteOrder(DOrder order);
 

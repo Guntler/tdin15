@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Data.SQLite;
+using System.Threading;
 
 /// <summary>
 /// Class used to store all persistant information
@@ -43,6 +44,31 @@ public class API : MarshalByRefObject, IAPI
     ~API()
     {
         m_dbConnection.Close();
+    }
+
+    void NotifyClients(Operation op, DOrder order)
+    {
+        if (alterEvent != null)
+        {
+            Delegate[] invkList = alterEvent.GetInvocationList();
+
+            foreach (AlterDelegate handler in invkList)
+            {
+                new Thread(() =>
+                {
+                    try
+                    {
+                        handler(op, order);
+                        Console.WriteLine("Invoking event handler");
+                    }
+                    catch (Exception)
+                    {
+                        alterEvent -= handler;
+                        Console.WriteLine("Exception: Removed an event handler");
+                    }
+                }).Start();
+            }
+        }
     }
 
     public override object InitializeLifetimeService()
@@ -90,6 +116,10 @@ public class API : MarshalByRefObject, IAPI
                 Console.WriteLine("Name: " + reader["name"] + "\tnickname: " + reader["Nickname"] + "\tpassword: " + reader["password"]);*/
 
            //Console.WriteLine("User registered:\n" + us);
+
+            for (int i = 0; i < 100; i++)
+                RegisterDiginote(us);
+
             return 0;
         }
     }
@@ -244,6 +274,8 @@ public class API : MarshalByRefObject, IAPI
         Console.WriteLine(@"New order id: " + order.Id);
 
         RegisteredOrders.Add(order);
+        
+        NotifyClients(Operation.New, order);
     }
 
     public DOrder GetOrder(long id)
@@ -342,6 +374,16 @@ public class API : MarshalByRefObject, IAPI
         }
 
         return orders;
+    }
+
+    public void EditOrder(DOrder order)
+    {
+        string sql = "Update DOrder SET amount = '" + order.Amount + "' where id = '" + order.Id + "'";
+
+        SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
+        command.ExecuteNonQuery();
+        
+        NotifyClients(Operation.Change, order);
     }
 
     public void DeleteOrder(DOrder order)

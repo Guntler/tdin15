@@ -71,24 +71,27 @@ namespace Client
 
                 //api.removeUserByName(textBox2.Text);
 
+                /*api.RegisterDiginote(aux);
                 api.RegisterDiginote(aux);
                 api.RegisterDiginote(aux);
-                api.RegisterDiginote(aux);
-                api.RegisterDiginote(aux);
+                api.RegisterDiginote(aux);*/
 
                 DOrder tempOrder = new DOrder(aux, 5, 5.0, OrderType.Buy);
                 api.RegisterOrder(ref tempOrder);
-                api.DeleteOrder(tempOrder);
-                api.RegisterOrder(ref tempOrder);
+                /*api.DeleteOrder(tempOrder);
+                api.RegisterOrder(ref tempOrder);*/
 
 
-                DTransaction tempTrans = new DTransaction(aux, 5.0, tempOrder);
+                /*DTransaction tempTrans = new DTransaction(aux, 5.0, tempOrder);
                 api.RegisterTransaction(tempTrans);
                 api.DeleteTransaction(tempTrans);
                 api.RegisterTransaction(tempTrans);
 
                 api.GetOrder(tempOrder.Id);
-                api.GetTransaction(tempTrans.Order.Id);
+                api.GetTransaction(tempTrans.Order.Id);*/
+
+                tempOrder.Amount = 1333;
+                api.EditOrder(tempOrder);
 
                 //Só se vai buscar as orders no login bem sucedido
                 //orders = api.ActiveOrders;
