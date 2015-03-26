@@ -90,10 +90,20 @@ public class User
     private List<Diginote> wallet;
 
     public User(string name, string username, string password) {
-        this.name = name;
-        this.Nickname = username;
-        this.password = password;
-        this.wallet = new List<Diginote>();
+        if (name == "" || username == "" || password == ""){
+            throw new InvalidObject("Invalid user parameter values.");
+        } else {
+            this.name = name;
+            this.Nickname = username;
+            this.password = password;
+            this.wallet = new List<Diginote>();
+        }
+    }
+
+    public User(){
+        this.name = "";
+        this.Nickname = "";
+        this.password = "";
     }
 
     public override string ToString()
@@ -101,6 +111,24 @@ public class User
         return "Name: " + this.name + "\nNickname: " + this.Nickname + "\nPassword: " + this.password + "\n";
     }
 
+}
+
+
+public class InvalidObject: Exception
+{
+    public InvalidObject()
+    {
+    }
+
+    public InvalidObject(string message)
+        : base(message)
+    {
+    }
+
+    public InvalidObject(string message, Exception inner)
+        : base(message, inner)
+    {
+    }
 }
 
 public interface IAPI
