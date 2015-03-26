@@ -28,8 +28,9 @@ namespace Client
             User aux = new User(textBox1.Text, textBox2.Text, textBox3.Text);
             int result = api.RegisterUser(ref aux);
             MessageBox.Show("Hello World! Here is the output of the register action: "+result);
-            api.GetUserByName(textBox2.Text);
             api.GetUserByName("NONEEE");
+            api.GetUserByName(textBox2.Text);
+            
 
             //api.removeUserByName(textBox2.Text);
 

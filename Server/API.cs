@@ -53,17 +53,18 @@ public class API : MarshalByRefObject, IAPI
 
     public bool ValidateUser(string username, string pass)
     {
-        if (!RegisteredUsers.ContainsKey(username)) //user does not exist
+        return GetUserByName(username)!=null && GetUserByName(username).password.Equals(pass);
+        /*if (!RegisteredUsers.ContainsKey(username)) //user does not exist
             return false;
         else if (RegisteredUsers[username].password != pass) //credentials dont match
             return false;
-        else return true;
+        else return true;*/
     }
 
     public int RegisterUser(ref User us)
     {
 
-        if (RegisteredUsers.ContainsKey(us.Nickname))
+        if (GetUserByName(us.Nickname)!=null)
             return 1; //username already exists
         else
         {
