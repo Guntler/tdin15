@@ -311,12 +311,12 @@
             // totalValue
             // 
             this.totalValue.Text = "Total Value";
-            this.totalValue.Width = 160;
+            this.totalValue.Width = 80;
             // 
             // date
             // 
             this.date.Text = "Date";
-            this.date.Width = 160;
+            this.date.Width = 240;
             // 
             // label10
             // 

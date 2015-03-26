@@ -16,10 +16,8 @@ namespace Client
     {
         IAPI api;
         readonly AlterEventRepeater _evRepeater;
-        List<DOrder> _orders; //to be removed
         delegate ListViewItem LVAddDelegate(ListViewItem lvItem);
 
-        delegate void LVAddDelegate(DOrder order);
         delegate void ChCommDelegate(DOrder order);
 
         public Client()
@@ -113,12 +111,17 @@ namespace Client
             if (api.ValidateUser(textBox4.Text, textBox5.Text))
             {
                 MessageBox.Show("User login valid!", "Form1");
-                _orders = api.ActiveOrders;
+                List<DOrder> _orders = api.ActiveOrders;
+                foreach (DOrder order in _orders)
+                {
+                    ListViewItem lvItem = new ListViewItem(new string[] { order.Type.ToString(), order.Amount.ToString(), (order.Value * order.Amount).ToString(), "not yet implemented" });
+                    listView.Items.Add(lvItem);
+                }
                 showExchangePanel();
             }
             else
             {
-                MessageBox.Show("User login invalid!");
+                MessageBox.Show("User login invalid!", "Form1");
             }
         }
 
