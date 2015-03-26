@@ -196,9 +196,9 @@ FakesAssemblies/
 # Visual Studio 6 workspace options file
 
 # TDIN-specific
-Client/obj/*
-Client/bin/*
-Common/obj/*
-Common/bin/*
-Server/obj/*
-Server/bin/*
+Client/obj/**
+Client/bin/**
+Common/obj/**
+Common/bin/**
+Server/obj/**
+Server/bin/**
