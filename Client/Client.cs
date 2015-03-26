@@ -16,7 +16,8 @@ namespace Client
     {
         IAPI api;
         readonly AlterEventRepeater _evRepeater;
-        List<DOrder> _orders;
+        List<DOrder> _orders; //to be removed
+        delegate ListViewItem LVAddDelegate(ListViewItem lvItem);
 
         delegate void LVAddDelegate(DOrder order);
         delegate void ChCommDelegate(DOrder order);
@@ -41,20 +42,15 @@ namespace Client
             switch (op)
             {
                 case Operation.New:
-                    lvAdd = new LVAddDelegate(AddOrder);
-                    Invoke(lvAdd, new object[] { order });
+                    lvAdd = new LVAddDelegate(listView.Items.Add);
+                    ListViewItem lvItem = new ListViewItem(new string[] { order.Type.ToString(), order.Amount.ToString(), (order.Value*order.Amount).ToString(), "not yet implemented"});
+                    Invoke(lvAdd, new object[] { lvItem });
                     break;
                 case Operation.Change:
                     chComm = new ChCommDelegate(ChangeOrder);
                     Invoke(chComm, new object[] { order });
                     break;
             }
-        }
-
-        private void AddOrder(DOrder order)
-        {
-            //TODO
-            //ListViewItem lvItem = new ListViewItem(new string[] { item.Type.ToString(), item.Name, item.Comment });
         }
 
         private void ChangeOrder(DOrder order)

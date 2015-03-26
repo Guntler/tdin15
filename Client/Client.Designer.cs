@@ -50,10 +50,11 @@
             this.label12 = new System.Windows.Forms.Label();
             this.ExchangeValueLbl = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
-            this.listView1 = new System.Windows.Forms.ListView();
-            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.listView = new System.Windows.Forms.ListView();
+            this.type = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.amount = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.totalValue = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.date = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.label10 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
@@ -78,7 +79,7 @@
             this.registerPanel.Location = new System.Drawing.Point(0, 0);
             this.registerPanel.Margin = new System.Windows.Forms.Padding(0);
             this.registerPanel.Name = "registerPanel";
-            this.registerPanel.Size = new System.Drawing.Size(214, 257);
+            this.registerPanel.Size = new System.Drawing.Size(328, 257);
             this.registerPanel.TabIndex = 0;
             // 
             // label5
@@ -92,7 +93,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(63, 217);
+            this.button1.Location = new System.Drawing.Point(124, 214);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 7;
@@ -113,7 +114,7 @@
             // 
             this.textBox2.Location = new System.Drawing.Point(83, 113);
             this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(100, 20);
+            this.textBox2.Size = new System.Drawing.Size(187, 20);
             this.textBox2.TabIndex = 3;
             // 
             // label3
@@ -129,7 +130,7 @@
             // 
             this.textBox1.Location = new System.Drawing.Point(83, 63);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(100, 20);
+            this.textBox1.Size = new System.Drawing.Size(187, 20);
             this.textBox1.TabIndex = 1;
             // 
             // textBox3
@@ -137,13 +138,13 @@
             this.textBox3.Location = new System.Drawing.Point(83, 164);
             this.textBox3.Name = "textBox3";
             this.textBox3.PasswordChar = '*';
-            this.textBox3.Size = new System.Drawing.Size(100, 20);
+            this.textBox3.Size = new System.Drawing.Size(187, 20);
             this.textBox3.TabIndex = 4;
             // 
             // label1
             // 
             this.label1.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.label1.Location = new System.Drawing.Point(0, 18);
+            this.label1.Location = new System.Drawing.Point(60, 9);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(200, 13);
             this.label1.TabIndex = 0;
@@ -158,10 +159,10 @@
             this.loginPanel.Controls.Add(this.label7);
             this.loginPanel.Controls.Add(this.label6);
             this.loginPanel.Controls.Add(this.label2);
-            this.loginPanel.Location = new System.Drawing.Point(214, 0);
+            this.loginPanel.Location = new System.Drawing.Point(328, 0);
             this.loginPanel.Margin = new System.Windows.Forms.Padding(0);
             this.loginPanel.Name = "loginPanel";
-            this.loginPanel.Size = new System.Drawing.Size(208, 257);
+            this.loginPanel.Size = new System.Drawing.Size(331, 257);
             this.loginPanel.TabIndex = 1;
             // 
             // textBox5
@@ -169,12 +170,12 @@
             this.textBox5.Location = new System.Drawing.Point(88, 113);
             this.textBox5.Name = "textBox5";
             this.textBox5.PasswordChar = '*';
-            this.textBox5.Size = new System.Drawing.Size(100, 20);
+            this.textBox5.Size = new System.Drawing.Size(187, 20);
             this.textBox5.TabIndex = 7;
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(88, 217);
+            this.button2.Location = new System.Drawing.Point(135, 214);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 23);
             this.button2.TabIndex = 10;
@@ -186,7 +187,7 @@
             // 
             this.textBox4.Location = new System.Drawing.Point(88, 63);
             this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(100, 20);
+            this.textBox4.Size = new System.Drawing.Size(187, 20);
             this.textBox4.TabIndex = 8;
             // 
             // label7
@@ -210,7 +211,7 @@
             // label2
             // 
             this.label2.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.label2.Location = new System.Drawing.Point(0, 18);
+            this.label2.Location = new System.Drawing.Point(81, 9);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(200, 13);
             this.label2.TabIndex = 1;
@@ -224,7 +225,7 @@
             this.ExchangePanel.Controls.Add(this.label12);
             this.ExchangePanel.Controls.Add(this.ExchangeValueLbl);
             this.ExchangePanel.Controls.Add(this.label11);
-            this.ExchangePanel.Controls.Add(this.listView1);
+            this.ExchangePanel.Controls.Add(this.listView);
             this.ExchangePanel.Controls.Add(this.label10);
             this.ExchangePanel.Controls.Add(this.label9);
             this.ExchangePanel.Controls.Add(this.comboBox1);
@@ -234,7 +235,7 @@
             this.ExchangePanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ExchangePanel.Location = new System.Drawing.Point(0, 0);
             this.ExchangePanel.Name = "ExchangePanel";
-            this.ExchangePanel.Size = new System.Drawing.Size(423, 254);
+            this.ExchangePanel.Size = new System.Drawing.Size(659, 254);
             this.ExchangePanel.TabIndex = 2;
             this.ExchangePanel.Visible = false;
             // 
@@ -250,7 +251,7 @@
             // diginotesLbl
             // 
             this.diginotesLbl.AutoSize = true;
-            this.diginotesLbl.Location = new System.Drawing.Point(376, 86);
+            this.diginotesLbl.Location = new System.Drawing.Point(637, 70);
             this.diginotesLbl.Name = "diginotesLbl";
             this.diginotesLbl.Size = new System.Drawing.Size(13, 13);
             this.diginotesLbl.TabIndex = 13;
@@ -259,7 +260,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(226, 86);
+            this.label12.Location = new System.Drawing.Point(486, 70);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(141, 13);
             this.label12.TabIndex = 12;
@@ -268,7 +269,7 @@
             // ExchangeValueLbl
             // 
             this.ExchangeValueLbl.AutoSize = true;
-            this.ExchangeValueLbl.Location = new System.Drawing.Point(376, 53);
+            this.ExchangeValueLbl.Location = new System.Drawing.Point(637, 48);
             this.ExchangeValueLbl.Name = "ExchangeValueLbl";
             this.ExchangeValueLbl.Size = new System.Drawing.Size(13, 13);
             this.ExchangeValueLbl.TabIndex = 11;
@@ -277,40 +278,50 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(225, 53);
+            this.label11.Location = new System.Drawing.Point(486, 48);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(123, 13);
             this.label11.TabIndex = 10;
             this.label11.Text = "Current exchange value;";
             // 
-            // listView1
+            // listView
             // 
-            this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader1,
-            this.columnHeader2,
-            this.columnHeader3});
-            this.listView1.Location = new System.Drawing.Point(13, 48);
-            this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(187, 189);
-            this.listView1.TabIndex = 9;
-            this.listView1.UseCompatibleStateImageBehavior = false;
+            this.listView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.type,
+            this.amount,
+            this.totalValue,
+            this.date});
+            this.listView.FullRowSelect = true;
+            this.listView.GridLines = true;
+            this.listView.Location = new System.Drawing.Point(13, 48);
+            this.listView.Name = "listView";
+            this.listView.Size = new System.Drawing.Size(444, 189);
+            this.listView.TabIndex = 9;
+            this.listView.UseCompatibleStateImageBehavior = false;
+            this.listView.View = System.Windows.Forms.View.Details;
             // 
-            // columnHeader1
+            // type
             // 
-            this.columnHeader1.Text = "Amount";
+            this.type.Text = "Type";
             // 
-            // columnHeader2
+            // amount
             // 
-            this.columnHeader2.Text = "Amount";
+            this.amount.Text = "Amount";
             // 
-            // columnHeader3
+            // totalValue
             // 
-            this.columnHeader3.Text = "Total Value";
+            this.totalValue.Text = "Total Value";
+            this.totalValue.Width = 160;
+            // 
+            // date
+            // 
+            this.date.Text = "Date";
+            this.date.Width = 160;
             // 
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(224, 163);
+            this.label10.Location = new System.Drawing.Point(487, 144);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(75, 13);
             this.label10.TabIndex = 8;
@@ -319,7 +330,7 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(225, 113);
+            this.label9.Location = new System.Drawing.Point(487, 92);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(69, 13);
             this.label9.TabIndex = 7;
@@ -331,14 +342,14 @@
             this.comboBox1.Items.AddRange(new object[] {
             "Buy",
             "Sell"});
-            this.comboBox1.Location = new System.Drawing.Point(227, 132);
+            this.comboBox1.Location = new System.Drawing.Point(490, 108);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(121, 21);
             this.comboBox1.TabIndex = 6;
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(229, 214);
+            this.button3.Location = new System.Drawing.Point(490, 214);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(100, 23);
             this.button3.TabIndex = 5;
@@ -347,7 +358,7 @@
             // 
             // textBox6
             // 
-            this.textBox6.Location = new System.Drawing.Point(228, 179);
+            this.textBox6.Location = new System.Drawing.Point(489, 164);
             this.textBox6.Name = "textBox6";
             this.textBox6.Size = new System.Drawing.Size(120, 20);
             this.textBox6.TabIndex = 4;
@@ -366,12 +377,12 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(423, 254);
-            this.Controls.Add(this.registerPanel);
-            this.Controls.Add(this.loginPanel);
+            this.ClientSize = new System.Drawing.Size(659, 254);
             this.Controls.Add(this.ExchangePanel);
+            this.Controls.Add(this.loginPanel);
+            this.Controls.Add(this.registerPanel);
             this.Name = "Client";
-            this.Text = "Form1";
+            this.Text = "Diginote Exchange System";
             this.registerPanel.ResumeLayout(false);
             this.registerPanel.PerformLayout();
             this.loginPanel.ResumeLayout(false);
@@ -401,7 +412,7 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Panel ExchangePanel;
-        private System.Windows.Forms.ListView listView1;
+        private System.Windows.Forms.ListView listView;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.ComboBox comboBox1;
@@ -413,9 +424,10 @@
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label ExchangeValueLbl;
         private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.ColumnHeader columnHeader1;
-        private System.Windows.Forms.ColumnHeader columnHeader2;
-        private System.Windows.Forms.ColumnHeader columnHeader3;
+        private System.Windows.Forms.ColumnHeader type;
+        private System.Windows.Forms.ColumnHeader amount;
+        private System.Windows.Forms.ColumnHeader totalValue;
+        private System.Windows.Forms.ColumnHeader date;
 
 
 
