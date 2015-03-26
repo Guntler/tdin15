@@ -15,6 +15,7 @@ namespace Client
     public partial class Client : Form
     {
         IAPI api;
+        User userSession;
         readonly AlterEventRepeater _evRepeater;
         delegate ListViewItem LVAddDelegate(ListViewItem lvItem);
 
@@ -108,9 +109,9 @@ namespace Client
         private void button2_Click(object sender, EventArgs e)
         {
             //login user
-            if (api.ValidateUser(textBox4.Text, textBox5.Text))
+            if ((userSession = api.ValidateUser(textBox4.Text, textBox5.Text))!= null)
             {
-                MessageBox.Show("User login valid!", "Form1");
+                MessageBox.Show("User login valid!", "Diginote Exchange System");
                 List<DOrder> _orders = api.ActiveOrders;
                 foreach (DOrder order in _orders)
                 {
@@ -121,7 +122,7 @@ namespace Client
             }
             else
             {
-                MessageBox.Show("User login invalid!", "Form1");
+                MessageBox.Show("User login invalid!", "Diginote Exchange System");
             }
         }
 
@@ -138,6 +139,32 @@ namespace Client
             loginPanel.Visible = true;
             registerPanel.Visible = true;
             ExchangePanel.Visible = false;
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                OrderType orderAction;
+                int amount;
+                if (!Enum.TryParse(this.comboBox1.GetItemText(this.comboBox1.SelectedItem),true, out orderAction))
+                {
+                    this.comboBox1.SelectedItem = null;
+                    MessageBox.Show("Order action not allowed","Diginote Exchange System");
+                }
+                if(Int32.TryParse(this.textBox6.Text, out amount)){
+                    this.textBox6.Text = "";
+                    MessageBox.Show("Order amount parse error", "Diginote Exchange System");
+                }
+
+                IAPI.RegisterOrder(new DOrder(userSession, amount, 0, orderAction));    
+
+            } catch (Exception exception) {
+                
+            }
+            finally{
+
+            }
         }
     }
 }
