@@ -15,12 +15,14 @@ using System.Data.SQLite;
 /// </summary>
 public class API : MarshalByRefObject, IAPI
 {
+    public event AlterDelegate alterEvent;
     List<Diginote> RegisteredNotes;
     Dictionary<string, User> RegisteredUsers;
     private List<DOrder> RegisteredOrders;
     private List<DTransaction> RegisteredTransactions;
     string filePath = "Transactions.txt";
     SQLiteConnection m_dbConnection;
+    public event AlterDelegate AlterEvent;
     public List<DOrder> ActiveOrders { get; private set; }
 
     public double ExchangeValue { get; set; }

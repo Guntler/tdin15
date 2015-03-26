@@ -15,7 +15,11 @@ namespace Client
     public partial class Client : Form
     {
         IAPI api;
-        List<DOrder> orders;
+        readonly AlterEventRepeater _evRepeater;
+        List<DOrder> _orders;
+
+        delegate void LVAddDelegate(DOrder order);
+        delegate void ChCommDelegate(DOrder order);
 
         public Client()
         {
@@ -23,6 +27,40 @@ namespace Client
             InitializeComponent();
             api = (IAPI)RemoteNew.New(typeof(IAPI));
             ExchangePanel.Parent = this;
+
+            _evRepeater = new AlterEventRepeater();
+            _evRepeater.AlterEvent += new AlterDelegate(OperationHandler);
+            api.AlterEvent += new AlterDelegate(_evRepeater.Repeater);
+        }
+
+        public void OperationHandler(Operation op, DOrder order)
+        {
+            LVAddDelegate lvAdd;
+            ChCommDelegate chComm;
+
+            switch (op)
+            {
+                case Operation.New:
+                    lvAdd = new LVAddDelegate(AddOrder);
+                    Invoke(lvAdd, new object[] { order });
+                    break;
+                case Operation.Change:
+                    chComm = new ChCommDelegate(ChangeOrder);
+                    Invoke(chComm, new object[] { order });
+                    break;
+            }
+        }
+
+        private void AddOrder(DOrder order)
+        {
+            //TODO
+            //ListViewItem lvItem = new ListViewItem(new string[] { item.Type.ToString(), item.Name, item.Comment });
+        }
+
+        private void ChangeOrder(DOrder order)
+        {
+            var i = api.ActiveOrders.FindIndex(o => order.Id == o.Id);
+            if(i>-1) api.ActiveOrders[i] = order;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -79,7 +117,7 @@ namespace Client
             if (api.ValidateUser(textBox4.Text, textBox5.Text))
             {
                 MessageBox.Show("User login valid!", "Form1");
-                orders = api.ActiveOrders;
+                _orders = api.ActiveOrders;
                 showExchangePanel();
             }
             else

@@ -113,6 +113,25 @@ public class User
 
 }
 
+public enum Operation { New, Change };
+
+public delegate void AlterDelegate(Operation op, DOrder order);
+
+public class AlterEventRepeater : MarshalByRefObject
+{
+    public event AlterDelegate AlterEvent;
+
+    public override object InitializeLifetimeService()
+    {
+        return null;
+    }
+
+    public void Repeater(Operation op, DOrder order)
+    {
+        if (AlterEvent != null)
+            AlterEvent(op, order);
+    }
+}
 
 public class InvalidObject: Exception
 {
@@ -133,6 +152,7 @@ public class InvalidObject: Exception
 
 public interface IAPI
 {
+    event AlterDelegate AlterEvent;
     List<DOrder> ActiveOrders { get; }
 
     #region User
