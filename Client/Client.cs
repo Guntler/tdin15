@@ -160,7 +160,8 @@ namespace Client
                     MessageBox.Show("Order amount parse error", "Diginote Exchange System");
                 }
 
-                IAPI.RegisterOrder(new DOrder(userSession, amount, 0, orderAction));    
+                DOrder tempOrder = new DOrder(userSession, amount, 0, orderAction);
+                api.RegisterOrder(ref tempOrder);
 
             } catch (Exception exception) {
                 
