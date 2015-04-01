@@ -23,6 +23,7 @@ public class API : MarshalByRefObject, IAPI
     private List<DTransaction> RegisteredTransactions;
     string filePath = "Transactions.txt";
     SQLiteConnection m_dbConnection;
+    HashSet<User> loggedInUsers;
     public List<DOrder> ActiveOrders { get; private set; }
 
     public double ExchangeValue { get; set; }
@@ -36,7 +37,8 @@ public class API : MarshalByRefObject, IAPI
         ExchangeValue = 1.00;
         m_dbConnection = new SQLiteConnection("Data Source=../../../database.db;Version=3;");
         m_dbConnection.Open();
-        this.ActiveOrders = this.GetActiveOrders(); ;
+        this.ActiveOrders = this.GetActiveOrders();
+        loggedInUsers = new HashSet<User>();
         //maybe ask clients for their database files
     }
 
@@ -83,7 +85,7 @@ public class API : MarshalByRefObject, IAPI
     {
         var user = GetUserByName(username) ?? new User();
 
-        if (user.password.Equals(pass))
+        if (user.password.Equals(pass) && loggedInUsers.Add(user))
         {
             user.wallet = GetDiginotesByUser(user);
             return user;
@@ -186,6 +188,13 @@ public class API : MarshalByRefObject, IAPI
         }
     }
 
+    public void logout(ref User us) {
+        if (loggedInUsers.Contains(us))
+        {
+            loggedInUsers.Remove(us);
+        }
+    }
+
     #endregion User
 
     #region Diginote
@@ -283,14 +292,16 @@ public class API : MarshalByRefObject, IAPI
     public void RegisterOrder(ref DOrder order)
     {
         string sql = "Insert into DOrder (type,status,source,value,amount) values ('"
-                        + ((int)order.Type)+1 + "','" + ((int)order.Status)+1 + "','" + order.Source.Nickname + "','" + order.Value + "','"
+                        + (((int)order.Type)+1) + "','" + (((int)order.Status)+1) + "','" + order.Source.Nickname + "','" + order.Value + "','"
                         + order.Amount + "')";
 
         SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
         if(command.ExecuteNonQuery()<0)
             Console.WriteLine("Error registering an Order.");
-        else
+        else { 
             Console.WriteLine("Successfully registered an Order.");
+            this.ActiveOrders.Add(order);
+        }
 
         sql = @"select last_insert_rowid()";
         command = new SQLiteCommand(sql, m_dbConnection);
@@ -363,24 +374,24 @@ public class API : MarshalByRefObject, IAPI
             DOrder order = null;
             User source = GetUserByName(reader["source"].ToString());
             OrderType type;
-            if (!OrderType.TryParse(reader["type"].ToString(), out type))
-            {
+            if (!Enum.IsDefined(typeof(OrderType), (Convert.ToInt32(reader["type"].ToString()))-1)){
                 Console.WriteLine(@"Type of order was in an incorrect format.");
-                return null;
+                continue;
             }
+            type = ((OrderType) (Convert.ToInt32(reader["type"].ToString()))-1);
 
             OrderStatus status;
             if (!OrderStatus.TryParse(reader["status"].ToString(), out status))
             {
                 Console.WriteLine(@"Type of order was in an incorrect format.");
-                return null;
+                continue;
             }
 
             //NOTE: Double.tryparse may cause problems - refer to here if anything happens
             if (source == null)
             {
                 Console.WriteLine(@"The user specified as the owner no longer exists.");
-                return null;
+                continue;
             }
 
             int amount = Convert.ToInt32(reader["amount"].ToString());
@@ -388,7 +399,7 @@ public class API : MarshalByRefObject, IAPI
             if (!Double.TryParse(reader["value"].ToString(), out value))
             {
                 Console.WriteLine(@"Could not parse value of Order.");
-                return null;
+                continue;
             }
 
             long orderId = Convert.ToInt64(reader["id"].ToString());

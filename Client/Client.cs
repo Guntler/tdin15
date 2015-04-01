@@ -168,6 +168,11 @@ namespace Client
 
             }
         }
+
+        private void logout(object sender, FormClosedEventArgs e)
+        {
+            api.logout(ref userSession);
+        }
     }
 }
 

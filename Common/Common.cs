@@ -49,6 +49,7 @@ public class DOrder
         Status = OrderStatus.Active;
         Type = type;
     }
+
 }
 
 [Serializable]
@@ -111,6 +112,8 @@ public class User
         return "Name: " + this.name + "\nNickname: " + this.Nickname + "\nPassword: " + this.password + "\n";
     }
 
+    public override int GetHashCode() { return Id.GetHashCode(); }
+    public override bool Equals(object obj) { return this.Nickname.Equals(((User)obj).Nickname); }
 }
 
 public enum Operation { New, Change };
@@ -167,6 +170,8 @@ public interface IAPI
 
     int UpdateUser(string username, string oldPassword, User updated);
 
+    void logout(ref User us);
+
     #endregion User
 
     #region Diginote
@@ -212,4 +217,5 @@ public interface IAPI
     bool ChangeExchangeValue(double value);
 
     #endregion Actions
+
 }
