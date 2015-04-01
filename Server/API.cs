@@ -23,7 +23,6 @@ public class API : MarshalByRefObject, IAPI
     private List<DTransaction> RegisteredTransactions;
     string filePath = "Transactions.txt";
     SQLiteConnection m_dbConnection;
-    public event AlterDelegate AlterEvent;
     public List<DOrder> ActiveOrders { get; private set; }
 
     public double ExchangeValue { get; set; }

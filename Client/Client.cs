@@ -29,8 +29,8 @@ namespace Client
             ExchangePanel.Parent = this;
 
             _evRepeater = new AlterEventRepeater();
-            _evRepeater.AlterEvent += new AlterDelegate(OperationHandler);
-            api.AlterEvent += new AlterDelegate(_evRepeater.Repeater);
+            _evRepeater.alterEvent += new AlterDelegate(OperationHandler);
+            api.alterEvent += new AlterDelegate(_evRepeater.Repeater);
         }
 
         public void OperationHandler(Operation op, DOrder order)
@@ -152,16 +152,17 @@ namespace Client
                     this.comboBox1.SelectedItem = null;
                     MessageBox.Show("Order action not allowed","Diginote Exchange System");
                 }
-                if(Int32.TryParse(this.textBox6.Text, out amount)){
+                if(!Int32.TryParse(this.textBox6.Text, out amount)){
                     this.textBox6.Text = "";
                     MessageBox.Show("Order amount parse error", "Diginote Exchange System");
                 }
-
-                DOrder tempOrder = new DOrder(userSession, amount, 0, orderAction);
-                api.RegisterOrder(ref tempOrder);
+                else {
+                    DOrder tempOrder = new DOrder(userSession, amount, 0, orderAction);
+                    api.RegisterOrder(ref tempOrder);
+                }
 
             } catch (Exception exception) {
-                
+                MessageBox.Show("Exception error:\n"+exception.Message, "Diginote Exchange System");
             }
             finally{
 
