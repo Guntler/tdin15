@@ -119,7 +119,7 @@ public delegate void AlterDelegate(Operation op, DOrder order);
 
 public class AlterEventRepeater : MarshalByRefObject
 {
-    public event AlterDelegate AlterEvent;
+    public event AlterDelegate alterEvent;
 
     public override object InitializeLifetimeService()
     {
@@ -128,8 +128,8 @@ public class AlterEventRepeater : MarshalByRefObject
 
     public void Repeater(Operation op, DOrder order)
     {
-        if (AlterEvent != null)
-            AlterEvent(op, order);
+        if (alterEvent != null)
+            alterEvent(op, order);
     }
 }
 
@@ -152,7 +152,7 @@ public class InvalidObject: Exception
 
 public interface IAPI
 {
-    event AlterDelegate AlterEvent;
+    event AlterDelegate alterEvent;
     List<DOrder> ActiveOrders { get; }
 
     #region User
