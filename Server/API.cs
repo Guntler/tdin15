@@ -82,7 +82,7 @@ public class API : MarshalByRefObject, IAPI
 
     public User ValidateUser(string username, string pass)
     {
-        var user = GetUserByName(username);
+        var user = GetUserByName(username) ?? new User();
         return user.password.Equals(pass) ? user : null;
 
         /*if (!RegisteredUsers.ContainsKey(username)) //user does not exist

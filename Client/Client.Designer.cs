@@ -29,21 +29,21 @@
         private void InitializeComponent()
         {
             this.registerPanel = new System.Windows.Forms.Panel();
-            this.label5 = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
-            this.label4 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
             this.textBox3 = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.button1 = new System.Windows.Forms.Button();
             this.loginPanel = new System.Windows.Forms.Panel();
+            this.textBox4 = new System.Windows.Forms.TextBox();
             this.textBox5 = new System.Windows.Forms.TextBox();
             this.button2 = new System.Windows.Forms.Button();
-            this.textBox4 = new System.Windows.Forms.TextBox();
-            this.label7 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
             this.ExchangePanel = new System.Windows.Forms.Panel();
             this.label13 = new System.Windows.Forms.Label();
             this.diginotesLbl = new System.Windows.Forms.Label();
@@ -69,12 +69,12 @@
             // registerPanel
             // 
             this.registerPanel.Controls.Add(this.label5);
-            this.registerPanel.Controls.Add(this.button1);
             this.registerPanel.Controls.Add(this.label4);
-            this.registerPanel.Controls.Add(this.textBox2);
             this.registerPanel.Controls.Add(this.label3);
             this.registerPanel.Controls.Add(this.textBox1);
+            this.registerPanel.Controls.Add(this.textBox2);
             this.registerPanel.Controls.Add(this.textBox3);
+            this.registerPanel.Controls.Add(this.button1);
             this.registerPanel.Controls.Add(this.label1);
             this.registerPanel.Location = new System.Drawing.Point(0, 0);
             this.registerPanel.Margin = new System.Windows.Forms.Padding(0);
@@ -151,6 +151,16 @@
             this.label1.Text = "Register your account";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // label2
+            // 
+            this.label2.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.label2.Location = new System.Drawing.Point(81, 9);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(200, 13);
+            this.label2.TabIndex = 1;
+            this.label2.Text = "Login with your account";
+            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // loginPanel
             // 
             this.loginPanel.Controls.Add(this.textBox5);
@@ -165,9 +175,16 @@
             this.loginPanel.Size = new System.Drawing.Size(331, 257);
             this.loginPanel.TabIndex = 1;
             // 
+            // textBox4
+            // 
+            this.textBox4.Location = new System.Drawing.Point(84, 63);
+            this.textBox4.Name = "textBox4";
+            this.textBox4.Size = new System.Drawing.Size(187, 20);
+            this.textBox4.TabIndex = 8;
+            // 
             // textBox5
             // 
-            this.textBox5.Location = new System.Drawing.Point(88, 113);
+            this.textBox5.Location = new System.Drawing.Point(84, 113);
             this.textBox5.Name = "textBox5";
             this.textBox5.PasswordChar = '*';
             this.textBox5.Size = new System.Drawing.Size(187, 20);
@@ -182,13 +199,6 @@
             this.button2.Text = "Login";
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
-            // 
-            // textBox4
-            // 
-            this.textBox4.Location = new System.Drawing.Point(88, 63);
-            this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(187, 20);
-            this.textBox4.TabIndex = 8;
             // 
             // label7
             // 
@@ -207,16 +217,6 @@
             this.label6.Size = new System.Drawing.Size(55, 13);
             this.label6.TabIndex = 6;
             this.label6.Text = "Nickname";
-            // 
-            // label2
-            // 
-            this.label2.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.label2.Location = new System.Drawing.Point(81, 9);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(200, 13);
-            this.label2.TabIndex = 1;
-            this.label2.Text = "Login with your account";
-            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // ExchangePanel
             // 
@@ -379,9 +379,9 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(659, 254);
-            this.Controls.Add(this.ExchangePanel);
             this.Controls.Add(this.loginPanel);
             this.Controls.Add(this.registerPanel);
+            this.Controls.Add(this.ExchangePanel);
             this.Name = "Client";
             this.Text = "Diginote Exchange System";
             this.registerPanel.ResumeLayout(false);
