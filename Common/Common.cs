@@ -173,6 +173,8 @@ public interface IAPI
 
     void RegisterDiginote(User owner);
 
+    List<Diginote> GetDiginotesByUser(User us);
+
     Diginote GetDiginote(long id);
 
     void DeleteDiginote(long id);

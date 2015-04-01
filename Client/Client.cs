@@ -35,18 +35,15 @@ namespace Client
 
         public void OperationHandler(Operation op, DOrder order)
         {
-            LVAddDelegate lvAdd;
-            ChCommDelegate chComm;
-
             switch (op)
             {
                 case Operation.New:
-                    lvAdd = new LVAddDelegate(listView.Items.Add);
+                    var lvAdd = new LVAddDelegate(listView.Items.Add);
                     ListViewItem lvItem = new ListViewItem(new string[] { order.Type.ToString(), order.Amount.ToString(), (order.Value*order.Amount).ToString(), "not yet implemented"});
                     Invoke(lvAdd, new object[] { lvItem });
                     break;
                 case Operation.Change:
-                    chComm = new ChCommDelegate(ChangeOrder);
+                    var chComm = new ChCommDelegate(ChangeOrder);
                     Invoke(chComm, new object[] { order });
                     break;
             }

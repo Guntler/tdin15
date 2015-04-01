@@ -211,6 +211,24 @@ public class API : MarshalByRefObject, IAPI
         RegisteredNotes.Add(note);
     }
 
+    public List<Diginote> GetDiginotesByUser(User us)
+    {
+        List<Diginote> notes = new List<Diginote>();
+
+        string sql = "select * from Diginote where owner = '" + us.Nickname + "'";
+        SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
+        SQLiteDataReader reader = command.ExecuteReader();
+
+        while (reader.Read())
+        {
+            Diginote note = null;
+            note = new Diginote(us);
+            notes.Add(note);
+        }
+
+        return notes;
+    }
+
     public Diginote GetDiginote(long id)
     {
         string sql = "select * from Diginote where id = '" + id + "'";
