@@ -87,7 +87,7 @@ public class User
 
     public string password { get; set; }
 
-    private List<Diginote> wallet;
+    public  List<Diginote> wallet;
 
     public User(string name, string username, string password) {
         if (name == "" || username == "" || password == ""){

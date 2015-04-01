@@ -82,7 +82,13 @@ public class API : MarshalByRefObject, IAPI
     public User ValidateUser(string username, string pass)
     {
         var user = GetUserByName(username) ?? new User();
-        return user.password.Equals(pass) ? user : null;
+
+        if (user.password.Equals(pass))
+        {
+            user.wallet = GetDiginotesByUser(user);
+            return user;
+        }
+        return null;
 
         /*if (!RegisteredUsers.ContainsKey(username)) //user does not exist
             return false;
