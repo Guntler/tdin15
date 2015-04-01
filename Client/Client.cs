@@ -18,8 +18,8 @@ namespace Client
         User userSession;
         readonly AlterEventRepeater _evRepeater;
         delegate ListViewItem LVAddDelegate(ListViewItem lvItem);
-
         delegate void ChCommDelegate(DOrder order);
+        delegate void LVRemDelegate(DOrder order);
 
         public Client()
         {
@@ -52,7 +52,17 @@ namespace Client
         private void ChangeOrder(DOrder order)
         {
             var i = api.ActiveOrders.FindIndex(o => order.Id == o.Id);
-            if(i>-1) api.ActiveOrders[i] = order;
+
+            if (order.Status.Equals(OrderStatus.Active))
+            {
+                if (i > -1) api.ActiveOrders[i] = order;
+            }
+            else
+            {
+                /*var lvRem = new LVRemDelegate(listView.Items.Remove);
+                Invoke(lvRem, new object[] { order });*/
+                api.ActiveOrders.RemoveAt(i);
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)
