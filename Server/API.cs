@@ -21,7 +21,7 @@ public class API : MarshalByRefObject, IAPI
     Dictionary<string, User> RegisteredUsers;
     private List<DOrder> RegisteredOrders;
     private List<DTransaction> RegisteredTransactions;
-    string filePath = "Transactions.txt";
+    string logPath;
     SQLiteConnection m_dbConnection;
     HashSet<User> loggedInUsers;
     public List<DOrder> ActiveOrders { get; private set; }
@@ -39,12 +39,19 @@ public class API : MarshalByRefObject, IAPI
         m_dbConnection.Open();
         this.ActiveOrders = this.GetActiveOrders();
         loggedInUsers = new HashSet<User>();
+        logPath = "Server Log:" + getTime();
+        Console.WriteLine("File path:"+logPath);
         //maybe ask clients for their database files
     }
 
     ~API()
     {
         m_dbConnection.Close();
+    }
+
+    static string getTime()
+    {
+        return DateTime.UtcNow.ToString("yyyy/MM/dd-HH':'mm':'ss");
     }
 
     void NotifyClients(Operation op, DOrder order)
@@ -531,12 +538,12 @@ public class API : MarshalByRefObject, IAPI
 
     #endregion Interface functions
 
-    public void saveData()
+    public void logEntry(string who, string when, string what, string result)
     {
-        string lines = ""; //generate text to save
-        using (StreamWriter file = File.AppendText(filePath)) //open in append, if not exist creates
+        using (StreamWriter file = File.AppendText(logPath)) //open in append, if not exist creates
         {
-            file.WriteLine(lines);
+            file.WriteLine(String.Format("{0} [{1}] {2} {3} ", who, when, what, result));
+            //file.WriteLine(line);
             file.Close();
         }
         return;

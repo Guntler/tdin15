@@ -132,7 +132,7 @@ namespace Client
             }
             else
             {
-                MessageBox.Show("User login invalid!", "Diginote Exchange System");
+				MessageBox.Show("User login invalid or already in use!", "Diginote Exchange System");
             }
         }
 
