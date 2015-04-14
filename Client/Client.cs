@@ -38,13 +38,13 @@ namespace Client
             switch (op)
             {
                 case Operation.New:
-                    var lvAdd = new LVAddDelegate(listView.Items.Add);
-                    ListViewItem lvItem = new ListViewItem(new string[] { order.Type.ToString(), order.Amount.ToString(), (order.Value*order.Amount).ToString(), "not yet implemented"});
-                    Invoke(lvAdd, new object[] { lvItem });
+                    //var lvAdd = new LVAddDelegate(listView.Items.Add);
+                    //ListViewItem lvItem = new ListViewItem(new string[] { order.Type.ToString(), order.Amount.ToString(), (order.Value*order.Amount).ToString(), "not yet implemented"});
+                    //Invoke(lvAdd, new object[] { lvItem });
                     break;
                 case Operation.Change:
-                    var chComm = new ChCommDelegate(ChangeOrder);
-                    Invoke(chComm, new object[] { order });
+                    //var chComm = new ChCommDelegate(ChangeOrder);
+                    //Invoke(chComm, new object[] { order });
                     break;
             }
         }
@@ -122,12 +122,8 @@ namespace Client
             if ((userSession = api.ValidateUser(textBox4.Text, textBox5.Text))!= null)
             {
                 MessageBox.Show("User login valid!", "Diginote Exchange System");
-                List<DOrder> _orders = api.ActiveOrders;
-                foreach (DOrder order in _orders)
-                {
-                    ListViewItem lvItem = new ListViewItem(new string[] { order.Type.ToString(), order.Amount.ToString(), (order.Value * order.Amount).ToString(), "not yet implemented" });
-                    listView.Items.Add(lvItem);
-                }
+                UserLbl.Text = userSession.Nickname;
+                updateExchangePanel(api.ActiveOrders);
                 showExchangePanel();
             }
             else
@@ -149,6 +145,15 @@ namespace Client
             loginPanel.Visible = true;
             registerPanel.Visible = true;
             ExchangePanel.Visible = false;
+        }
+
+        private void updateExchangePanel(List<DOrder> _orders)
+        {
+            Num_Buy_Order_System.Text = _orders.FindAll(order => order.Type == OrderType.Buy).Count.ToString();
+            Num_Sell_Order_System.Text = _orders.FindAll(order => order.Type == OrderType.Sell).Count.ToString();
+            Num_Buy_Order_User.Text = _orders.FindAll(order => order.Type == OrderType.Buy && order.Source.Nickname == userSession.Nickname).Count.ToString();
+            Num_Sell_Order_User.Text = _orders.FindAll(order => order.Type == OrderType.Sell && order.Source.Nickname == userSession.Nickname).Count.ToString();
+            ExchangeValueLbl.Text = String.Format("{0:0.00}", api.ExchangeValue);
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -183,6 +188,7 @@ namespace Client
         {
             api.logout(ref userSession);
         }
+
     }
 }
 

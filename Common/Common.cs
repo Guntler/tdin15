@@ -157,6 +157,7 @@ public interface IAPI
 {
     event AlterDelegate alterEvent;
     List<DOrder> ActiveOrders { get; }
+    double ExchangeValue { get; }
 
     #region User
 
