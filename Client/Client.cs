@@ -35,7 +35,9 @@ namespace Client
 
         public void OperationHandler(Operation op, DOrder order)
         {
-            if (!order.Source.Nickname.Equals(userSession.Nickname) &&
+            //uncomment if not treating creator or order like a regular user
+            //and updating the rest of the user's orders automatically
+            if (/*!order.Source.Nickname.Equals(userSession.Nickname) &&*/
                         (!order.Value.Equals(api.ExchangeValue)))
             {
                 //Create prompt to change the current value of your orders
@@ -58,6 +60,9 @@ namespace Client
                 case Operation.Change:
                     //var chComm = new ChCommDelegate(ChangeOrder);
                     //Invoke(chComm, new object[] { order });
+                    break;
+                case Operation.Remove:
+
                     break;
             }
         }

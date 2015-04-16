@@ -28,9 +28,6 @@ public enum OrderType { Buy,Sell };
 /// <summary>
 /// The object class referring to a purchase/sale order 
 /// </summary>
-/**
- * TODO MISSING DATE
- */
 public class DOrder
 {
     public long Id { get; set; }
@@ -39,8 +36,8 @@ public class DOrder
     public OrderStatus Status { get; set; }
     public int Amount { get; set; }
     public User Source { get; set; }
+    public DateTime Date { get; set; }
 
-    //TODO: order status should maybe be active by default in the SQL file instead of in its constructor
     public DOrder(User source, int amount,double value,OrderType type)
     {
         Source = source;
@@ -48,6 +45,7 @@ public class DOrder
         Amount = amount;
         Status = OrderStatus.Active;
         Type = type;
+        Date = DateTime.Today;
     }
 
 }
@@ -56,20 +54,19 @@ public class DOrder
 /// <summary>
 /// The object class referring to a concluded or cancelled Order
 /// </summary>
-/**
- * TODO MISSING DATE
- * TODO Destination MUST be different from Source
- */
 public class DTransaction
 {
     public DOrder Order { get; set; }
     public double Value { get; set; }
     public User Destination { get; set; }
+    public DateTime Date { get; set; }
+
     public DTransaction(User destination, double value, DOrder order)
     {
         Destination = destination;
         Value = value;
         Order = order;
+        Date = DateTime.Today;
     }
 }
 
@@ -116,7 +113,7 @@ public class User
     public override bool Equals(object obj) { return this.Nickname.Equals(((User)obj).Nickname); }
 }
 
-public enum Operation { New, Change };
+public enum Operation { New, Change, Remove };
 
 public delegate void AlterDelegate(Operation op, DOrder order);
 
@@ -183,6 +180,8 @@ public interface IAPI
 
     Diginote GetDiginote(long id);
 
+    void PurchaseDiginotes(User owner, int amt, User buyer);
+
     void DeleteDiginote(long id);
 
     #endregion Diginote
@@ -200,6 +199,10 @@ public interface IAPI
     void DeleteOrder(DOrder order);
 
     void DeleteAllUserOrders(User user);
+
+    void CancelOrder(DOrder order);
+
+    void FulfillOrder(User buyer, DOrder order);
 
     #endregion Order
 

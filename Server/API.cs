@@ -274,6 +274,18 @@ public class API : MarshalByRefObject, IAPI
         return null;
     }
 
+    public void PurchaseDiginotes(User owner, int amt, User buyer)
+    {
+        for (var i = 0; i < amt; i++)
+        {
+            string sql = "Update Diginote SET owner = '" + buyer.Nickname + "' where id = '" + owner.wallet[0].Id + "'";
+            owner.wallet.RemoveAt(0);
+
+            SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
+            command.ExecuteNonQuery();
+        }   
+    }
+
     public void DeleteDiginote(long id)
     {
         RegisteredNotes.RemoveAll(c => c.Id == id);
@@ -470,6 +482,32 @@ public class API : MarshalByRefObject, IAPI
         }
 
         Console.WriteLine("Successfuly removed Order " + order.Id);
+    }
+
+    public void CancelOrder(DOrder order)
+    {
+        order.Status=OrderStatus.Cancelled;
+        EditOrder(order);
+
+        NotifyClients(Operation.Change,order);
+    }
+
+    public void FulfillOrder(User buyer, DOrder order)
+    {
+        if (!buyer.Nickname.Equals(order.Source.Nickname))
+        {
+            PurchaseDiginotes(order.Source, order.Amount, buyer);
+            order.Status = OrderStatus.Fulfilled;
+
+            EditOrder(order);
+            RegisteredTransactions.Add(new DTransaction(buyer,order.Value,order));
+
+            NotifyClients(Operation.Change, order);
+        }
+        else
+        {
+            //Display Error message because you can't buy your own order
+        }
     }
 
     #endregion Order
