@@ -49,17 +49,20 @@ namespace Client
                 //api.DeleteAllUserOrders(userSession);
             }
 
+            if (!order.Source.Nickname.Equals(userSession.Nickname))
+                return;
+
             switch (op)
             {
                 case Operation.New:
                     
-                    //var lvAdd = new LVAddDelegate(listView.Items.Add);
-                    //ListViewItem lvItem = new ListViewItem(new string[] { order.Type.ToString(), order.Amount.ToString(), (order.Value*order.Amount).ToString(), "not yet implemented"});
-                    //Invoke(lvAdd, new object[] { lvItem });
+                    var lvAdd = new LVAddDelegate(listView.Items.Add);
+                    ListViewItem lvItem = new ListViewItem(new string[] { order.Type.ToString(), order.Amount.ToString(), (order.Value*order.Amount).ToString(), "not yet implemented"});
+                    Invoke(lvAdd, new object[] { lvItem });
                     break;
                 case Operation.Change:
-                    //var chComm = new ChCommDelegate(ChangeOrder);
-                    //Invoke(chComm, new object[] { order });
+                    var chComm = new ChCommDelegate(ChangeOrder);
+                    Invoke(chComm, new object[] { order });
                     break;
                 case Operation.Remove:
 
