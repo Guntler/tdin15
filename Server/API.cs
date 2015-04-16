@@ -316,29 +316,36 @@ public class API : MarshalByRefObject, IAPI
             //Ask for a new value
         }
 
-        string sql = "Insert into DOrder (type,status,source,value,amount) values ('"
-                        + (((int)order.Type)+1) + "','" + (((int)order.Status)+1) + "','" + order.Source.Nickname + "','" + order.Value + "','"
+        var sql = "";
+        SQLiteCommand command;
+
+        try
+        {
+            sql = "Insert into DOrder (type,status,source,value,amount) values ('"
+                        + (((int)order.Type) + 1) + "','" + (((int)order.Status) + 1) + "','" + order.Source.Nickname + "','" + order.Value + "','"
                         + order.Amount + "')";
 
-        SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
-        if(command.ExecuteNonQuery()<0)
-            Console.WriteLine("Error registering an Order.");
-        else { 
-            Console.WriteLine("Successfully registered an Order.");
-            this.ActiveOrders.Add(order);
+            command = new SQLiteCommand(sql, m_dbConnection);
+            command.ExecuteNonQuery();
         }
+        catch (SQLiteException sqle)
+        {
+            Console.WriteLine(sqle.ToString());
+        }
+        finally {
+            this.ActiveOrders.Add(order);
+            sql = @"select last_insert_rowid()";
+            command = new SQLiteCommand(sql, m_dbConnection);
+            order.Id = (long)command.ExecuteScalar();
+            Console.WriteLine(@"New order id: " + order.Id);
 
-        sql = @"select last_insert_rowid()";
-        command = new SQLiteCommand(sql, m_dbConnection);
-        order.Id = (long)command.ExecuteScalar();
-        Console.WriteLine(@"New order id: " + order.Id);
+            RegisteredOrders.Add(order);
 
-        RegisteredOrders.Add(order);
-        
-        NotifyClients(Operation.New, order);
+            NotifyClients(Operation.New, order);
 
-        if(!order.Value.Equals(ExchangeValue))
-            ExchangeValue = order.Value;
+            if (!order.Value.Equals(ExchangeValue))
+                ExchangeValue = order.Value;
+        }
     }
 
     public DOrder GetOrder(long id)
