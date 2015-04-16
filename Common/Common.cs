@@ -193,9 +193,13 @@ public interface IAPI
 
     DOrder GetOrder(long id);
 
+    void ChangeAllUserOrders(User user, float newValue);
+
     void EditOrder(DOrder order);
     
     void DeleteOrder(DOrder order);
+
+    void DeleteAllUserOrders(User user);
 
     #endregion Order
 

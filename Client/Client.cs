@@ -35,9 +35,22 @@ namespace Client
 
         public void OperationHandler(Operation op, DOrder order)
         {
+            if (!order.Source.Nickname.Equals(userSession.Nickname) &&
+                        (!order.Value.Equals(api.ExchangeValue)))
+            {
+                //Create prompt to change the current value of your orders
+
+                //User says yes or times out
+                //api.ChangeAllUserOrders(userSession,newValue);
+
+                //User says no
+                //api.DeleteAllUserOrders(userSession);
+            }
+
             switch (op)
             {
                 case Operation.New:
+                    
                     //var lvAdd = new LVAddDelegate(listView.Items.Add);
                     //ListViewItem lvItem = new ListViewItem(new string[] { order.Type.ToString(), order.Amount.ToString(), (order.Value*order.Amount).ToString(), "not yet implemented"});
                     //Invoke(lvAdd, new object[] { lvItem });

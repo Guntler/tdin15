@@ -298,6 +298,12 @@ public class API : MarshalByRefObject, IAPI
 
     public void RegisterOrder(ref DOrder order)
     {
+        if ((order.Type.Equals(OrderType.Buy) && order.Value > ExchangeValue) ||
+            (order.Type.Equals(OrderType.Sell) && order.Value < ExchangeValue))
+        {
+            //Ask for a new value
+        }
+
         string sql = "Insert into DOrder (type,status,source,value,amount) values ('"
                         + (((int)order.Type)+1) + "','" + (((int)order.Status)+1) + "','" + order.Source.Nickname + "','" + order.Value + "','"
                         + order.Amount + "')";
@@ -318,6 +324,9 @@ public class API : MarshalByRefObject, IAPI
         RegisteredOrders.Add(order);
         
         NotifyClients(Operation.New, order);
+
+        if(!order.Value.Equals(ExchangeValue))
+            ExchangeValue = order.Value;
     }
 
     public DOrder GetOrder(long id)
@@ -418,9 +427,26 @@ public class API : MarshalByRefObject, IAPI
         return orders;
     }
 
+    public void ChangeAllUserOrders(User user, float newValue)
+    {
+        foreach (var o in ActiveOrders.Where(o => o.Source.Nickname.Equals(user.Nickname)))
+        {
+            o.Value=newValue;
+            EditOrder(o);
+        }
+    }
+
+    public void DeleteAllUserOrders(User user)
+    {
+        foreach (var o in ActiveOrders.Where(o => o.Source.Nickname.Equals(user.Nickname)))
+        {
+            DeleteOrder(o);
+        }
+    }
+
     public void EditOrder(DOrder order)
     {
-        string sql = "Update DOrder SET amount = '" + order.Amount + "' where id = '" + order.Id + "'";
+        string sql = "Update DOrder SET value = '" + order.Value + "' where id = '" + order.Id + "'";
 
         SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
         command.ExecuteNonQuery();
