@@ -55,9 +55,9 @@ namespace Client
             switch (op)
             {
                 case Operation.New:
-                    
-                    var lvAdd = new LVAddDelegate(listView.Items.Add);
-                    ListViewItem lvItem = new ListViewItem(new string[] { order.Type.ToString(), order.Amount.ToString(), (order.Value*order.Amount).ToString(), "not yet implemented"});
+
+                    var lvAdd = new LVAddDelegate(itemListView.Items.Add);
+                    ListViewItem lvItem = new ListViewItem(new string[] { order.Type.ToString(), order.Amount.ToString(), (order.Value * order.Amount).ToString(), order.Date.ToString() });
                     Invoke(lvAdd, new object[] { lvItem });
                     break;
                 case Operation.Change:
@@ -172,8 +172,13 @@ namespace Client
         {
             Num_Buy_Order_System.Text = _orders.FindAll(order => order.Type == OrderType.Buy).Count.ToString();
             Num_Sell_Order_System.Text = _orders.FindAll(order => order.Type == OrderType.Sell).Count.ToString();
-            Num_Buy_Order_User.Text = _orders.FindAll(order => order.Type == OrderType.Buy && order.Source.Nickname == userSession.Nickname).Count.ToString();
-            Num_Sell_Order_User.Text = _orders.FindAll(order => order.Type == OrderType.Sell && order.Source.Nickname == userSession.Nickname).Count.ToString();
+            List<DOrder> aux = _orders.FindAll(order => order.Source.Nickname == userSession.Nickname);
+            foreach (DOrder order in aux)
+	        {
+                var lvAdd = new LVAddDelegate(itemListView.Items.Add);
+                ListViewItem lvItem = new ListViewItem(new string[] { order.Type.ToString(), order.Amount.ToString(), (order.Value * order.Amount).ToString(), order.Date.ToString() });
+                Invoke(lvAdd, new object[] { lvItem });
+	        }
             ExchangeValueLbl.Text = String.Format("{0:0.00}", api.ExchangeValue);
         }
 

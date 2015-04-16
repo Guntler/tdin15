@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.ColumnHeader date;
             this.registerPanel = new System.Windows.Forms.Panel();
             this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
@@ -46,10 +45,18 @@
             this.label7 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.ExchangePanel = new System.Windows.Forms.Panel();
-            this.listView = new System.Windows.Forms.ListView();
-            this.type = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.amount = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.totalValue = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.itemListView = new System.Windows.Forms.ListView();
+            this.Type = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.UserLbl = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.Num_Sell_Order_System = new System.Windows.Forms.Label();
+            this.Num_Buy_Order_System = new System.Windows.Forms.Label();
+            this.label16 = new System.Windows.Forms.Label();
+            this.label15 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
             this.diginotesLbl = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
@@ -60,8 +67,7 @@
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.button3 = new System.Windows.Forms.Button();
             this.textBox6 = new System.Windows.Forms.TextBox();
-            this.label8 = new System.Windows.Forms.Label();
-            date = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.Title = new System.Windows.Forms.Label();
             this.registerPanel.SuspendLayout();
             this.loginPanel.SuspendLayout();
             this.ExchangePanel.SuspendLayout();
@@ -80,7 +86,7 @@
             this.registerPanel.Location = new System.Drawing.Point(0, 0);
             this.registerPanel.Margin = new System.Windows.Forms.Padding(0);
             this.registerPanel.Name = "registerPanel";
-            this.registerPanel.Size = new System.Drawing.Size(328, 257);
+            this.registerPanel.Size = new System.Drawing.Size(243, 257);
             this.registerPanel.TabIndex = 0;
             // 
             // label5
@@ -114,14 +120,14 @@
             // 
             this.textBox1.Location = new System.Drawing.Point(83, 63);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(187, 20);
+            this.textBox1.Size = new System.Drawing.Size(116, 20);
             this.textBox1.TabIndex = 1;
             // 
             // textBox2
             // 
             this.textBox2.Location = new System.Drawing.Point(83, 113);
             this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(187, 20);
+            this.textBox2.Size = new System.Drawing.Size(116, 20);
             this.textBox2.TabIndex = 3;
             // 
             // textBox3
@@ -129,12 +135,12 @@
             this.textBox3.Location = new System.Drawing.Point(83, 164);
             this.textBox3.Name = "textBox3";
             this.textBox3.PasswordChar = '*';
-            this.textBox3.Size = new System.Drawing.Size(187, 20);
+            this.textBox3.Size = new System.Drawing.Size(116, 20);
             this.textBox3.TabIndex = 4;
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(124, 214);
+            this.button1.Location = new System.Drawing.Point(108, 214);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 7;
@@ -145,7 +151,7 @@
             // label1
             // 
             this.label1.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.label1.Location = new System.Drawing.Point(60, 9);
+            this.label1.Location = new System.Drawing.Point(22, 9);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(200, 13);
             this.label1.TabIndex = 0;
@@ -155,7 +161,7 @@
             // label2
             // 
             this.label2.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.label2.Location = new System.Drawing.Point(81, 9);
+            this.label2.Location = new System.Drawing.Point(36, 9);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(200, 13);
             this.label2.TabIndex = 1;
@@ -170,23 +176,23 @@
             this.loginPanel.Controls.Add(this.label7);
             this.loginPanel.Controls.Add(this.label6);
             this.loginPanel.Controls.Add(this.label2);
-            this.loginPanel.Location = new System.Drawing.Point(328, 0);
+            this.loginPanel.Location = new System.Drawing.Point(243, 0);
             this.loginPanel.Margin = new System.Windows.Forms.Padding(0);
             this.loginPanel.Name = "loginPanel";
-            this.loginPanel.Size = new System.Drawing.Size(331, 257);
+            this.loginPanel.Size = new System.Drawing.Size(248, 257);
             this.loginPanel.TabIndex = 1;
             // 
             // textBox5
             // 
-            this.textBox5.Location = new System.Drawing.Point(84, 113);
+            this.textBox5.Location = new System.Drawing.Point(77, 117);
             this.textBox5.Name = "textBox5";
             this.textBox5.PasswordChar = '*';
-            this.textBox5.Size = new System.Drawing.Size(187, 20);
+            this.textBox5.Size = new System.Drawing.Size(116, 20);
             this.textBox5.TabIndex = 7;
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(135, 214);
+            this.button2.Location = new System.Drawing.Point(102, 214);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 23);
             this.button2.TabIndex = 10;
@@ -196,9 +202,9 @@
             // 
             // textBox4
             // 
-            this.textBox4.Location = new System.Drawing.Point(84, 63);
+            this.textBox4.Location = new System.Drawing.Point(77, 63);
             this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(187, 20);
+            this.textBox4.Size = new System.Drawing.Size(116, 20);
             this.textBox4.TabIndex = 8;
             // 
             // label7
@@ -222,7 +228,14 @@
             // ExchangePanel
             // 
             this.ExchangePanel.AutoSize = true;
-            this.ExchangePanel.Controls.Add(this.listView);
+            this.ExchangePanel.Controls.Add(this.itemListView);
+            this.ExchangePanel.Controls.Add(this.UserLbl);
+            this.ExchangePanel.Controls.Add(this.label8);
+            this.ExchangePanel.Controls.Add(this.Num_Sell_Order_System);
+            this.ExchangePanel.Controls.Add(this.Num_Buy_Order_System);
+            this.ExchangePanel.Controls.Add(this.label16);
+            this.ExchangePanel.Controls.Add(this.label15);
+            this.ExchangePanel.Controls.Add(this.label14);
             this.ExchangePanel.Controls.Add(this.label13);
             this.ExchangePanel.Controls.Add(this.diginotesLbl);
             this.ExchangePanel.Controls.Add(this.label12);
@@ -233,61 +246,123 @@
             this.ExchangePanel.Controls.Add(this.comboBox1);
             this.ExchangePanel.Controls.Add(this.button3);
             this.ExchangePanel.Controls.Add(this.textBox6);
-            this.ExchangePanel.Controls.Add(this.label8);
+            this.ExchangePanel.Controls.Add(this.Title);
             this.ExchangePanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ExchangePanel.Location = new System.Drawing.Point(0, 0);
             this.ExchangePanel.Name = "ExchangePanel";
-            this.ExchangePanel.Size = new System.Drawing.Size(659, 254);
+            this.ExchangePanel.Size = new System.Drawing.Size(491, 254);
             this.ExchangePanel.TabIndex = 2;
             this.ExchangePanel.Visible = false;
             // 
-            // listView
+            // itemListView
             // 
-            this.listView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.type,
-            this.amount,
-            this.totalValue,
-            date});
-            this.listView.FullRowSelect = true;
-            this.listView.GridLines = true;
-            this.listView.Location = new System.Drawing.Point(13, 48);
-            this.listView.Name = "listView";
-            this.listView.Size = new System.Drawing.Size(424, 189);
-            this.listView.TabIndex = 1;
-            this.listView.UseCompatibleStateImageBehavior = false;
-            this.listView.View = System.Windows.Forms.View.Details;
+            this.itemListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.Type,
+            this.columnHeader1,
+            this.columnHeader2,
+            this.columnHeader3});
+            this.itemListView.FullRowSelect = true;
+            this.itemListView.Location = new System.Drawing.Point(15, 159);
+            this.itemListView.Name = "itemListView";
+            this.itemListView.Size = new System.Drawing.Size(405, 83);
+            this.itemListView.TabIndex = 26;
+            this.itemListView.UseCompatibleStateImageBehavior = false;
+            this.itemListView.View = System.Windows.Forms.View.Details;
             // 
-            // type
+            // Type
             // 
-            this.type.Text = "Type";
+            this.Type.Text = "Type";
             // 
-            // amount
+            // columnHeader1
             // 
-            this.amount.Text = "Amount";
+            this.columnHeader1.Text = "Amount";
             // 
-            // totalValue
+            // columnHeader2
             // 
-            this.totalValue.Text = "Total Value";
-            this.totalValue.Width = 80;
+            this.columnHeader2.Text = "Status";
+            this.columnHeader2.Width = 61;
             // 
-            // date
+            // columnHeader3
             // 
-            date.Text = "Date";
-            date.Width = 203;
+            this.columnHeader3.Text = "Date";
+            this.columnHeader3.Width = 220;
+            // 
+            // UserLbl
+            // 
+            this.UserLbl.AutoSize = true;
+            this.UserLbl.Location = new System.Drawing.Point(277, 33);
+            this.UserLbl.MinimumSize = new System.Drawing.Size(10, 10);
+            this.UserLbl.Name = "UserLbl";
+            this.UserLbl.Size = new System.Drawing.Size(10, 13);
+            this.UserLbl.TabIndex = 25;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(239, 33);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(32, 13);
+            this.label8.TabIndex = 24;
+            this.label8.Text = "User:";
+            // 
+            // Num_Sell_Order_System
+            // 
+            this.Num_Sell_Order_System.AutoSize = true;
+            this.Num_Sell_Order_System.Location = new System.Drawing.Point(78, 105);
+            this.Num_Sell_Order_System.Name = "Num_Sell_Order_System";
+            this.Num_Sell_Order_System.Size = new System.Drawing.Size(13, 13);
+            this.Num_Sell_Order_System.TabIndex = 23;
+            this.Num_Sell_Order_System.Text = "0";
+            // 
+            // Num_Buy_Order_System
+            // 
+            this.Num_Buy_Order_System.AutoSize = true;
+            this.Num_Buy_Order_System.Location = new System.Drawing.Point(78, 83);
+            this.Num_Buy_Order_System.Name = "Num_Buy_Order_System";
+            this.Num_Buy_Order_System.Size = new System.Drawing.Size(13, 13);
+            this.Num_Buy_Order_System.TabIndex = 22;
+            this.Num_Buy_Order_System.Text = "0";
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(12, 137);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(64, 13);
+            this.label16.TabIndex = 19;
+            this.label16.Text = "Your orders:";
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(12, 105);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(59, 13);
+            this.label15.TabIndex = 17;
+            this.label15.Text = "Sell orders:";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(12, 83);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(60, 13);
+            this.label14.TabIndex = 15;
+            this.label14.Text = "Buy orders:";
             // 
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(15, 29);
+            this.label13.Location = new System.Drawing.Point(12, 59);
             this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(72, 13);
+            this.label13.Size = new System.Drawing.Size(137, 13);
             this.label13.TabIndex = 14;
-            this.label13.Text = "Current Offers";
+            this.label13.Text = "Current offers in the system:";
             // 
             // diginotesLbl
             // 
             this.diginotesLbl.AutoSize = true;
-            this.diginotesLbl.Location = new System.Drawing.Point(637, 70);
+            this.diginotesLbl.Location = new System.Drawing.Point(386, 59);
             this.diginotesLbl.Name = "diginotesLbl";
             this.diginotesLbl.Size = new System.Drawing.Size(13, 13);
             this.diginotesLbl.TabIndex = 13;
@@ -296,7 +371,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(486, 70);
+            this.label12.Location = new System.Drawing.Point(238, 59);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(141, 13);
             this.label12.TabIndex = 12;
@@ -305,7 +380,7 @@
             // ExchangeValueLbl
             // 
             this.ExchangeValueLbl.AutoSize = true;
-            this.ExchangeValueLbl.Location = new System.Drawing.Point(637, 48);
+            this.ExchangeValueLbl.Location = new System.Drawing.Point(141, 33);
             this.ExchangeValueLbl.Name = "ExchangeValueLbl";
             this.ExchangeValueLbl.Size = new System.Drawing.Size(13, 13);
             this.ExchangeValueLbl.TabIndex = 11;
@@ -314,7 +389,7 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(486, 48);
+            this.label11.Location = new System.Drawing.Point(12, 33);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(123, 13);
             this.label11.TabIndex = 10;
@@ -323,7 +398,7 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(487, 144);
+            this.label10.Location = new System.Drawing.Point(373, 83);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(75, 13);
             this.label10.TabIndex = 8;
@@ -332,7 +407,7 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(487, 92);
+            this.label9.Location = new System.Drawing.Point(239, 83);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(69, 13);
             this.label9.TabIndex = 7;
@@ -344,14 +419,14 @@
             this.comboBox1.Items.AddRange(new object[] {
             "Buy",
             "Sell"});
-            this.comboBox1.Location = new System.Drawing.Point(490, 108);
+            this.comboBox1.Location = new System.Drawing.Point(241, 105);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(121, 21);
             this.comboBox1.TabIndex = 6;
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(490, 214);
+            this.button3.Location = new System.Drawing.Point(320, 132);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(100, 23);
             this.button3.TabIndex = 5;
@@ -361,26 +436,26 @@
             // 
             // textBox6
             // 
-            this.textBox6.Location = new System.Drawing.Point(489, 164);
+            this.textBox6.Location = new System.Drawing.Point(368, 105);
             this.textBox6.Name = "textBox6";
             this.textBox6.Size = new System.Drawing.Size(120, 20);
             this.textBox6.TabIndex = 4;
             // 
-            // label8
+            // Title
             // 
-            this.label8.AutoSize = true;
-            this.label8.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.label8.Location = new System.Drawing.Point(93, 9);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(212, 13);
-            this.label8.TabIndex = 3;
-            this.label8.Text = "Welcome to the Diginote Exchange System";
+            this.Title.AutoSize = true;
+            this.Title.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.Title.Location = new System.Drawing.Point(130, 9);
+            this.Title.Name = "Title";
+            this.Title.Size = new System.Drawing.Size(212, 13);
+            this.Title.TabIndex = 3;
+            this.Title.Text = "Welcome to the Diginote Exchange System";
             // 
             // Client
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(659, 254);
+            this.ClientSize = new System.Drawing.Size(491, 254);
             this.Controls.Add(this.ExchangePanel);
             this.Controls.Add(this.registerPanel);
             this.Controls.Add(this.loginPanel);
@@ -417,21 +492,29 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Panel ExchangePanel;
-        private System.Windows.Forms.ListView listView;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.TextBox textBox6;
-        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label Title;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label diginotesLbl;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label ExchangeValueLbl;
         private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.ColumnHeader type;
-        private System.Windows.Forms.ColumnHeader amount;
-        private System.Windows.Forms.ColumnHeader totalValue;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label Num_Sell_Order_System;
+        private System.Windows.Forms.Label Num_Buy_Order_System;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.Label UserLbl;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.ListView itemListView;
+        private System.Windows.Forms.ColumnHeader Type;
+        private System.Windows.Forms.ColumnHeader columnHeader1;
+        private System.Windows.Forms.ColumnHeader columnHeader2;
+        private System.Windows.Forms.ColumnHeader columnHeader3;
 
 
 
