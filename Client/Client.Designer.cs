@@ -68,6 +68,8 @@
             this.button3 = new System.Windows.Forms.Button();
             this.textBox6 = new System.Windows.Forms.TextBox();
             this.Title = new System.Windows.Forms.Label();
+            this.textBox7 = new System.Windows.Forms.TextBox();
+            this.label17 = new System.Windows.Forms.Label();
             this.registerPanel.SuspendLayout();
             this.loginPanel.SuspendLayout();
             this.ExchangePanel.SuspendLayout();
@@ -228,6 +230,8 @@
             // ExchangePanel
             // 
             this.ExchangePanel.AutoSize = true;
+            this.ExchangePanel.Controls.Add(this.label17);
+            this.ExchangePanel.Controls.Add(this.textBox7);
             this.ExchangePanel.Controls.Add(this.itemListView);
             this.ExchangePanel.Controls.Add(this.UserLbl);
             this.ExchangePanel.Controls.Add(this.label8);
@@ -268,6 +272,7 @@
             this.itemListView.TabIndex = 26;
             this.itemListView.UseCompatibleStateImageBehavior = false;
             this.itemListView.View = System.Windows.Forms.View.Details;
+            this.itemListView.ItemActivate += new System.EventHandler(this.itemListView_ItemActivate);
             // 
             // Type
             // 
@@ -290,7 +295,7 @@
             // UserLbl
             // 
             this.UserLbl.AutoSize = true;
-            this.UserLbl.Location = new System.Drawing.Point(277, 33);
+            this.UserLbl.Location = new System.Drawing.Point(212, 33);
             this.UserLbl.MinimumSize = new System.Drawing.Size(10, 10);
             this.UserLbl.Name = "UserLbl";
             this.UserLbl.Size = new System.Drawing.Size(10, 13);
@@ -299,7 +304,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(239, 33);
+            this.label8.Location = new System.Drawing.Point(174, 33);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(32, 13);
             this.label8.TabIndex = 24;
@@ -362,7 +367,7 @@
             // diginotesLbl
             // 
             this.diginotesLbl.AutoSize = true;
-            this.diginotesLbl.Location = new System.Drawing.Point(386, 59);
+            this.diginotesLbl.Location = new System.Drawing.Point(321, 59);
             this.diginotesLbl.Name = "diginotesLbl";
             this.diginotesLbl.Size = new System.Drawing.Size(13, 13);
             this.diginotesLbl.TabIndex = 13;
@@ -371,7 +376,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(238, 59);
+            this.label12.Location = new System.Drawing.Point(173, 59);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(141, 13);
             this.label12.TabIndex = 12;
@@ -398,7 +403,7 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(373, 83);
+            this.label10.Location = new System.Drawing.Point(279, 83);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(75, 13);
             this.label10.TabIndex = 8;
@@ -407,7 +412,7 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(239, 83);
+            this.label9.Location = new System.Drawing.Point(174, 83);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(69, 13);
             this.label9.TabIndex = 7;
@@ -419,14 +424,14 @@
             this.comboBox1.Items.AddRange(new object[] {
             "Buy",
             "Sell"});
-            this.comboBox1.Location = new System.Drawing.Point(241, 105);
+            this.comboBox1.Location = new System.Drawing.Point(176, 105);
             this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(121, 21);
+            this.comboBox1.Size = new System.Drawing.Size(75, 21);
             this.comboBox1.TabIndex = 6;
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(320, 132);
+            this.button3.Location = new System.Drawing.Point(271, 130);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(100, 23);
             this.button3.TabIndex = 5;
@@ -436,9 +441,9 @@
             // 
             // textBox6
             // 
-            this.textBox6.Location = new System.Drawing.Point(368, 105);
+            this.textBox6.Location = new System.Drawing.Point(282, 105);
             this.textBox6.Name = "textBox6";
-            this.textBox6.Size = new System.Drawing.Size(120, 20);
+            this.textBox6.Size = new System.Drawing.Size(75, 20);
             this.textBox6.TabIndex = 4;
             // 
             // Title
@@ -450,6 +455,22 @@
             this.Title.Size = new System.Drawing.Size(212, 13);
             this.Title.TabIndex = 3;
             this.Title.Text = "Welcome to the Diginote Exchange System";
+            // 
+            // textBox7
+            // 
+            this.textBox7.Location = new System.Drawing.Point(384, 106);
+            this.textBox7.Name = "textBox7";
+            this.textBox7.Size = new System.Drawing.Size(75, 20);
+            this.textBox7.TabIndex = 27;
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(381, 83);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(66, 13);
+            this.label17.TabIndex = 28;
+            this.label17.Text = "Select value";
             // 
             // Client
             // 
@@ -515,6 +536,8 @@
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.ColumnHeader columnHeader2;
         private System.Windows.Forms.ColumnHeader columnHeader3;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.TextBox textBox7;
 
 
 

@@ -146,6 +146,7 @@ namespace Client
             {
                 MessageBox.Show("User login valid!", "Diginote Exchange System");
                 UserLbl.Text = userSession.Nickname;
+                diginotesLbl.Text = userSession.wallet.Count.ToString();
                 Console.WriteLine(api.ActiveOrders.Count);
                 UpdateExchangePanel(api.ActiveOrders);
                 showExchangePanel();
@@ -191,6 +192,8 @@ namespace Client
             {
                 OrderType orderAction;
                 int amount;
+                double value;
+
                 if (!Enum.TryParse(this.comboBox1.GetItemText(this.comboBox1.SelectedItem),true, out orderAction))
                 {
                     this.comboBox1.SelectedItem = null;
@@ -200,8 +203,13 @@ namespace Client
                     this.textBox6.Text = "";
                     MessageBox.Show("Order amount parse error", "Diginote Exchange System");
                 }
+                if (!Double.TryParse(this.textBox7.Text, out value))
+                {
+                    this.textBox7.Text = "";
+                    MessageBox.Show("Order value parse error", "Diginote Exchange System");
+                }
                 else {
-                    DOrder tempOrder = new DOrder(userSession, amount, 0, orderAction, DateTime.Now);
+                    DOrder tempOrder = new DOrder(userSession, amount, value, orderAction, DateTime.Now);
                     api.RegisterOrder(ref tempOrder);
                 }
 
@@ -218,6 +226,11 @@ namespace Client
             api.logout(ref userSession);
         }
 
+        private void itemListView_ItemActivate(object sender, EventArgs e)
+        {
+            if (itemListView.SelectedItems.Count > 0)
+                MessageBox.Show("You clicked " + itemListView.SelectedItems[0].Text);
+        }
     }
 }
 
