@@ -165,11 +165,11 @@ public class API : MarshalByRefObject, IAPI
         while (reader.Read())
         {
             User user = new User(reader["name"].ToString(), reader["Nickname"].ToString(), reader["password"].ToString());
-            Console.WriteLine("Found: " + "Name: " + reader["name"] + "\tnickname: " + reader["Nickname"] + "\tpassword: " + reader["password"]);
+            //Console.WriteLine("Found: " + "Name: " + reader["name"] + "\tnickname: " + reader["Nickname"] + "\tpassword: " + reader["password"]);
             return user;
         }
 
-        Console.WriteLine("No users matched the query " + nickname);
+        //Console.WriteLine("No users matched the query " + nickname);
         return null;
     }
 
@@ -227,7 +227,7 @@ public class API : MarshalByRefObject, IAPI
         sql = @"select last_insert_rowid()";
         command = new SQLiteCommand(sql, m_dbConnection);
         note.Id = (long)command.ExecuteScalar();
-        Console.WriteLine(@"New note id: " + note.Id);
+        //Console.WriteLine(@"New note id: " + note.Id);
         
         RegisteredNotes.Add(note);
     }
@@ -321,8 +321,8 @@ public class API : MarshalByRefObject, IAPI
 
         try
         {
-            sql = "Insert into DOrder (type,status,source,value,amount) values ('"
-                        + (((int)order.Type) + 1) + "','" + (((int)order.Status) + 1) + "','" + order.Source.Nickname + "','" + order.Value + "','"
+            sql = "Insert into DOrder (type,status,date,source,value,amount) values ('"
+                        + (((int)order.Type) + 1) + "','" + (((int)order.Status) + 1) + "','" + order.Date.ToString("yyyyMMddHHmmss") + "','" + order.Source.Nickname + "','" + order.Value + "','"
                         + order.Amount + "')";
 
             command = new SQLiteCommand(sql, m_dbConnection);
@@ -387,9 +387,10 @@ public class API : MarshalByRefObject, IAPI
                 return null;
             }
 
-            long orderId = Convert.ToInt64(reader["id"].ToString());
-            order = new DOrder(source, amount, value, type) { Id = orderId, Status = status };
+            string date = reader["date"].ToString();
 
+            long orderId = Convert.ToInt64(reader["id"].ToString());
+            order = new DOrder(source, amount, value, type,DateTime.Parse(date)) { Id = orderId, Status = status };
             Console.WriteLine(@"Found: " + order.ToString());
             return order;
         }
@@ -437,8 +438,10 @@ public class API : MarshalByRefObject, IAPI
                 continue;
             }
 
+            string date = reader["date"].ToString();
+
             long orderId = Convert.ToInt64(reader["id"].ToString());
-            order = new DOrder(source, amount, value, type) { Id = orderId, Status = status };
+            order = new DOrder(source, amount, value, type, DateTime.Parse(date)) { Id = orderId, Status = status };
 
             orders.Add(order);
         }

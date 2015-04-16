@@ -35,6 +35,8 @@ namespace Client
 
         public void OperationHandler(Operation op, DOrder order)
         {
+            Console.WriteLine("STUFFFFFF");
+            Console.WriteLine(api.ActiveOrders.Count);
             //uncomment if not treating creator or order like a regular user
             //and updating the rest of the user's orders automatically
             if (/*!order.Source.Nickname.Equals(userSession.Nickname) &&*/
@@ -49,7 +51,7 @@ namespace Client
                 //api.DeleteAllUserOrders(userSession);
             }
 
-            if (!order.Source.Nickname.Equals(userSession.Nickname))
+            if (userSession != null && !order.Source.Nickname.Equals(userSession.Nickname))
                 return;
 
             switch (op)
@@ -104,7 +106,7 @@ namespace Client
                 api.RegisterDiginote(aux);
                 api.RegisterDiginote(aux);*/
 
-                DOrder tempOrder = new DOrder(aux, 5, 5.0, OrderType.Buy);
+                DOrder tempOrder = new DOrder(aux, 5, 5.0, OrderType.Buy,DateTime.Now);
                 api.RegisterOrder(ref tempOrder);
                 /*api.DeleteOrder(tempOrder);
                 api.RegisterOrder(ref tempOrder);*/
@@ -144,7 +146,8 @@ namespace Client
             {
                 MessageBox.Show("User login valid!", "Diginote Exchange System");
                 UserLbl.Text = userSession.Nickname;
-                updateExchangePanel(api.ActiveOrders);
+                Console.WriteLine(api.ActiveOrders.Count);
+                UpdateExchangePanel(api.ActiveOrders);
                 showExchangePanel();
             }
             else
@@ -168,11 +171,11 @@ namespace Client
             ExchangePanel.Visible = false;
         }
 
-        private void updateExchangePanel(List<DOrder> _orders)
+        private void UpdateExchangePanel(List<DOrder> orders)
         {
-            Num_Buy_Order_System.Text = _orders.FindAll(order => order.Type == OrderType.Buy).Count.ToString();
-            Num_Sell_Order_System.Text = _orders.FindAll(order => order.Type == OrderType.Sell).Count.ToString();
-            List<DOrder> aux = _orders.FindAll(order => order.Source.Nickname == userSession.Nickname);
+            Num_Buy_Order_System.Text = orders.FindAll(order => order.Type == OrderType.Buy).Count.ToString();
+            Num_Sell_Order_System.Text = orders.FindAll(order => order.Type == OrderType.Sell).Count.ToString();
+            List<DOrder> aux = orders.FindAll(order => order.Source.Nickname.Equals(userSession.Nickname));
             foreach (DOrder order in aux)
 	        {
                 var lvAdd = new LVAddDelegate(itemListView.Items.Add);
@@ -198,7 +201,7 @@ namespace Client
                     MessageBox.Show("Order amount parse error", "Diginote Exchange System");
                 }
                 else {
-                    DOrder tempOrder = new DOrder(userSession, amount, 0, orderAction);
+                    DOrder tempOrder = new DOrder(userSession, amount, 0, orderAction, DateTime.Now);
                     api.RegisterOrder(ref tempOrder);
                 }
 

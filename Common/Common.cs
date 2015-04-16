@@ -38,14 +38,14 @@ public class DOrder
     public User Source { get; set; }
     public DateTime Date { get; set; }
 
-    public DOrder(User source, int amount,double value,OrderType type)
+    public DOrder(User source, int amount,double value,OrderType type,DateTime date)
     {
         Source = source;
         Value = value;
         Amount = amount;
         Status = OrderStatus.Active;
         Type = type;
-        Date = DateTime.Today;
+        Date = date;
     }
 
 }
