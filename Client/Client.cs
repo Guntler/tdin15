@@ -58,45 +58,58 @@ namespace Client
                 case Operation.New:
 
                     var lvAdd = new LVAddDelegate(itemListView.Items.Add);
-                    ListViewItem lvItem = new ListViewItem(new string[] { order.Id.ToString(), order.Type.ToString(), order.Value.ToString(), order.Amount.ToString(), (order.Value * order.Amount).ToString(), order.Status.ToString(), order.Date.ToString() }); 
+                    ListViewItem lvItem = new ListViewItem(new string[] { order.Id.ToString(), order.Type.ToString(), order.Value.ToString(), order.Amount.ToString(), (order.Value * order.Amount).ToString(), order.Status.ToString(), order.Date.ToString() });
                     Invoke(lvAdd, new object[] { lvItem });
                     break;
                 case Operation.Change:
-                    double newValue = api.ExchangeValue;
-
-                    System.Timers.Timer aTimer = new System.Timers.Timer();
-                    aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
-                    aTimer.Interval=1000;
-                    aTimer.Enabled=true;
-
-                    DialogResult dialogResult = MessageBox.Show("Would you accept the new exchange value:" +newValue+"?\n", "New exchange value!", MessageBoxButtons.YesNo);
-                    if(dialogResult == DialogResult.Yes)
+                    if (!api.ExchangeValue.ToString().Equals(ExchangeValueLbl.ToString())) //mudança de exchangeValue
                     {
-                        aTimer.Stop();
-                        api.ChangeAllUserOrders(this.userSession, api.ExchangeValue);
+                        double newValue = api.ExchangeValue;
+                        ExchangeValueLbl.Text = String.Format("{0:0.00}", newValue);
+
+                        System.Timers.Timer aTimer = new System.Timers.Timer();
+                        aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
+                        aTimer.Interval = 1000;
+                        aTimer.Enabled = true;
+
+                        DialogResult dialogResult = MessageBox.Show("Would you accept the new exchange value:" + newValue + "?\n", "New exchange value!", MessageBoxButtons.YesNo);
+                        if (dialogResult == DialogResult.Yes)
+                        {
+                            aTimer.Stop();
+                            api.ChangeAllUserOrders(this.userSession, newValue);
+                            foreach (ListViewItem item in itemListView.Items)
+                            {
+                                item.SubItems[2].Text = newValue.ToString();
+                            }
+                        }
+                        else if (dialogResult == DialogResult.No)
+                        {
+                            aTimer.Stop();
+                            api.DeleteAllUserOrders(this.userSession);
+                            foreach (ListViewItem item in itemListView.Items)
+                            {
+                                if (!item.SubItems[2].ToString().Equals(newValue.ToString()))
+                                {
+                                    item.Remove();
+                                }
+                            }
+                        }
                     }
-                    else if (dialogResult == DialogResult.No)
-                    {
-                        aTimer.Stop();
-                        api.DeleteAllUserOrders(this.userSession);
-                    }
-                    
                     break;
                 case Operation.Remove:
-                    int i=0;
                     foreach (ListViewItem item in itemListView.Items)
                     {
                         if (order.Id.ToString().Equals(item.Text))
                         {
-                            i = itemListView.Items.IndexOf(item);
+                            item.Remove();
                             break;
                         }
                     }
-                    itemListView.Items.RemoveAt(i);
 
                     break;
                 case Operation.Notify:
                     //Notify User that they have sold X diginotes
+                    
                     break;
             }
         }
@@ -127,13 +140,6 @@ namespace Client
             {
                 User aux = new User(textBox1.Text, textBox2.Text, textBox3.Text);
                 int result = api.RegisterUser(ref aux);
-                MessageBox.Show("Hello World! Here is the output of the register action: " + result);
-                api.GetUserByName("NONEEE");
-                api.GetUserByName(textBox2.Text);
-                DOrder tempOrder = new DOrder(aux, 5, 5.0, OrderType.Buy, DateTime.Now);
-                api.RegisterOrder(ref tempOrder);
-                tempOrder.Amount = 1333;
-                api.EditOrder(tempOrder);
             }
             catch (Exception error)
             {
@@ -189,6 +195,7 @@ namespace Client
                 ListViewItem lvItem = new ListViewItem(new string[] { order.Id.ToString(), order.Type.ToString(), order.Value.ToString(), order.Amount.ToString(), (order.Value * order.Amount).ToString(), order.Status.ToString(), order.Date.ToString() });
                 Invoke(lvAdd, new object[] { lvItem });
             }
+
             ExchangeValueLbl.Text = String.Format("{0:0.00}", api.ExchangeValue);
         }
 
@@ -253,7 +260,7 @@ namespace Client
                 }
                 //update order
                 int quantidade = Int32.Parse(itemListView.SelectedItems[0].SubItems[3].Text.ToString());
-                OrderType tipoOrdem = (OrderType) Enum.Parse(typeof(OrderType), tipo);
+                OrderType tipoOrdem = (OrderType)Enum.Parse(typeof(OrderType), tipo);
                 DateTime tempo = DateTime.Parse(itemListView.SelectedItems[0].SubItems[6].Text.ToString());
                 DOrder tempOrder = new DOrder(userSession, quantidade, editor.value, tipoOrdem, tempo);
                 tempOrder.Id = id;
@@ -267,10 +274,10 @@ namespace Client
                 DateTime tempo = DateTime.Parse(itemListView.SelectedItems[0].SubItems[6].Text.ToString());
                 DOrder tempOrder = new DOrder(userSession, quantidade, valor, tipoOrdem, tempo);
                 tempOrder.Id = id;
-                MessageBox.Show("Cancel:\n"+tempOrder.ToString());
+                MessageBox.Show("Cancel:\n" + tempOrder.ToString());
                 api.CancelOrder(tempOrder);
             }
-            
+
         }
     }
 }
