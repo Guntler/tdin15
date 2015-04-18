@@ -359,18 +359,20 @@ public class API : MarshalByRefObject, IAPI
             DOrder order = null;
             User source = GetUserByName(reader["source"].ToString());
             OrderType type;
-            if (!OrderType.TryParse(reader["type"].ToString(), out type))
+            if (!Enum.IsDefined(typeof(OrderType), (Convert.ToInt32(reader["type"].ToString())) - 1))
             {
                 Console.WriteLine(@"Type of order was in an incorrect format.");
-                return null;
+                continue;
             }
+            type = ((OrderType)(Convert.ToInt32(reader["type"].ToString())) - 1);
 
             OrderStatus status;
-            if (!OrderStatus.TryParse(reader["status"].ToString(), out status))
+            if (!Enum.IsDefined(typeof(OrderStatus), (Convert.ToInt32(reader["status"].ToString())) - 1))
             {
-                Console.WriteLine(@"Type of order was in an incorrect format.");
-                return null;
+                Console.WriteLine(@"Status of order was in an incorrect format.");
+                continue;
             }
+            status = ((OrderStatus)(Convert.ToInt32(reader["status"].ToString())) - 1);
 
             //NOTE: Double.tryparse may cause problems - refer to here if anything happens
             if (source == null)
@@ -388,7 +390,7 @@ public class API : MarshalByRefObject, IAPI
             }
 
             string date = reader["date"].ToString();
-
+            Console.WriteLine(type.ToString());
             long orderId = Convert.ToInt64(reader["id"].ToString());
             order = new DOrder(source, amount, value, type,DateTime.Parse(date)) { Id = orderId, Status = status };
             Console.WriteLine(@"Found: " + order.ToString());
@@ -417,11 +419,12 @@ public class API : MarshalByRefObject, IAPI
             type = ((OrderType) (Convert.ToInt32(reader["type"].ToString()))-1);
 
             OrderStatus status;
-            if (!OrderStatus.TryParse(reader["status"].ToString(), out status))
+            if (!Enum.IsDefined(typeof(OrderStatus), (Convert.ToInt32(reader["status"].ToString())) - 1))
             {
-                Console.WriteLine(@"Type of order was in an incorrect format.");
+                Console.WriteLine(@"Status of order was in an incorrect format.");
                 continue;
             }
+            status = ((OrderStatus)(Convert.ToInt32(reader["status"].ToString())) - 1);
 
             //NOTE: Double.tryparse may cause problems - refer to here if anything happens
             if (source == null)
@@ -468,7 +471,7 @@ public class API : MarshalByRefObject, IAPI
 
     public void EditOrder(DOrder order)
     {
-        string sql = "Update DOrder SET value = '" + order.Value + "' where id = '" + order.Id + "'";
+        string sql = "Update DOrder SET value = '" + order.Value + "', amount = '"+ order.Amount + "' where id = '" + order.Id + "'";
 
         SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
         command.ExecuteNonQuery();
@@ -497,7 +500,11 @@ public class API : MarshalByRefObject, IAPI
     public void CancelOrder(DOrder order)
     {
         order.Status=OrderStatus.Cancelled;
-        EditOrder(order);
+
+        string sql = "Update DOrder SET status = '" + (((int)order.Status) + 1) + "' where id = '" + order.Id + "'";
+
+        SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
+        command.ExecuteNonQuery();
 
         NotifyClients(Operation.Change,order);
     }
@@ -509,7 +516,11 @@ public class API : MarshalByRefObject, IAPI
             PurchaseDiginotes(order.Source, order.Amount, buyer);
             order.Status = OrderStatus.Fulfilled;
 
-            EditOrder(order);
+            string sql = "Update DOrder SET status = '" + (((int)order.Status) + 1) + "' where id = '" + order.Id + "'";
+
+            SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
+            command.ExecuteNonQuery();
+
             RegisteredTransactions.Add(new DTransaction(buyer,order.Value,order));
 
             NotifyClients(Operation.Change, order);
@@ -520,6 +531,48 @@ public class API : MarshalByRefObject, IAPI
         }
     }
 
+    public void MatchOrder(DOrder order)
+    {
+        if (order.Type.Equals(OrderType.Buy))
+        {
+            DOrder oldestOrder = FindOldestOrder(OrderType.Sell, order.Source.Nickname);
+
+            while (oldestOrder != null)
+            {
+                oldestOrder.Amount -= order.Amount;
+                order.Amount -= oldestOrder.Amount;
+
+                if (order.Amount <= 0)
+                    oldestOrder = FindOldestOrder(OrderType.Sell, order.Source.Nickname);
+            }
+
+        }
+        else
+        {
+            DOrder oldestOrder = FindOldestOrder(OrderType.Buy, order.Source.Nickname);
+
+            if (oldestOrder != null)
+            {
+                order.Amount -= oldestOrder.Amount;
+
+            }
+        }
+    }
+
+    public DOrder FindOldestOrder(OrderType type, String source)
+    {
+        DOrder oldestOrder = null;
+        foreach (var o in ActiveOrders)
+        {
+            if ((oldestOrder == null || (o.Date < oldestOrder.Date))
+                    && o.Type.Equals(type)&&!o.Source.Nickname.Equals(source))
+            {
+                oldestOrder = o;
+            }
+        }
+
+        return oldestOrder;
+    }
     #endregion Order
 
     #region Transaction

@@ -51,7 +51,9 @@ namespace Client
                 //api.DeleteAllUserOrders(userSession);
             }
 
-            if (userSession != null && !order.Source.Nickname.Equals(userSession.Nickname))
+            if ((userSession != null && !order.Source.Nickname.Equals(userSession.Nickname))
+                    || (userSession != null && op.Equals(Operation.Notify)
+                            && order.Source.Nickname.Equals(userSession.Nickname)))
                 return;
 
             switch (op)
@@ -68,6 +70,9 @@ namespace Client
                     break;
                 case Operation.Remove:
 
+                    break;
+                case Operation.Notify:
+                    //Notify User that they have sold X diginotes
                     break;
             }
         }

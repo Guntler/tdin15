@@ -113,7 +113,7 @@ public class User
     public override bool Equals(object obj) { return this.Nickname.Equals(((User)obj).Nickname); }
 }
 
-public enum Operation { New, Change, Remove };
+public enum Operation { New, Change, Remove, Notify};
 
 public delegate void AlterDelegate(Operation op, DOrder order);
 
@@ -204,6 +204,9 @@ public interface IAPI
 
     void FulfillOrder(User buyer, DOrder order);
 
+    void MatchOrder(DOrder order);
+
+    DOrder FindOldestOrder(OrderType type, String source);
     #endregion Order
 
     #region Transaction
