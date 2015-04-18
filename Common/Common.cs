@@ -48,6 +48,11 @@ public class DOrder
         Date = date;
     }
 
+    public override string ToString()
+    {
+        return "id: " + this.Id + "\nValue: " + this.Value + "\nType: " + this.Type.ToString() + "\nStatus: "+this.Status.ToString() + "\nAmount: " + this.Amount + "\nSource: " + this.Source.Nickname + "\nDate: " + this.Date.ToString();
+    }
+
 }
 
 [Serializable]
@@ -68,6 +73,7 @@ public class DTransaction
         Order = order;
         Date = DateTime.Today;
     }
+
 }
 
 [Serializable]

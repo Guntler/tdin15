@@ -61,7 +61,7 @@ namespace Client
                 case Operation.New:
 
                     var lvAdd = new LVAddDelegate(itemListView.Items.Add);
-                    ListViewItem lvItem = new ListViewItem(new string[] { order.Type.ToString(), order.Amount.ToString(), (order.Value * order.Amount).ToString(), order.Date.ToString() });
+                    ListViewItem lvItem = new ListViewItem(new string[] { order.Id.ToString(), order.Type.ToString(), order.Value.ToString(), order.Amount.ToString(), (order.Value * order.Amount).ToString(), order.Status.ToString(), order.Date.ToString() }); 
                     Invoke(lvAdd, new object[] { lvItem });
                     break;
                 case Operation.Change:
@@ -111,7 +111,7 @@ namespace Client
                 api.RegisterDiginote(aux);
                 api.RegisterDiginote(aux);*/
 
-                DOrder tempOrder = new DOrder(aux, 5, 5.0, OrderType.Buy,DateTime.Now);
+                DOrder tempOrder = new DOrder(aux, 5, 5.0, OrderType.Buy, DateTime.Now);
                 api.RegisterOrder(ref tempOrder);
                 /*api.DeleteOrder(tempOrder);
                 api.RegisterOrder(ref tempOrder);*/
@@ -136,7 +136,8 @@ namespace Client
             {
                 MessageBox.Show("Something went wrong:\n" + error.Message);
             }
-            finally {
+            finally
+            {
                 //clear text
                 textBox1.Text = "";
                 textBox2.Text = "";
@@ -147,7 +148,7 @@ namespace Client
         private void button2_Click(object sender, EventArgs e)
         {
             //login user
-            if ((userSession = api.ValidateUser(textBox4.Text, textBox5.Text))!= null)
+            if ((userSession = api.ValidateUser(textBox4.Text, textBox5.Text)) != null)
             {
                 MessageBox.Show("User login valid!", "Diginote Exchange System");
                 UserLbl.Text = userSession.Nickname;
@@ -158,7 +159,7 @@ namespace Client
             }
             else
             {
-				MessageBox.Show("User login invalid or already in use!", "Diginote Exchange System");
+                MessageBox.Show("User login invalid or already in use!", "Diginote Exchange System");
             }
         }
 
@@ -183,11 +184,11 @@ namespace Client
             Num_Sell_Order_System.Text = orders.FindAll(order => order.Type == OrderType.Sell).Count.ToString();
             List<DOrder> aux = orders.FindAll(order => order.Source.Nickname.Equals(userSession.Nickname));
             foreach (DOrder order in aux)
-	        {
+            {
                 var lvAdd = new LVAddDelegate(itemListView.Items.Add);
-                ListViewItem lvItem = new ListViewItem(new string[] { order.Type.ToString(), order.Amount.ToString(), (order.Value * order.Amount).ToString(), order.Date.ToString() });
+                ListViewItem lvItem = new ListViewItem(new string[] { order.Id.ToString(), order.Type.ToString(), order.Value.ToString(), order.Amount.ToString(), (order.Value * order.Amount).ToString(), order.Status.ToString(), order.Date.ToString() });
                 Invoke(lvAdd, new object[] { lvItem });
-	        }
+            }
             ExchangeValueLbl.Text = String.Format("{0:0.00}", api.ExchangeValue);
         }
 
@@ -199,12 +200,13 @@ namespace Client
                 int amount;
                 double value;
 
-                if (!Enum.TryParse(this.comboBox1.GetItemText(this.comboBox1.SelectedItem),true, out orderAction))
+                if (!Enum.TryParse(this.comboBox1.GetItemText(this.comboBox1.SelectedItem), true, out orderAction))
                 {
                     this.comboBox1.SelectedItem = null;
-                    MessageBox.Show("Order action not allowed","Diginote Exchange System");
+                    MessageBox.Show("Order action not allowed", "Diginote Exchange System");
                 }
-                if(!Int32.TryParse(this.textBox6.Text, out amount)){
+                if (!Int32.TryParse(this.textBox6.Text, out amount))
+                {
                     this.textBox6.Text = "";
                     MessageBox.Show("Order amount parse error", "Diginote Exchange System");
                 }
@@ -213,15 +215,19 @@ namespace Client
                     this.textBox7.Text = "";
                     MessageBox.Show("Order value parse error", "Diginote Exchange System");
                 }
-                else {
+                else
+                {
                     DOrder tempOrder = new DOrder(userSession, amount, value, orderAction, DateTime.Now);
                     api.RegisterOrder(ref tempOrder);
                 }
 
-            } catch (Exception exception) {
-                MessageBox.Show("Exception error:\n"+exception.Message, "Diginote Exchange System");
             }
-            finally{
+            catch (Exception exception)
+            {
+                MessageBox.Show("Exception error:\n" + exception.Message, "Diginote Exchange System");
+            }
+            finally
+            {
 
             }
         }
@@ -233,8 +239,44 @@ namespace Client
 
         private void itemListView_ItemActivate(object sender, EventArgs e)
         {
-            if (itemListView.SelectedItems.Count > 0)
-                MessageBox.Show("You clicked " + itemListView.SelectedItems[0].Text);
+            int id = Int32.Parse(itemListView.SelectedItems[0].SubItems[0].Text.ToString());
+            string tipo = itemListView.SelectedItems[0].SubItems[1].Text.ToString();
+            double valor = Double.Parse(itemListView.SelectedItems[0].SubItems[2].Text.ToString());
+
+            OrderEditor editor = new OrderEditor(id, tipo, valor);
+            editor.ShowDialog(this);
+
+            //logica de negocio
+            if (editor.updated)
+            {
+                if (editor.type == "Sell" && editor.value > valor)
+                {
+                    MessageBox.Show("Value must be lower or equal to " + valor, "Diginote Exchange System");
+                }
+                else if (editor.type == "Buy" && editor.value < valor)
+                {
+                    MessageBox.Show("Value must be greater or equal to " + valor, "Diginote Exchange System");
+                }
+                //update order
+                int quantidade = Int32.Parse(itemListView.SelectedItems[0].SubItems[3].Text.ToString());
+                OrderType tipoOrdem = (OrderType) Enum.Parse(typeof(OrderType), tipo);
+                DateTime tempo = DateTime.Parse(itemListView.SelectedItems[0].SubItems[6].Text.ToString());
+                DOrder tempOrder = new DOrder(userSession, quantidade, editor.value, tipoOrdem, tempo);
+                tempOrder.Id = id;
+                MessageBox.Show("Update:\n" + tempOrder.ToString());
+                api.EditOrder(tempOrder);
+            }
+            else
+            {
+                int quantidade = Int32.Parse(itemListView.SelectedItems[0].SubItems[3].Text.ToString());
+                OrderType tipoOrdem = (OrderType)Enum.Parse(typeof(OrderType), tipo);
+                DateTime tempo = DateTime.Parse(itemListView.SelectedItems[0].SubItems[6].Text.ToString());
+                DOrder tempOrder = new DOrder(userSession, quantidade, valor, tipoOrdem, tempo);
+                tempOrder.Id = id;
+                MessageBox.Show("Cancel:\n"+tempOrder.ToString());
+                api.CancelOrder(tempOrder);
+            }
+            
         }
     }
 }
