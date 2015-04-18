@@ -343,8 +343,8 @@ public class API : MarshalByRefObject, IAPI
 
             NotifyClients(Operation.New, order);
 
-            if (!order.Value.Equals(ExchangeValue))
-                ExchangeValue = order.Value;
+            //UNCOMMENT WHEN READY TO TEST
+            //MatchOrder(order);
         }
     }
 
@@ -549,10 +549,15 @@ public class API : MarshalByRefObject, IAPI
 
             while (oldestOrder != null)
             {
+                DOrder dummyOrder = order;
                 oldestOrder.Amount -= order.Amount;
                 order.Amount -= oldestOrder.Amount;
+                if (oldestOrder.Amount < 0) oldestOrder.Amount = 0;
+                if (order.Amount < 0) order.Amount = 0;
                 EditOrder(order);
                 EditOrder(oldestOrder);
+
+                NotifyClients(Operation.Notify,dummyOrder);
 
                 if (oldestOrder.Amount <= 0)
                 {
@@ -564,22 +569,37 @@ public class API : MarshalByRefObject, IAPI
                     FulfillOrder(oldestOrder.Source, order);     //someone fully sold to our buy order
                     break;
                 }
-                else
-                {
-                    oldestOrder = FindOldestOrder(OrderType.Sell, order.Source.Nickname);
-                }
-
+                oldestOrder = FindOldestOrder(OrderType.Sell, order.Source.Nickname);
             }
 
-        }
+        } //As the seller
         else
         {
             DOrder oldestOrder = FindOldestOrder(OrderType.Buy, order.Source.Nickname);
 
-            if (oldestOrder != null)
+            while (oldestOrder != null)
             {
+                DOrder dummyOrder = order;
+                oldestOrder.Amount -= order.Amount;
                 order.Amount -= oldestOrder.Amount;
+                if (oldestOrder.Amount < 0) oldestOrder.Amount = 0;
+                if (order.Amount < 0) order.Amount = 0;
+                EditOrder(order);
+                EditOrder(oldestOrder);
 
+                NotifyClients(Operation.Notify, dummyOrder);
+
+                if (oldestOrder.Amount <= 0)
+                {
+                    FulfillOrder(order.Source, oldestOrder);     //we fully sold to someone's buy order
+                }
+
+                if (order.Amount <= 0)
+                {
+                    FulfillOrder(oldestOrder.Source, order);     //someone fully bought to our sell order
+                    break;
+                }
+                oldestOrder = FindOldestOrder(OrderType.Buy, order.Source.Nickname);
             }
         }
     }
