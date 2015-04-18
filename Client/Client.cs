@@ -109,7 +109,8 @@ namespace Client
                     break;
                 case Operation.Notify:
                     //Notify User that they have sold X diginotes
-                    
+                    DOrder aux = api.ActiveOrders.Find(o=> o.Id == order.Id);
+                    MessageBox.Show("Order of id:"+order.Id+" has been updated.\n Sold "+(order.Amount-aux.Amount)+" diginotes\n");
                     break;
             }
         }
