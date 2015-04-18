@@ -40,14 +40,19 @@
             this.label2 = new System.Windows.Forms.Label();
             this.loginPanel = new System.Windows.Forms.Panel();
             this.textBox5 = new System.Windows.Forms.TextBox();
-            this.button2 = new System.Windows.Forms.Button();
             this.textBox4 = new System.Windows.Forms.TextBox();
+            this.button2 = new System.Windows.Forms.Button();
             this.label7 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.ExchangePanel = new System.Windows.Forms.Panel();
+            this.label17 = new System.Windows.Forms.Label();
+            this.textBox7 = new System.Windows.Forms.TextBox();
             this.itemListView = new System.Windows.Forms.ListView();
+            this.Id = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.Type = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.UserLbl = new System.Windows.Forms.Label();
@@ -68,8 +73,6 @@
             this.button3 = new System.Windows.Forms.Button();
             this.textBox6 = new System.Windows.Forms.TextBox();
             this.Title = new System.Windows.Forms.Label();
-            this.textBox7 = new System.Windows.Forms.TextBox();
-            this.label17 = new System.Windows.Forms.Label();
             this.registerPanel.SuspendLayout();
             this.loginPanel.SuspendLayout();
             this.ExchangePanel.SuspendLayout();
@@ -258,29 +261,65 @@
             this.ExchangePanel.TabIndex = 2;
             this.ExchangePanel.Visible = false;
             // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(381, 83);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(66, 13);
+            this.label17.TabIndex = 28;
+            this.label17.Text = "Select value";
+            // 
+            // textBox7
+            // 
+            this.textBox7.Location = new System.Drawing.Point(384, 106);
+            this.textBox7.Name = "textBox7";
+            this.textBox7.Size = new System.Drawing.Size(75, 20);
+            this.textBox7.TabIndex = 27;
+            // 
             // itemListView
             // 
             this.itemListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.Id,
             this.Type,
+            this.columnHeader5,
             this.columnHeader1,
+            this.columnHeader4,
             this.columnHeader2,
             this.columnHeader3});
             this.itemListView.FullRowSelect = true;
-            this.itemListView.Location = new System.Drawing.Point(15, 159);
+            this.itemListView.Location = new System.Drawing.Point(12, 159);
             this.itemListView.Name = "itemListView";
-            this.itemListView.Size = new System.Drawing.Size(405, 83);
+            this.itemListView.Size = new System.Drawing.Size(467, 83);
             this.itemListView.TabIndex = 26;
             this.itemListView.UseCompatibleStateImageBehavior = false;
             this.itemListView.View = System.Windows.Forms.View.Details;
             this.itemListView.ItemActivate += new System.EventHandler(this.itemListView_ItemActivate);
             // 
+            // Id
+            // 
+            this.Id.Text = "Id";
+            this.Id.Width = 30;
+            // 
             // Type
             // 
             this.Type.Text = "Type";
+            this.Type.Width = 45;
+            // 
+            // columnHeader5
+            // 
+            this.columnHeader5.Text = "Value";
+            this.columnHeader5.Width = 48;
             // 
             // columnHeader1
             // 
             this.columnHeader1.Text = "Amount";
+            this.columnHeader1.Width = 50;
+            // 
+            // columnHeader4
+            // 
+            this.columnHeader4.Text = "Total";
+            this.columnHeader4.Width = 48;
             // 
             // columnHeader2
             // 
@@ -290,7 +329,7 @@
             // columnHeader3
             // 
             this.columnHeader3.Text = "Date";
-            this.columnHeader3.Width = 220;
+            this.columnHeader3.Width = 180;
             // 
             // UserLbl
             // 
@@ -456,30 +495,14 @@
             this.Title.TabIndex = 3;
             this.Title.Text = "Welcome to the Diginote Exchange System";
             // 
-            // textBox7
-            // 
-            this.textBox7.Location = new System.Drawing.Point(384, 106);
-            this.textBox7.Name = "textBox7";
-            this.textBox7.Size = new System.Drawing.Size(75, 20);
-            this.textBox7.TabIndex = 27;
-            // 
-            // label17
-            // 
-            this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(381, 83);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(66, 13);
-            this.label17.TabIndex = 28;
-            this.label17.Text = "Select value";
-            // 
             // Client
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(491, 254);
-            this.Controls.Add(this.ExchangePanel);
             this.Controls.Add(this.registerPanel);
             this.Controls.Add(this.loginPanel);
+            this.Controls.Add(this.ExchangePanel);
             this.Name = "Client";
             this.Text = "Diginote Exchange System";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.logout);
@@ -497,6 +520,7 @@
         #endregion
 
         private System.Windows.Forms.Panel registerPanel;
+        private System.Windows.Forms.Panel loginPanel;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox textBox1;
@@ -505,7 +529,6 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox textBox3;
         private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Panel loginPanel;
         private System.Windows.Forms.TextBox textBox4;
         private System.Windows.Forms.TextBox textBox5;
         private System.Windows.Forms.Button button2;
@@ -538,6 +561,9 @@
         private System.Windows.Forms.ColumnHeader columnHeader3;
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.TextBox textBox7;
+        private System.Windows.Forms.ColumnHeader Id;
+        private System.Windows.Forms.ColumnHeader columnHeader5;
+        private System.Windows.Forms.ColumnHeader columnHeader4;
 
 
 
