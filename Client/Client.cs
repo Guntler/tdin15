@@ -36,8 +36,6 @@ namespace Client
 
         public void OperationHandler(Operation op, DOrder order)
         {
-            Console.WriteLine("STUFFFFFF");
-            Console.WriteLine(api.ActiveOrders.Count);
             //uncomment if not treating creator or order like a regular user
             //and updating the rest of the user's orders automatically
             if (/*!order.Source.Nickname.Equals(userSession.Nickname) &&*/
@@ -52,9 +50,7 @@ namespace Client
                 //api.DeleteAllUserOrders(userSession);
             }
 
-            if ((userSession != null && !order.Source.Nickname.Equals(userSession.Nickname))
-                    || (userSession != null && op.Equals(Operation.Notify)
-                            && order.Source.Nickname.Equals(userSession.Nickname)))
+            if (userSession != null && !order.Source.Nickname.Equals(userSession.Nickname))
                 return;
 
             switch (op)

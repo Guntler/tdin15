@@ -465,7 +465,7 @@ public class API : MarshalByRefObject, IAPI
     {
         foreach (var o in ActiveOrders.Where(o => o.Source.Nickname.Equals(user.Nickname)))
         {
-            DeleteOrder(o);
+            CancelOrder(o);
         }
     }
 
@@ -475,7 +475,14 @@ public class API : MarshalByRefObject, IAPI
 
         SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
         command.ExecuteNonQuery();
-        
+
+        var i = ActiveOrders.FindIndex(o => order.Id == o.Id);
+
+        if (order.Status.Equals(OrderStatus.Active))
+        {
+            if (i > -1) ActiveOrders[i] = order;
+        }
+
         NotifyClients(Operation.Change, order);
     }
 
@@ -506,7 +513,8 @@ public class API : MarshalByRefObject, IAPI
         SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
         command.ExecuteNonQuery();
 
-        NotifyClients(Operation.Change,order);
+        ActiveOrders.Remove(order);
+        NotifyClients(Operation.Remove,order);
     }
 
     public void FulfillOrder(User buyer, DOrder order)
@@ -521,9 +529,10 @@ public class API : MarshalByRefObject, IAPI
             SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
             command.ExecuteNonQuery();
 
+            ActiveOrders.Remove(order);
             RegisteredTransactions.Add(new DTransaction(buyer,order.Value,order));
 
-            NotifyClients(Operation.Change, order);
+            NotifyClients(Operation.Remove, order);
         }
         else
         {
@@ -533,6 +542,7 @@ public class API : MarshalByRefObject, IAPI
 
     public void MatchOrder(DOrder order)
     {
+        //As the buyer
         if (order.Type.Equals(OrderType.Buy))
         {
             DOrder oldestOrder = FindOldestOrder(OrderType.Sell, order.Source.Nickname);
@@ -541,9 +551,24 @@ public class API : MarshalByRefObject, IAPI
             {
                 oldestOrder.Amount -= order.Amount;
                 order.Amount -= oldestOrder.Amount;
+                EditOrder(order);
+                EditOrder(oldestOrder);
+
+                if (oldestOrder.Amount <= 0)
+                {
+                    FulfillOrder(order.Source,oldestOrder);     //we fully bought someone's sell order
+                }
 
                 if (order.Amount <= 0)
+                {
+                    FulfillOrder(oldestOrder.Source, order);     //someone fully sold to our buy order
+                    break;
+                }
+                else
+                {
                     oldestOrder = FindOldestOrder(OrderType.Sell, order.Source.Nickname);
+                }
+
             }
 
         }
