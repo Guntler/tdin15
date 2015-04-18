@@ -19,6 +19,8 @@ namespace Client
         User userSession;
         readonly AlterEventRepeater _evRepeater;
         delegate ListViewItem LVAddDelegate(ListViewItem lvItem);
+        delegate void LVRemoveDelegate(ListViewItem lvItem);
+        delegate ListViewItem[] LVFindDelegate(string key, bool searchAllSubItems);
         delegate void ChCommDelegate(DOrder order);
         delegate void LVRemDelegate(DOrder order);
 
@@ -36,19 +38,6 @@ namespace Client
 
         public void OperationHandler(Operation op, DOrder order)
         {
-            //uncomment if not treating creator or order like a regular user
-            //and updating the rest of the user's orders automatically
-            if (/*!order.Source.Nickname.Equals(userSession.Nickname) &&*/
-                        (!order.Value.Equals(api.ExchangeValue)))
-            {
-                //Create prompt to change the current value of your orders
-
-                //User says yes or times out
-                //api.ChangeAllUserOrders(userSession,newValue);
-
-                //User says no
-                //api.DeleteAllUserOrders(userSession);
-            }
 
             if (userSession != null && !order.Source.Nickname.Equals(userSession.Nickname))
                 return;
@@ -77,6 +66,9 @@ namespace Client
                         {
                             aTimer.Stop();
                             api.ChangeAllUserOrders(this.userSession, newValue);
+                            var lvFind = new LVFindDelegate(itemListView.Items.Find);
+                            Invoke(lvFind, new object[] { lvItem });
+
                             foreach (ListViewItem item in itemListView.Items)
                             {
                                 item.SubItems[2].Text = newValue.ToString();
@@ -86,6 +78,7 @@ namespace Client
                         {
                             aTimer.Stop();
                             api.DeleteAllUserOrders(this.userSession);
+                            var lvRemove = new LVRemoveDelegate(itemListView.Items.Remove);
                             foreach (ListViewItem item in itemListView.Items)
                             {
                                 if (!item.SubItems[2].ToString().Equals(newValue.ToString()))
