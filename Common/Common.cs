@@ -198,7 +198,7 @@ public interface IAPI
 
     DOrder GetOrder(long id);
 
-    void ChangeAllUserOrders(User user, float newValue);
+    void ChangeAllUserOrders(User user, double newValue);
 
     void EditOrder(DOrder order);
     

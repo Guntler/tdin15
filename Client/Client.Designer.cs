@@ -40,13 +40,11 @@
             this.label2 = new System.Windows.Forms.Label();
             this.loginPanel = new System.Windows.Forms.Panel();
             this.textBox5 = new System.Windows.Forms.TextBox();
-            this.textBox4 = new System.Windows.Forms.TextBox();
             this.button2 = new System.Windows.Forms.Button();
+            this.textBox4 = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.ExchangePanel = new System.Windows.Forms.Panel();
-            this.label17 = new System.Windows.Forms.Label();
-            this.textBox7 = new System.Windows.Forms.TextBox();
             this.itemListView = new System.Windows.Forms.ListView();
             this.Id = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.Type = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -233,8 +231,6 @@
             // ExchangePanel
             // 
             this.ExchangePanel.AutoSize = true;
-            this.ExchangePanel.Controls.Add(this.label17);
-            this.ExchangePanel.Controls.Add(this.textBox7);
             this.ExchangePanel.Controls.Add(this.itemListView);
             this.ExchangePanel.Controls.Add(this.UserLbl);
             this.ExchangePanel.Controls.Add(this.label8);
@@ -260,22 +256,6 @@
             this.ExchangePanel.Size = new System.Drawing.Size(491, 254);
             this.ExchangePanel.TabIndex = 2;
             this.ExchangePanel.Visible = false;
-            // 
-            // label17
-            // 
-            this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(381, 83);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(66, 13);
-            this.label17.TabIndex = 28;
-            this.label17.Text = "Select value";
-            // 
-            // textBox7
-            // 
-            this.textBox7.Location = new System.Drawing.Point(384, 106);
-            this.textBox7.Name = "textBox7";
-            this.textBox7.Size = new System.Drawing.Size(75, 20);
-            this.textBox7.TabIndex = 27;
             // 
             // itemListView
             // 
@@ -470,7 +450,7 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(271, 130);
+            this.button3.Location = new System.Drawing.Point(379, 103);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(100, 23);
             this.button3.TabIndex = 5;
@@ -500,9 +480,9 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(491, 254);
+            this.Controls.Add(this.ExchangePanel);
             this.Controls.Add(this.registerPanel);
             this.Controls.Add(this.loginPanel);
-            this.Controls.Add(this.ExchangePanel);
             this.Name = "Client";
             this.Text = "Diginote Exchange System";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.logout);
@@ -559,8 +539,6 @@
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.ColumnHeader columnHeader2;
         private System.Windows.Forms.ColumnHeader columnHeader3;
-        private System.Windows.Forms.Label label17;
-        private System.Windows.Forms.TextBox textBox7;
         private System.Windows.Forms.ColumnHeader Id;
         private System.Windows.Forms.ColumnHeader columnHeader5;
         private System.Windows.Forms.ColumnHeader columnHeader4;

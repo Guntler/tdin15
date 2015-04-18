@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Runtime.Remoting;
 using System.Collections;
+using System.Timers;
 
 namespace Client
 {
@@ -65,8 +66,25 @@ namespace Client
                     Invoke(lvAdd, new object[] { lvItem });
                     break;
                 case Operation.Change:
-                    var chComm = new ChCommDelegate(ChangeOrder);
-                    Invoke(chComm, new object[] { order });
+                    double newValue = api.ExchangeValue;
+
+                    System.Timers.Timer aTimer = new System.Timers.Timer();
+                    aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
+                    aTimer.Interval=1000;
+                    aTimer.Enabled=true;
+
+                    DialogResult dialogResult = MessageBox.Show("Would you accept the new exchange value:" +newValue+"?\n", "New exchange value!", MessageBoxButtons.YesNo);
+                    if(dialogResult == DialogResult.Yes)
+                    {
+                        aTimer.Stop();
+                        api.ChangeAllUserOrders(this.userSession, api.ExchangeValue);
+                    }
+                    else if (dialogResult == DialogResult.No)
+                    {
+                        aTimer.Stop();
+                        api.DeleteAllUserOrders(this.userSession);
+                    }
+                    
                     break;
                 case Operation.Remove:
 
@@ -75,6 +93,10 @@ namespace Client
                     //Notify User that they have sold X diginotes
                     break;
             }
+        }
+        private void OnTimedEvent(object source, ElapsedEventArgs e)
+        {
+            api.ChangeAllUserOrders(this.userSession, api.ExchangeValue);
         }
 
         private void ChangeOrder(DOrder order)
@@ -150,7 +172,6 @@ namespace Client
             //login user
             if ((userSession = api.ValidateUser(textBox4.Text, textBox5.Text)) != null)
             {
-                MessageBox.Show("User login valid!", "Diginote Exchange System");
                 UserLbl.Text = userSession.Nickname;
                 diginotesLbl.Text = userSession.wallet.Count.ToString();
                 Console.WriteLine(api.ActiveOrders.Count);
@@ -198,7 +219,6 @@ namespace Client
             {
                 OrderType orderAction;
                 int amount;
-                double value;
 
                 if (!Enum.TryParse(this.comboBox1.GetItemText(this.comboBox1.SelectedItem), true, out orderAction))
                 {
@@ -210,14 +230,9 @@ namespace Client
                     this.textBox6.Text = "";
                     MessageBox.Show("Order amount parse error", "Diginote Exchange System");
                 }
-                if (!Double.TryParse(this.textBox7.Text, out value))
-                {
-                    this.textBox7.Text = "";
-                    MessageBox.Show("Order value parse error", "Diginote Exchange System");
-                }
                 else
                 {
-                    DOrder tempOrder = new DOrder(userSession, amount, value, orderAction, DateTime.Now);
+                    DOrder tempOrder = new DOrder(userSession, amount, api.ExchangeValue, orderAction, DateTime.Now);
                     api.RegisterOrder(ref tempOrder);
                 }
 

@@ -452,7 +452,7 @@ public class API : MarshalByRefObject, IAPI
         return orders;
     }
 
-    public void ChangeAllUserOrders(User user, float newValue)
+    public void ChangeAllUserOrders(User user, double newValue)
     {
         foreach (var o in ActiveOrders.Where(o => o.Source.Nickname.Equals(user.Nickname)))
         {
