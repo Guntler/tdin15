@@ -20,3 +20,4 @@ C:\Users\pbpdi_000\Documents\tdin15\Client\obj\Debug\Client.csprojResolveAssembl
 C:\Users\pbpdi_000\Documents\tdin15\Client\obj\Debug\Client.Client.resources
 C:\Users\pbpdi_000\Documents\tdin15\Client\obj\Debug\Client.Properties.Resources.resources
 C:\Users\pbpdi_000\Documents\tdin15\Client\obj\Debug\Client.csproj.GenerateResource.Cache
+C:\Users\pbpdi_000\Documents\tdin15\Client\obj\Debug\Client.OrderEditor.resources

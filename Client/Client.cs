@@ -18,11 +18,11 @@ namespace Client
         IAPI api;
         User userSession;
         readonly AlterEventRepeater _evRepeater;
-        delegate ListViewItem LVAddDelegate(ListViewItem lvItem);
+        delegate ListViewItem LvAddDelegate(ListViewItem lvItem);
         delegate void LVRemoveDelegate(ListViewItem lvItem);
         delegate ListViewItem[] LVFindDelegate(string key, bool searchAllSubItems);
         delegate void ChCommDelegate(DOrder order);
-        delegate void LVRemDelegate(DOrder order);
+        delegate void LvRemDelegate(DOrder order);
 
         public Client()
         {
@@ -38,67 +38,23 @@ namespace Client
 
         public void OperationHandler(Operation op, DOrder order)
         {
-
             if (userSession != null && !order.Source.Nickname.Equals(userSession.Nickname))
                 return;
 
             switch (op)
             {
                 case Operation.New:
-
-                    var lvAdd = new LVAddDelegate(itemListView.Items.Add);
+                    var lvAdd = new LvAddDelegate(itemListView.Items.Add);
                     ListViewItem lvItem = new ListViewItem(new string[] { order.Id.ToString(), order.Type.ToString(), order.Value.ToString(), order.Amount.ToString(), (order.Value * order.Amount).ToString(), order.Status.ToString(), order.Date.ToString() });
                     Invoke(lvAdd, new object[] { lvItem });
                     break;
                 case Operation.Change:
-                    if (!api.ExchangeValue.ToString().Equals(ExchangeValueLbl.ToString())) //mudança de exchangeValue
-                    {
-                        double newValue = api.ExchangeValue;
-                        ExchangeValueLbl.Text = String.Format("{0:0.00}", newValue);
-
-                        System.Timers.Timer aTimer = new System.Timers.Timer();
-                        aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
-                        aTimer.Interval = 1000;
-                        aTimer.Enabled = true;
-
-                        DialogResult dialogResult = MessageBox.Show("Would you accept the new exchange value:" + newValue + "?\n", "New exchange value!", MessageBoxButtons.YesNo);
-                        if (dialogResult == DialogResult.Yes)
-                        {
-                            aTimer.Stop();
-                            api.ChangeAllUserOrders(this.userSession, newValue);
-                            var lvFind = new LVFindDelegate(itemListView.Items.Find);
-                            Invoke(lvFind, new object[] { lvItem });
-
-                            foreach (ListViewItem item in itemListView.Items)
-                            {
-                                item.SubItems[2].Text = newValue.ToString();
-                            }
-                        }
-                        else if (dialogResult == DialogResult.No)
-                        {
-                            aTimer.Stop();
-                            api.DeleteAllUserOrders(this.userSession);
-                            var lvRemove = new LVRemoveDelegate(itemListView.Items.Remove);
-                            foreach (ListViewItem item in itemListView.Items)
-                            {
-                                if (!item.SubItems[2].ToString().Equals(newValue.ToString()))
-                                {
-                                    item.Remove();
-                                }
-                            }
-                        }
-                    }
+                    var chChomm = new ChCommDelegate(ChangeHandler);
+                    Invoke(chChomm, new object[] { order });
                     break;
                 case Operation.Remove:
-                    foreach (ListViewItem item in itemListView.Items)
-                    {
-                        if (order.Id.ToString().Equals(item.Text))
-                        {
-                            item.Remove();
-                            break;
-                        }
-                    }
-
+                    var lvRem = new LvRemDelegate(RemoveHandler);
+                    Invoke(lvRem, new object[] { order });
                     break;
                 case Operation.Notify:
                     //Notify User that they have sold X diginotes
@@ -107,24 +63,63 @@ namespace Client
                     break;
             }
         }
+
         private void OnTimedEvent(object source, ElapsedEventArgs e)
         {
             api.ChangeAllUserOrders(this.userSession, api.ExchangeValue);
         }
 
-        private void ChangeOrder(DOrder order)
+        private void ChangeHandler(DOrder order)
         {
-            var i = api.ActiveOrders.FindIndex(o => order.Id == o.Id);
+            if (!api.ExchangeValue.ToString().Equals(ExchangeValueLbl.ToString())) //mudança de exchangeValue
+            {
+                double newValue = api.ExchangeValue;
+                ExchangeValueLbl.Text = String.Format("{0:0.00}", newValue);
 
-            if (order.Status.Equals(OrderStatus.Active))
-            {
-                if (i > -1) api.ActiveOrders[i] = order;
+                System.Timers.Timer aTimer = new System.Timers.Timer();
+                aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
+                aTimer.Interval = 1000;
+                aTimer.Enabled = true;
+
+                DialogResult dialogResult = MessageBox.Show("Would you accept the new exchange value:" + newValue + "?\n", "New exchange value!", MessageBoxButtons.YesNo);
+                if (dialogResult == DialogResult.Yes)
+                {
+                    aTimer.Stop();
+                    api.ChangeAllUserOrders(this.userSession, newValue);
+                    var lvFind = new LVFindDelegate(itemListView.Items.Find);
+                    ListViewItem lvItem = new ListViewItem(new string[] { order.Id.ToString(), order.Type.ToString(), order.Value.ToString(), order.Amount.ToString(), (order.Value * order.Amount).ToString(), order.Status.ToString(), order.Date.ToString() });
+                    Invoke(lvFind, new object[] { lvItem });
+
+                    foreach (ListViewItem item in itemListView.Items)
+                    {
+                        item.SubItems[2].Text = newValue.ToString();
+                    }
+                }
+                else if (dialogResult == DialogResult.No)
+                {
+                    aTimer.Stop();
+                    api.DeleteAllUserOrders(this.userSession);
+                    var lvRemove = new LVRemoveDelegate(itemListView.Items.Remove);
+                    foreach (ListViewItem item in itemListView.Items)
+                    {
+                        if (!item.SubItems[2].ToString().Equals(newValue.ToString()))
+                        {
+                            item.Remove();
+                        }
+                    }
+                }
             }
-            else
+        }
+
+        private void RemoveHandler(DOrder order)
+        {
+            foreach (ListViewItem item in itemListView.Items)
             {
-                /*var lvRem = new LVRemDelegate(listView.Items.Remove);
-                Invoke(lvRem, new object[] { order });*/
-                api.ActiveOrders.RemoveAt(i);
+                if (order.Id.ToString().Equals(item.Text))
+                {
+                    item.Remove();
+                    break;
+                }
             }
         }
 
@@ -185,7 +180,7 @@ namespace Client
             List<DOrder> aux = orders.FindAll(order => order.Source.Nickname.Equals(userSession.Nickname));
             foreach (DOrder order in aux)
             {
-                var lvAdd = new LVAddDelegate(itemListView.Items.Add);
+                var lvAdd = new LvAddDelegate(itemListView.Items.Add);
                 ListViewItem lvItem = new ListViewItem(new string[] { order.Id.ToString(), order.Type.ToString(), order.Value.ToString(), order.Amount.ToString(), (order.Value * order.Amount).ToString(), order.Status.ToString(), order.Date.ToString() });
                 Invoke(lvAdd, new object[] { lvItem });
             }
