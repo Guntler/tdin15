@@ -344,7 +344,7 @@ public class API : MarshalByRefObject, IAPI
             NotifyClients(Operation.New, order);
 
             //UNCOMMENT WHEN READY TO TEST
-            //MatchOrder(order);
+            MatchOrder(order);
         }
     }
 
@@ -454,7 +454,9 @@ public class API : MarshalByRefObject, IAPI
 
     public void ChangeAllUserOrders(User user, double newValue)
     {
-        foreach (var o in ActiveOrders.Where(o => o.Source.Nickname.Equals(user.Nickname)))
+        List<DOrder> list = ActiveOrders.FindAll(o => o.Source.Nickname.Equals(user.Nickname));
+        Console.WriteLine("ChangeAllUserOrders size: " + list.Count);
+        foreach (DOrder o in list)
         {
             o.Value=newValue;
             EditOrder(o);
@@ -463,7 +465,9 @@ public class API : MarshalByRefObject, IAPI
 
     public void DeleteAllUserOrders(User user)
     {
-        foreach (var o in ActiveOrders.Where(o => o.Source.Nickname.Equals(user.Nickname)))
+        List<DOrder> list = ActiveOrders.FindAll(o => o.Source.Nickname.Equals(user.Nickname));
+        Console.WriteLine("DeleteAllUserOrders size: " + list.Count);
+        foreach (DOrder o in list)
         {
             CancelOrder(o);
         }

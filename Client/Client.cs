@@ -38,7 +38,7 @@ namespace Client
 
         public void OperationHandler(Operation op, DOrder order)
         {
-            if (userSession != null && !order.Source.Nickname.Equals(userSession.Nickname))
+            if (userSession == null || !order.Source.Nickname.Equals(userSession.Nickname))
                 return;
 
             switch (op)
@@ -67,6 +67,10 @@ namespace Client
         private void OnTimedEvent(object source, ElapsedEventArgs e)
         {
             api.ChangeAllUserOrders(this.userSession, api.ExchangeValue);
+            foreach (ListViewItem item in itemListView.Items) //sets all order's exchange value to new value
+            {
+                item.SubItems[2].Text = api.ExchangeValue.ToString();
+            }
         }
 
         private void ChangeHandler(DOrder order)
@@ -86,11 +90,8 @@ namespace Client
                 {
                     aTimer.Stop();
                     api.ChangeAllUserOrders(this.userSession, newValue);
-                    var lvFind = new LVFindDelegate(itemListView.Items.Find);
-                    ListViewItem lvItem = new ListViewItem(new string[] { order.Id.ToString(), order.Type.ToString(), order.Value.ToString(), order.Amount.ToString(), (order.Value * order.Amount).ToString(), order.Status.ToString(), order.Date.ToString() });
-                    Invoke(lvFind, new object[] { lvItem });
-
-                    foreach (ListViewItem item in itemListView.Items)
+                    
+                    foreach (ListViewItem item in itemListView.Items) //sets all order's exchange value to new value
                     {
                         item.SubItems[2].Text = newValue.ToString();
                     }
@@ -99,8 +100,7 @@ namespace Client
                 {
                     aTimer.Stop();
                     api.DeleteAllUserOrders(this.userSession);
-                    var lvRemove = new LVRemoveDelegate(itemListView.Items.Remove);
-                    foreach (ListViewItem item in itemListView.Items)
+                    foreach (ListViewItem item in itemListView.Items) //remove orders with exchange values != from the new one
                     {
                         if (!item.SubItems[2].ToString().Equals(newValue.ToString()))
                         {
@@ -129,17 +129,21 @@ namespace Client
             {
                 User aux = new User(textBox1.Text, textBox2.Text, textBox3.Text);
                 int result = api.RegisterUser(ref aux);
+                if (result == 1)
+                {
+                    MessageBox.Show("Nickname has been taken, please choose another.", "Diginote Exchange System");
+                }
+                else
+                {
+                    MessageBox.Show("Registration has been a success!", "Diginote Exchange System");
+                }
+                textBox1.Text = "";
+                textBox2.Text = "";
+                textBox3.Text = "";
             }
             catch (Exception error)
             {
                 MessageBox.Show("Something went wrong:\n" + error.Message);
-            }
-            finally
-            {
-                //clear text
-                textBox1.Text = "";
-                textBox2.Text = "";
-                textBox3.Text = "";
             }
         }
 
@@ -197,18 +201,23 @@ namespace Client
 
                 if (!Enum.TryParse(this.comboBox1.GetItemText(this.comboBox1.SelectedItem), true, out orderAction))
                 {
-                    this.comboBox1.SelectedItem = null;
                     MessageBox.Show("Order action not allowed", "Diginote Exchange System");
                 }
                 if (!Int32.TryParse(this.textBox6.Text, out amount))
                 {
-                    this.textBox6.Text = "";
                     MessageBox.Show("Order amount parse error", "Diginote Exchange System");
                 }
                 else
                 {
-                    DOrder tempOrder = new DOrder(userSession, amount, api.ExchangeValue, orderAction, DateTime.Now);
-                    api.RegisterOrder(ref tempOrder);
+                    if(orderAction == OrderType.Sell && amount > userSession.wallet.Count)
+                    {
+                        MessageBox.Show("You have insufficient diginotes\nto perform that action.", "Diginote Exchange System");
+                    }
+                    else
+                    {
+                        DOrder tempOrder = new DOrder(userSession, amount, api.ExchangeValue, orderAction, DateTime.Now);
+                        api.RegisterOrder(ref tempOrder);
+                    }
                 }
 
             }
@@ -218,7 +227,8 @@ namespace Client
             }
             finally
             {
-
+                this.comboBox1.SelectedItem = null;
+                this.textBox6.Text = "";
             }
         }
 
