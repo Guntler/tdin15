@@ -20,6 +20,7 @@ namespace Client
         readonly AlterEventRepeater _evRepeater;
         delegate ListViewItem LvAddDelegate(ListViewItem lvItem);
         delegate void LVRemoveDelegate(ListViewItem lvItem);
+        delegate void LVupdateUIDelegate(DOrder order);
         delegate ListViewItem[] LVFindDelegate(string key, bool searchAllSubItems);
         delegate void ChCommDelegate(DOrder order);
         delegate void LvRemDelegate(DOrder order);
@@ -38,6 +39,9 @@ namespace Client
 
         public void OperationHandler(Operation op, DOrder order)
         {
+            var delgUI = new LVupdateUIDelegate(updateUI);
+            Invoke(delgUI, new object[] { order });
+
             if (userSession == null || !order.Source.Nickname.Equals(userSession.Nickname))
                 return;
 
@@ -48,8 +52,8 @@ namespace Client
                     ListViewItem lvItem = new ListViewItem(new string[] { order.Id.ToString(), order.Type.ToString(), order.Value.ToString(), order.Amount.ToString(), (order.Value * order.Amount).ToString(), order.Status.ToString(), order.Date.ToString() });
                     Invoke(lvAdd, new object[] { lvItem });
                     break;
-                case Operation.Change:
-                    var chChomm = new ChCommDelegate(ChangeHandler);
+                case Operation.Change: //mudança no amount de uma ordem
+                    var chChomm = new ChCommDelegate(updateOrder);
                     Invoke(chChomm, new object[] { order });
                     break;
                 case Operation.Remove:
@@ -58,13 +62,21 @@ namespace Client
                     break;
                 case Operation.Notify:
                     //Notify User that they have sold X diginotes
-                    DOrder aux = api.ActiveOrders.Find(o=> o.Id == order.Id);
-                    MessageBox.Show("Order of id:"+order.Id+" has been updated.\n Sold "+(order.Amount-aux.Amount)+" diginotes\n");
+                    chChomm = new ChCommDelegate(notifyUI);
+                    Invoke(chChomm, new object[] { order });
                     break;
-                case Operation.ChangeAll:
-                    //TODO update ALL orders in the UI
+                case Operation.ChangeAll: //mudança do exchange value de todas as ordens
+                    chChomm = new ChCommDelegate(ChangeHandler);
+                    Invoke(chChomm, new object[] { order });
                     break;
             }
+        }
+
+        private void notifyUI(DOrder order)
+        {
+            DOrder aux = api.ActiveOrders.Find(o => o.Id == order.Id);
+            MessageBox.Show("Order of id:" + order.Id + " has been updated.\n Sold " + (order.Amount - aux.Amount) + " diginotes\n");
+            diginotesLbl.Text = api.GetDiginotesByUser(this.userSession).Count.ToString();
         }
 
         private void OnTimedEvent(object source, ElapsedEventArgs e)
@@ -76,12 +88,32 @@ namespace Client
             }
         }
 
+        private void updateUI(DOrder order)
+        {
+            Num_Buy_Order_System.Text = api.ActiveOrders.FindAll(o => o.Type == OrderType.Buy).Count.ToString();
+            Num_Sell_Order_System.Text = api.ActiveOrders.FindAll(o => o.Type == OrderType.Sell).Count.ToString();
+            ExchangeValueLbl.Text = String.Format("{0:0.00}", api.ExchangeValue);
+            diginotesLbl.Text = api.GetDiginotesByUser(this.userSession).Count.ToString();
+        }
+
+        private void updateOrder(DOrder order)
+        {
+            foreach (ListViewItem item in itemListView.Items) //remove orders with exchange values != from the new one
+            {
+                if (item.SubItems[0].Text.Equals(order.Id.ToString()))
+                {
+                    item.SubItems[3].Text = order.Amount.ToString();
+                }
+            }
+        }
+
+
         private void ChangeHandler(DOrder order)
         {
-            if (!api.ExchangeValue.ToString().Equals(ExchangeValueLbl.ToString())) //mudança de exchangeValue
+
+            string newValue = String.Format("{0:0.00}", api.ExchangeValue);
+            if (!newValue.Equals(ExchangeValueLbl.Text)) //mudança de exchangeValue
             {
-                double newValue = api.ExchangeValue;
-                ExchangeValueLbl.Text = String.Format("{0:0.00}", newValue);
 
                 System.Timers.Timer aTimer = new System.Timers.Timer();
                 aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
@@ -92,7 +124,7 @@ namespace Client
                 if (dialogResult == DialogResult.Yes)
                 {
                     aTimer.Stop();
-                    api.ChangeAllUserOrders(this.userSession, newValue);
+                    api.ChangeAllUserOrders(this.userSession, api.ExchangeValue);
                     
                     foreach (ListViewItem item in itemListView.Items) //sets all order's exchange value to new value
                     {
@@ -219,6 +251,7 @@ namespace Client
                     else
                     {
                         DOrder tempOrder = new DOrder(userSession, amount, api.ExchangeValue, orderAction, DateTime.Now);
+                        diginotesLbl.Text = (userSession.wallet.Count - amount).ToString();
                         api.RegisterOrder(ref tempOrder);
                     }
                 }
@@ -266,7 +299,8 @@ namespace Client
                 DateTime tempo = DateTime.Parse(itemListView.SelectedItems[0].SubItems[6].Text.ToString());
                 DOrder tempOrder = new DOrder(userSession, quantidade, editor.value, tipoOrdem, tempo);
                 tempOrder.Id = id;
-                MessageBox.Show("Update:\n" + tempOrder.ToString());
+                //MessageBox.Show("Update:\n" + tempOrder.ToString());
+                itemListView.SelectedItems[0].SubItems[2].Text = editor.value.ToString();
                 api.EditOrder(tempOrder);
             }
             else
@@ -276,7 +310,8 @@ namespace Client
                 DateTime tempo = DateTime.Parse(itemListView.SelectedItems[0].SubItems[6].Text.ToString());
                 DOrder tempOrder = new DOrder(userSession, quantidade, valor, tipoOrdem, tempo);
                 tempOrder.Id = id;
-                MessageBox.Show("Cancel:\n" + tempOrder.ToString());
+                //MessageBox.Show("Cancel:\n" + tempOrder.ToString());
+                itemListView.SelectedItems[0].Remove();
                 api.CancelOrder(tempOrder);
             }
 
