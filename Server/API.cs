@@ -69,10 +69,10 @@ public class API : MarshalByRefObject, IAPI
                         handler(op, order);
                         Console.WriteLine("Invoking event handler");
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
                         alterEvent -= handler;
-                        Console.WriteLine("Exception: Removed an event handler");
+                        Console.WriteLine("Exception: Removed an event handler: "+e.Message);
                     }
                 }).Start();
             }

@@ -83,7 +83,6 @@ namespace Client
 
         private void notifyUI(DOrder order)
         {
-            MessageBox.Show("IN notifyUI");
             diginotesLbl.Text = api.GetDiginotesByUser(this.userSession).FindAll(o => o.IsForSale == false).Count.ToString();
             DOrder aux = api.ActiveOrders.Find(o => o.Id == order.Id);
             UpdateExchangePanel(api.ActiveOrders);
