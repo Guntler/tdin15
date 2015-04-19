@@ -461,7 +461,7 @@ public class API : MarshalByRefObject, IAPI
             o.Value=newValue;
             ChangeOrderDB(o);
         }
-        NotifyClients(Operation.ChangeAll,new DOrder(user,0,0,OrderType.Buy,new DateTime(1,1,1)));
+        NotifyClients(Operation.Change,new DOrder(user,0,0,OrderType.Buy,new DateTime(1,1,1)));
     }
 
     public void DeleteAllUserOrders(User user)
@@ -473,7 +473,7 @@ public class API : MarshalByRefObject, IAPI
             if (!o.Value.Equals(ExchangeValue))
             {
                 CancelOrderDB(o);
-                NotifyClients(Operation.Remove, o);
+                NotifyClients(Operation.Change, o);
             }
         }
     }
@@ -495,7 +495,7 @@ public class API : MarshalByRefObject, IAPI
 
     public void EditOrder(DOrder order)
     {
-        ChangeOrder(order);
+        ChangeOrderDB(order);
 
         NotifyClients(Operation.Change, order);
     }
@@ -533,30 +533,23 @@ public class API : MarshalByRefObject, IAPI
     public void CancelOrder(DOrder order)
     {
         CancelOrderDB(order);
-        NotifyClients(Operation.Remove,order);
+        NotifyClients(Operation.Change,order);
     }
 
     public void FulfillOrder(User buyer, DOrder order)
     {
-        if (!buyer.Nickname.Equals(order.Source.Nickname))
-        {
-            PurchaseDiginotes(order.Source, order.Amount, buyer);
-            order.Status = OrderStatus.Fulfilled;
+        PurchaseDiginotes(order.Source, order.Amount, buyer);
+        order.Status = OrderStatus.Fulfilled;
 
-            string sql = "Update DOrder SET status = '" + (((int)order.Status) + 1) + "' where id = '" + order.Id + "'";
+        string sql = "Update DOrder SET status = '" + (((int)order.Status) + 1) + "' where id = '" + order.Id + "'";
 
-            SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
-            command.ExecuteNonQuery();
+        SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
+        command.ExecuteNonQuery();
 
-            ActiveOrders.Remove(order);
-            RegisteredTransactions.Add(new DTransaction(buyer,order.Value,order));
+        ActiveOrders.Remove(order);
+        RegisterTransaction(new DTransaction(buyer,order.Value,order));
 
-            NotifyClients(Operation.Remove, order);
-        }
-        else
-        {
-            //Display Error message because you can't buy your own order
-        }
+        NotifyClients(Operation.Remove, order);
     }
 
     public void MatchOrder(DOrder order)
@@ -568,7 +561,7 @@ public class API : MarshalByRefObject, IAPI
 
             while (oldestOrder != null)
             {
-                DOrder dummyOrder = order;
+                DOrder dummyOrder = new DOrder(order.Source,order.Amount,0,OrderType.Buy, new DateTime(1,1,1));
                 oldestOrder.Amount -= order.Amount;
                 order.Amount -= oldestOrder.Amount;
                 if (oldestOrder.Amount < 0) oldestOrder.Amount = 0;
@@ -598,7 +591,7 @@ public class API : MarshalByRefObject, IAPI
 
             while (oldestOrder != null)
             {
-                DOrder dummyOrder = order;
+                DOrder dummyOrder = new DOrder(order.Source, order.Amount, 0, OrderType.Buy, new DateTime(1, 1, 1));
                 oldestOrder.Amount -= order.Amount;
                 order.Amount -= oldestOrder.Amount;
                 if (oldestOrder.Amount < 0) oldestOrder.Amount = 0;
