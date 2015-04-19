@@ -14,9 +14,11 @@ public class Diginote
     public long Id { get; set; }
     public int value { get; set; }
     public User Owner { get; set; }
+    public Boolean IsForSale { get; set; }
     public Diginote(User owner) { 
         Id = ++idCounter; this.value = 1;
         Owner = owner;
+        IsForSale = false;
     }
 }
 
@@ -185,6 +187,8 @@ public interface IAPI
     List<Diginote> GetDiginotesByUser(User us);
 
     Diginote GetDiginote(long id);
+
+    void PutDiginotesForSale(User owner, int amt);
 
     void PurchaseDiginotes(User owner, int amt, User buyer);
 

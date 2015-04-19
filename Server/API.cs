@@ -274,11 +274,31 @@ public class API : MarshalByRefObject, IAPI
         return null;
     }
 
+    public void PutDiginotesForSale(User owner, int amt)
+    {
+        var forSaleAmt = owner.wallet.FindAll(d => d.IsForSale).Count;
+        for (var i = forSaleAmt; i < amt; i++)
+        {
+            owner.wallet[i].IsForSale = true;
+        }
+    }
+
+    public void TakeDiginotesFromSale(User owner, int amt)
+    {
+        for (var i = 0; i < amt; i++)
+        {
+            owner.wallet[i].IsForSale = false;
+        }
+    }
+
     public void PurchaseDiginotes(User owner, int amt, User buyer)
     {
         for (var i = 0; i < amt; i++)
         {
             string sql = "Update Diginote SET owner = '" + buyer.Nickname + "' where id = '" + owner.wallet[0].Id + "'";
+            owner.wallet[0].Owner = buyer;
+            owner.wallet[0].IsForSale = false;
+            buyer.wallet.Add(owner.wallet[0]);
             owner.wallet.RemoveAt(0);
 
             SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
@@ -562,6 +582,7 @@ public class API : MarshalByRefObject, IAPI
             while (oldestOrder != null)
             {
                 DOrder dummyOrder = new DOrder(order.Source,order.Amount,0,OrderType.Buy, new DateTime(1,1,1));
+                dummyOrder.Id = order.Id;
                 oldestOrder.Amount -= order.Amount;
                 order.Amount -= oldestOrder.Amount;
                 if (oldestOrder.Amount < 0) oldestOrder.Amount = 0;
