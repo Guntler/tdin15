@@ -119,7 +119,7 @@ public class User
     public override bool Equals(object obj) { return this.Nickname.Equals(((User)obj).Nickname); }
 }
 
-public enum Operation { New, Change, Remove, Notify};
+public enum Operation { New, Change, Remove, Notify, ChangeAll};
 
 public delegate void AlterDelegate(Operation op, DOrder order);
 
@@ -199,6 +199,8 @@ public interface IAPI
     DOrder GetOrder(long id);
 
     void ChangeAllUserOrders(User user, double newValue);
+
+    void ChangeOrderDB(DOrder order);
 
     void EditOrder(DOrder order);
     

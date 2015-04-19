@@ -61,6 +61,9 @@ namespace Client
                     DOrder aux = api.ActiveOrders.Find(o=> o.Id == order.Id);
                     MessageBox.Show("Order of id:"+order.Id+" has been updated.\n Sold "+(order.Amount-aux.Amount)+" diginotes\n");
                     break;
+                case Operation.ChangeAll:
+                    //TODO update ALL orders in the UI
+                    break;
             }
         }
 

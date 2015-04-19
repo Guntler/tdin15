@@ -459,8 +459,9 @@ public class API : MarshalByRefObject, IAPI
         foreach (DOrder o in list)
         {
             o.Value=newValue;
-            EditOrder(o);
+            ChangeOrderDB(o);
         }
+        NotifyClients(Operation.ChangeAll,new DOrder(user,0,0,OrderType.Buy,new DateTime(1,1,1)));
     }
 
     public void DeleteAllUserOrders(User user)
@@ -469,13 +470,17 @@ public class API : MarshalByRefObject, IAPI
         Console.WriteLine("DeleteAllUserOrders size: " + list.Count);
         foreach (DOrder o in list)
         {
-            CancelOrder(o);
+            if (!o.Value.Equals(ExchangeValue))
+            {
+                CancelOrderDB(o);
+                NotifyClients(Operation.Remove, o);
+            }
         }
     }
 
-    public void EditOrder(DOrder order)
+    public void ChangeOrderDB(DOrder order)
     {
-        string sql = "Update DOrder SET value = '" + order.Value + "', amount = '"+ order.Amount + "' where id = '" + order.Id + "'";
+        string sql = "Update DOrder SET value = '" + order.Value + "', amount = '" + order.Amount + "' where id = '" + order.Id + "'";
 
         SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
         command.ExecuteNonQuery();
@@ -486,6 +491,11 @@ public class API : MarshalByRefObject, IAPI
         {
             if (i > -1) ActiveOrders[i] = order;
         }
+    }
+
+    public void EditOrder(DOrder order)
+    {
+        ChangeOrder(order);
 
         NotifyClients(Operation.Change, order);
     }
@@ -508,9 +518,9 @@ public class API : MarshalByRefObject, IAPI
         Console.WriteLine("Successfuly removed Order " + order.Id);
     }
 
-    public void CancelOrder(DOrder order)
+    public void CancelOrderDB(DOrder order)
     {
-        order.Status=OrderStatus.Cancelled;
+        order.Status = OrderStatus.Cancelled;
 
         string sql = "Update DOrder SET status = '" + (((int)order.Status) + 1) + "' where id = '" + order.Id + "'";
 
@@ -518,6 +528,11 @@ public class API : MarshalByRefObject, IAPI
         command.ExecuteNonQuery();
 
         ActiveOrders.Remove(order);
+    }
+
+    public void CancelOrder(DOrder order)
+    {
+        CancelOrderDB(order);
         NotifyClients(Operation.Remove,order);
     }
 
