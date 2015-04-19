@@ -20,6 +20,7 @@ namespace Client
         readonly AlterEventRepeater _evRepeater;
         delegate ListViewItem LvAddDelegate(ListViewItem lvItem);
         delegate void LVRemoveDelegate(ListViewItem lvItem);
+        delegate void LVaddDelegate(DOrder order);
         delegate void LVupdateUIDelegate(DOrder order);
         delegate ListViewItem[] LVFindDelegate(string key, bool searchAllSubItems);
         delegate void ChCommDelegate(DOrder order);
@@ -48,9 +49,8 @@ namespace Client
             switch (op)
             {
                 case Operation.New:
-                    var lvAdd = new LvAddDelegate(itemListView.Items.Add);
-                    ListViewItem lvItem = new ListViewItem(new string[] { order.Id.ToString(), order.Type.ToString(), order.Value.ToString(), order.Amount.ToString(), (order.Value * order.Amount).ToString(), order.Status.ToString(), order.Date.ToString() });
-                    Invoke(lvAdd, new object[] { lvItem });
+                    var lvAdd = new LVaddDelegate(addHandler);
+                    Invoke(lvAdd, new object[] { order });
                     break;
                 case Operation.Change: //mudança no amount de uma ordem
                     var chChomm = new ChCommDelegate(updateOrder);
@@ -72,11 +72,25 @@ namespace Client
             }
         }
 
+        private void addHandler(DOrder order)
+        {
+            var lvAdd = new LvAddDelegate(itemListView.Items.Add);
+            if(order.Type==OrderType.Sell)
+                diginotesLbl.Text = (api.GetDiginotesByUser(this.userSession).FindAll(o => o.IsForSale == false).Count - order.Amount).ToString();
+            ListViewItem lvItem = new ListViewItem(new string[] { order.Id.ToString(), order.Type.ToString(), order.Value.ToString(), order.Amount.ToString(), (order.Value * order.Amount).ToString(), order.Status.ToString(), order.Date.ToString() });
+            Invoke(lvAdd, new object[] { lvItem });
+        }
+
         private void notifyUI(DOrder order)
         {
+            MessageBox.Show("IN notifyUI");
+            diginotesLbl.Text = api.GetDiginotesByUser(this.userSession).FindAll(o => o.IsForSale == false).Count.ToString();
             DOrder aux = api.ActiveOrders.Find(o => o.Id == order.Id);
-            MessageBox.Show("Order of id:" + order.Id + " has been updated.\n Sold " + (order.Amount - aux.Amount) + " diginotes\n");
-            diginotesLbl.Text = api.GetDiginotesByUser(this.userSession).Count.ToString();
+            UpdateExchangePanel(api.ActiveOrders);
+            if (aux == null)
+                return;
+            MessageBox.Show("notifyUI\nOrder.Amount: "+order.Amount+"\naux.Amount: "+aux.Amount);
+            MessageBox.Show("Order of id:" + order.Id + " has been updated.\n"+(order.Type == OrderType.Buy ?"Bought ":"Sold ") + (order.Amount - aux.Amount) + " diginotes\n");
         }
 
         private void OnTimedEvent(object source, ElapsedEventArgs e)
@@ -93,7 +107,7 @@ namespace Client
             Num_Buy_Order_System.Text = api.ActiveOrders.FindAll(o => o.Type == OrderType.Buy).Count.ToString();
             Num_Sell_Order_System.Text = api.ActiveOrders.FindAll(o => o.Type == OrderType.Sell).Count.ToString();
             ExchangeValueLbl.Text = String.Format("{0:0.00}", api.ExchangeValue);
-            diginotesLbl.Text = api.GetDiginotesByUser(this.userSession).Count.ToString();
+            diginotesLbl.Text = api.GetDiginotesByUser(this.userSession).FindAll(o => o.IsForSale == false).Count.ToString();
         }
 
         private void updateOrder(DOrder order)
@@ -148,6 +162,7 @@ namespace Client
 
         private void RemoveHandler(DOrder order)
         {
+            notifyUI(order);
             foreach (ListViewItem item in itemListView.Items)
             {
                 if (order.Id.ToString().Equals(item.Text))
@@ -187,8 +202,7 @@ namespace Client
             if ((userSession = api.ValidateUser(textBox4.Text, textBox5.Text)) != null)
             {
                 UserLbl.Text = userSession.Nickname;
-                diginotesLbl.Text = userSession.wallet.Count.ToString();
-                Console.WriteLine(api.ActiveOrders.Count);
+                diginotesLbl.Text = api.GetDiginotesByUser(this.userSession).FindAll(o => o.IsForSale == false).Count.ToString();
                 UpdateExchangePanel(api.ActiveOrders);
                 showExchangePanel();
             }
@@ -244,14 +258,13 @@ namespace Client
                 }
                 else
                 {
-                    if(orderAction == OrderType.Sell && amount > userSession.wallet.Count)
+                    if(orderAction == OrderType.Sell && amount > userSession.wallet.FindAll(o => o.IsForSale==false).Count)
                     {
                         MessageBox.Show("You have insufficient diginotes\nto perform that action.", "Diginote Exchange System");
                     }
                     else
                     {
                         DOrder tempOrder = new DOrder(userSession, amount, api.ExchangeValue, orderAction, DateTime.Now);
-                        diginotesLbl.Text = (userSession.wallet.Count - amount).ToString();
                         api.RegisterOrder(ref tempOrder);
                     }
                 }

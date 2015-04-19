@@ -330,12 +330,6 @@ public class API : MarshalByRefObject, IAPI
 
     public void RegisterOrder(ref DOrder order)
     {
-        if ((order.Type.Equals(OrderType.Buy) && order.Value > ExchangeValue) ||
-            (order.Type.Equals(OrderType.Sell) && order.Value < ExchangeValue))
-        {
-            //Ask for a new value
-        }
-
         var sql = "";
         SQLiteCommand command;
 
@@ -360,7 +354,7 @@ public class API : MarshalByRefObject, IAPI
             Console.WriteLine(@"New order id: " + order.Id);
 
             RegisteredOrders.Add(order);
-
+            PutDiginotesForSale(order.Source, order.Amount);
             NotifyClients(Operation.New, order);
 
             //UNCOMMENT WHEN READY TO TEST
@@ -547,18 +541,19 @@ public class API : MarshalByRefObject, IAPI
         SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
         command.ExecuteNonQuery();
 
-        ActiveOrders.Remove(order);
+        ActiveOrders.RemoveAll(o => o.Id == order.Id);
     }
 
     public void CancelOrder(DOrder order)
     {
+        TakeDiginotesFromSale(order.Source, order.Amount);
         CancelOrderDB(order);
         NotifyClients(Operation.Change,order);
     }
 
     public void FulfillOrder(User buyer, DOrder order)
     {
-        PurchaseDiginotes(order.Source, order.Amount, buyer);
+        
         order.Status = OrderStatus.Fulfilled;
 
         string sql = "Update DOrder SET status = '" + (((int)order.Status) + 1) + "' where id = '" + order.Id + "'";
@@ -582,27 +577,38 @@ public class API : MarshalByRefObject, IAPI
             while (oldestOrder != null)
             {
                 DOrder dummyOrder = new DOrder(order.Source,order.Amount,0,OrderType.Buy, new DateTime(1,1,1));
+                DOrder dummyOrder2 = new DOrder(oldestOrder.Source, oldestOrder.Amount, 0, OrderType.Sell, new DateTime(1, 1, 1));
+                PurchaseDiginotes(oldestOrder.Source, oldestOrder.Amount, order.Source);
+
                 dummyOrder.Id = order.Id;
+                dummyOrder2.Id = oldestOrder.Id;
+                int oldestAmount = oldestOrder.Amount;
                 oldestOrder.Amount -= order.Amount;
-                order.Amount -= oldestOrder.Amount;
+                order.Amount -= oldestAmount;
+                Console.WriteLine("MatchOrder: oldestOrder.amount: " + oldestOrder.Amount + ", order.Amount: " + order.Amount);
                 if (oldestOrder.Amount < 0) oldestOrder.Amount = 0;
                 if (order.Amount < 0) order.Amount = 0;
                 EditOrder(order);
                 EditOrder(oldestOrder);
-
-                NotifyClients(Operation.Notify,dummyOrder);
+                
 
                 if (oldestOrder.Amount <= 0)
                 {
+                    NotifyClients(Operation.Notify, dummyOrder2);
                     FulfillOrder(order.Source,oldestOrder);     //we fully bought someone's sell order
                 }
 
                 if (order.Amount <= 0)
                 {
+                    NotifyClients(Operation.Notify, dummyOrder);
+                    NotifyClients(Operation.Remove, dummyOrder);
                     FulfillOrder(oldestOrder.Source, order);     //someone fully sold to our buy order
                     break;
                 }
+               
+
                 oldestOrder = FindOldestOrder(OrderType.Sell, order.Source.Nickname);
+
             }
 
         } //As the seller
@@ -613,25 +619,34 @@ public class API : MarshalByRefObject, IAPI
             while (oldestOrder != null)
             {
                 DOrder dummyOrder = new DOrder(order.Source, order.Amount, 0, OrderType.Buy, new DateTime(1, 1, 1));
+                DOrder dummyOrder2 = new DOrder(oldestOrder.Source, oldestOrder.Amount, 0, OrderType.Sell, new DateTime(1, 1, 1));
+                PurchaseDiginotes(order.Source, order.Amount, oldestOrder.Source);
+
+                dummyOrder.Id = order.Id;
+                dummyOrder2.Id = oldestOrder.Id;
+                int oldestAmount = oldestOrder.Amount;
                 oldestOrder.Amount -= order.Amount;
-                order.Amount -= oldestOrder.Amount;
+                order.Amount -= oldestAmount;
                 if (oldestOrder.Amount < 0) oldestOrder.Amount = 0;
                 if (order.Amount < 0) order.Amount = 0;
                 EditOrder(order);
                 EditOrder(oldestOrder);
 
-                NotifyClients(Operation.Notify, dummyOrder);
-
                 if (oldestOrder.Amount <= 0)
                 {
+                    NotifyClients(Operation.Notify, dummyOrder2);
                     FulfillOrder(order.Source, oldestOrder);     //we fully sold to someone's buy order
                 }
 
                 if (order.Amount <= 0)
                 {
+                    NotifyClients(Operation.Notify, dummyOrder);
+                    NotifyClients(Operation.Remove, dummyOrder);
                     FulfillOrder(oldestOrder.Source, order);     //someone fully bought to our sell order
                     break;
                 }
+               // NotifyClients(Operation.Notify, dummyOrder);
+
                 oldestOrder = FindOldestOrder(OrderType.Buy, order.Source.Nickname);
             }
         }
