@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.Runtime.Remoting;
 using System.Collections;
 using System.Timers;
+using System.Threading;
 
 namespace Client
 {
@@ -25,6 +26,7 @@ namespace Client
         delegate ListViewItem[] LVFindDelegate(string key, bool searchAllSubItems);
         delegate void ChCommDelegate(DOrder order);
         delegate void LvRemDelegate(DOrder order);
+        AlterDelegate DelRepeater;
 
         public Client()
         {
@@ -35,7 +37,8 @@ namespace Client
 
             _evRepeater = new AlterEventRepeater();
             _evRepeater.alterEvent += new AlterDelegate(OperationHandler);
-            api.alterEvent += new AlterDelegate(_evRepeater.Repeater);
+            DelRepeater = new AlterDelegate(_evRepeater.Repeater);
+            api.alterEvent += DelRepeater;
         }
 
         public void OperationHandler(Operation op, DOrder order)
@@ -76,7 +79,7 @@ namespace Client
         {
             var lvAdd = new LvAddDelegate(itemListView.Items.Add);
             if(order.Type==OrderType.Sell)
-                diginotesLbl.Text = (api.GetDiginotesByUser(this.userSession).FindAll(o => o.IsForSale == false).Count - order.Amount).ToString();
+                diginotesLbl.Text = (api.GetDiginotesByUser(this.userSession).FindAll(o => o.IsForSale == false).Count).ToString();
             ListViewItem lvItem = new ListViewItem(new string[] { order.Id.ToString(), order.Type.ToString(), order.Value.ToString(), order.Amount.ToString(), (order.Value * order.Amount).ToString(), order.Status.ToString(), order.Date.ToString() });
             Invoke(lvAdd, new object[] { lvItem });
         }
@@ -116,6 +119,7 @@ namespace Client
                 if (item.SubItems[0].Text.Equals(order.Id.ToString()))
                 {
                     item.SubItems[3].Text = order.Amount.ToString();
+                    item.SubItems[4].Text = (order.Value * order.Amount).ToString();
                 }
             }
         }
@@ -138,10 +142,12 @@ namespace Client
                 {
                     aTimer.Stop();
                     api.ChangeAllUserOrders(this.userSession, api.ExchangeValue);
-                    
+                    int amount;
                     foreach (ListViewItem item in itemListView.Items) //sets all order's exchange value to new value
                     {
+                        amount = Int32.Parse(item.SubItems[3].ToString());
                         item.SubItems[2].Text = newValue.ToString();
+                        item.SubItems[4].Text = (api.ExchangeValue * amount).ToString();
                     }
                 }
                 else if (dialogResult == DialogResult.No)
@@ -161,14 +167,16 @@ namespace Client
 
         private void RemoveHandler(DOrder order)
         {
+            //MessageBox.Show("RemoveHandler: "+order.ToString());
             notifyUI(order);
-            foreach (ListViewItem item in itemListView.Items)
+            itemListView.Clear();
+            MessageBox.Show("Active orders:" + api.ActiveOrders.Count);
+            List<DOrder> aux = api.ActiveOrders.FindAll(o => o.Source.Nickname.Equals(userSession.Nickname));
+            foreach (DOrder o in aux)
             {
-                if (order.Id.ToString().Equals(item.Text))
-                {
-                    item.Remove();
-                    break;
-                }
+                var lvAdd = new LvAddDelegate(itemListView.Items.Add);
+                ListViewItem lvItem = new ListViewItem(new string[] { o.Id.ToString(), o.Type.ToString(), o.Value.ToString(), o.Amount.ToString(), (o.Value * o.Amount).ToString(), o.Status.ToString(), o.Date.ToString() });
+                Invoke(lvAdd, new object[] { lvItem });
             }
         }
 
@@ -251,7 +259,7 @@ namespace Client
                 {
                     MessageBox.Show("Order action not allowed", "Diginote Exchange System");
                 }
-                if (!Int32.TryParse(this.textBox6.Text, out amount))
+                else if (!Int32.TryParse(this.textBox6.Text, out amount))
                 {
                     MessageBox.Show("Order amount parse error", "Diginote Exchange System");
                 }
@@ -283,6 +291,7 @@ namespace Client
         private void logout(object sender, FormClosedEventArgs e)
         {
             api.logout(ref userSession);
+            api.alterEvent -= DelRepeater;
         }
 
         private void itemListView_ItemActivate(object sender, EventArgs e)
@@ -295,7 +304,7 @@ namespace Client
             editor.ShowDialog(this);
 
             //logica de negocio
-            if (editor.updated)
+            if (editor.updated == 1)
             {
                 if (editor.type == "Sell" && editor.value > valor)
                 {
@@ -315,7 +324,7 @@ namespace Client
                 itemListView.SelectedItems[0].SubItems[2].Text = editor.value.ToString();
                 api.EditOrder(tempOrder);
             }
-            else
+            else if (editor.updated == 2)
             {
                 int quantidade = Int32.Parse(itemListView.SelectedItems[0].SubItems[3].Text.ToString());
                 OrderType tipoOrdem = (OrderType)Enum.Parse(typeof(OrderType), tipo);

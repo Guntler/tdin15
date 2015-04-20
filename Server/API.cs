@@ -246,7 +246,17 @@ public class API : MarshalByRefObject, IAPI
             note = new Diginote(us);
             notes.Add(note);
         }
-
+        var aux = GetActiveOrders().FindAll(o => o.Source.Nickname.Equals(us.Nickname));
+        var totalAmount = 0;
+        foreach (DOrder o in aux)
+        {
+            if (o.Type == OrderType.Sell)
+                totalAmount += o.Amount;
+        }
+        for (int i = 0; i < totalAmount; i++)
+        {
+            notes[i].IsForSale = true;
+        }
         return notes;
     }
 
@@ -291,19 +301,21 @@ public class API : MarshalByRefObject, IAPI
         }
     }
 
-    public void PurchaseDiginotes(User owner, int amt, User buyer)
+    public void PurchaseDiginotes(User owner, int amt, User dest)
     {
         for (var i = 0; i < amt; i++)
         {
-            string sql = "Update Diginote SET owner = '" + buyer.Nickname + "' where id = '" + owner.wallet[0].Id + "'";
-            owner.wallet[0].Owner = buyer;
-            owner.wallet[0].IsForSale = false;
-            buyer.wallet.Add(owner.wallet[0]);
-            owner.wallet.RemoveAt(0);
+            var aux = GetDiginotesByUser(owner);
+            string sql = "Update Diginote SET owner = '" + dest.Nickname + "' where id = '" + aux[0].Id + "'";
+            dest.wallet.Add(aux[0]);
+            aux.RemoveAt(0);
 
             SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
             command.ExecuteNonQuery();
-        }   
+        }
+        Console.WriteLine("owner getDiginotes count: " + GetDiginotesByUser(owner).Count);
+        Console.WriteLine("dest getDiginotes count: " + GetDiginotesByUser(dest).Count);
+        Console.WriteLine("purchasediginotes: amt ->"+amt);
     }
 
     public void DeleteDiginote(long id)
@@ -594,15 +606,15 @@ public class API : MarshalByRefObject, IAPI
 
                 if (oldestOrder.Amount <= 0)
                 {
-                    NotifyClients(Operation.Notify, dummyOrder2);
                     FulfillOrder(order.Source,oldestOrder);     //we fully bought someone's sell order
+                    NotifyClients(Operation.Notify, dummyOrder2);
                 }
 
                 if (order.Amount <= 0)
                 {
+                    FulfillOrder(oldestOrder.Source, order);     //someone fully sold to our buy order
                     NotifyClients(Operation.Notify, dummyOrder);
                     NotifyClients(Operation.Remove, dummyOrder);
-                    FulfillOrder(oldestOrder.Source, order);     //someone fully sold to our buy order
                     break;
                 }
                
@@ -634,15 +646,15 @@ public class API : MarshalByRefObject, IAPI
 
                 if (oldestOrder.Amount <= 0)
                 {
-                    NotifyClients(Operation.Notify, dummyOrder2);
                     FulfillOrder(order.Source, oldestOrder);     //we fully sold to someone's buy order
+                    NotifyClients(Operation.Notify, dummyOrder2);
                 }
 
                 if (order.Amount <= 0)
                 {
+                    FulfillOrder(oldestOrder.Source, order);     //someone fully bought to our sell order
                     NotifyClients(Operation.Notify, dummyOrder);
                     NotifyClients(Operation.Remove, dummyOrder);
-                    FulfillOrder(oldestOrder.Source, order);     //someone fully bought to our sell order
                     break;
                 }
                // NotifyClients(Operation.Notify, dummyOrder);

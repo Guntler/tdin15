@@ -40,8 +40,8 @@
             this.label2 = new System.Windows.Forms.Label();
             this.loginPanel = new System.Windows.Forms.Panel();
             this.textBox5 = new System.Windows.Forms.TextBox();
-            this.textBox4 = new System.Windows.Forms.TextBox();
             this.loginButton = new System.Windows.Forms.Button();
+            this.textBox4 = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.ExchangePanel = new System.Windows.Forms.Panel();
@@ -193,13 +193,6 @@
             this.textBox5.Size = new System.Drawing.Size(116, 20);
             this.textBox5.TabIndex = 7;
             // 
-            // textBox4
-            // 
-            this.textBox4.Location = new System.Drawing.Point(77, 63);
-            this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(116, 20);
-            this.textBox4.TabIndex = 8;
-            // 
             // loginButton
             // 
             this.loginButton.Location = new System.Drawing.Point(102, 214);
@@ -209,6 +202,13 @@
             this.loginButton.Text = "Login";
             this.loginButton.UseVisualStyleBackColor = true;
             this.loginButton.Click += new System.EventHandler(this.button2_Click);
+            // 
+            // textBox4
+            // 
+            this.textBox4.Location = new System.Drawing.Point(77, 63);
+            this.textBox4.Name = "textBox4";
+            this.textBox4.Size = new System.Drawing.Size(116, 20);
+            this.textBox4.TabIndex = 8;
             // 
             // label7
             // 
@@ -298,8 +298,8 @@
             // 
             // columnHeader4
             // 
-            this.columnHeader4.Text = "Total";
-            this.columnHeader4.Width = 48;
+            this.columnHeader4.Text = "Total Cost";
+            this.columnHeader4.Width = 62;
             // 
             // columnHeader2
             // 
@@ -309,7 +309,7 @@
             // columnHeader3
             // 
             this.columnHeader3.Text = "Date";
-            this.columnHeader3.Width = 180;
+            this.columnHeader3.Width = 165;
             // 
             // UserLbl
             // 
@@ -480,9 +480,9 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(491, 274);
+            this.Controls.Add(this.ExchangePanel);
             this.Controls.Add(this.registerPanel);
             this.Controls.Add(this.loginPanel);
-            this.Controls.Add(this.ExchangePanel);
             this.Name = "Client";
             this.Text = "Diginote Exchange System";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.logout);

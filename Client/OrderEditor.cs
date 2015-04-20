@@ -15,7 +15,7 @@ namespace Client
         public int id { get; private set; }
         public string type { get; private set; }
         public double value { get; private set; }
-        public bool updated { get; private set; }
+        public int updated { get; private set; }
         public OrderEditor()
         {
             InitializeComponent();
@@ -27,7 +27,7 @@ namespace Client
             this.id = id;
             this.type = tipo;
             this.value = valor;
-            this.updated = false;
+            this.updated = 0;
             idLbl.Text = this.id.ToString();
             Order_Type.Text = this.type;
             textBox1.Text = this.value.ToString();
@@ -42,13 +42,13 @@ namespace Client
                 MessageBox.Show("Order value parse error", "OrderEditor");
             }
             this.value = aux;
-            this.updated = true;
+            this.updated = 1;
             this.Close();
         }
 
         private void cancelButton_Click(object sender, EventArgs e)
         {
-            this.updated = false;
+            this.updated = 2;
             this.Close();
         }
     }

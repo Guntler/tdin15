@@ -190,7 +190,7 @@ public interface IAPI
 
     void PutDiginotesForSale(User owner, int amt);
 
-    void PurchaseDiginotes(User owner, int amt, User buyer);
+    void PurchaseDiginotes(User owner, int amt, User dest);
 
     void DeleteDiginote(long id);
 
