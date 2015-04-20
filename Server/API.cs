@@ -244,6 +244,7 @@ public class API : MarshalByRefObject, IAPI
         {
             Diginote note = null;
             note = new Diginote(us);
+            note.Id = Convert.ToInt32(reader["id"].ToString());
             notes.Add(note);
         }
         var aux = GetActiveOrders().FindAll(o => o.Source.Nickname.Equals(us.Nickname));
@@ -268,7 +269,7 @@ public class API : MarshalByRefObject, IAPI
         while (reader.Read())
         {
             Diginote note = null;
-            User owner = GetUserByName(reader["id"].ToString());
+            User owner = GetUserByName(reader["owner"].ToString());
             if(owner!=null)
                 note = new Diginote(owner);
             else
@@ -307,11 +308,12 @@ public class API : MarshalByRefObject, IAPI
         {
             var aux = GetDiginotesByUser(owner);
             string sql = "Update Diginote SET owner = '" + dest.Nickname + "' where id = '" + aux[0].Id + "'";
-            dest.wallet.Add(aux[0]);
-            aux.RemoveAt(0);
-
             SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
             command.ExecuteNonQuery();
+
+            dest.wallet.Add(aux[0]);
+            aux.RemoveAt(0);
+            
         }
         Console.WriteLine("owner getDiginotes count: " + GetDiginotesByUser(owner).Count);
         Console.WriteLine("dest getDiginotes count: " + GetDiginotesByUser(dest).Count);

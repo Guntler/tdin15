@@ -21,3 +21,15 @@ C:\Users\pbpdi_000\Documents\tdin15\Client\obj\Debug\Client.Client.resources
 C:\Users\pbpdi_000\Documents\tdin15\Client\obj\Debug\Client.Properties.Resources.resources
 C:\Users\pbpdi_000\Documents\tdin15\Client\obj\Debug\Client.csproj.GenerateResource.Cache
 C:\Users\pbpdi_000\Documents\tdin15\Client\obj\Debug\Client.OrderEditor.resources
+\\192.168.50.233\redirection\ei11132\Desktop\Projectos\tdin15\Client\bin\Debug\Client.exe.config
+\\192.168.50.233\redirection\ei11132\Desktop\Projectos\tdin15\Client\bin\Debug\Client.exe
+\\192.168.50.233\redirection\ei11132\Desktop\Projectos\tdin15\Client\bin\Debug\Client.pdb
+\\192.168.50.233\redirection\ei11132\Desktop\Projectos\tdin15\Client\bin\Debug\Common.dll
+\\192.168.50.233\redirection\ei11132\Desktop\Projectos\tdin15\Client\bin\Debug\Common.pdb
+\\192.168.50.233\redirection\ei11132\Desktop\Projectos\tdin15\Client\obj\Debug\Client.csprojResolveAssemblyReference.cache
+\\192.168.50.233\redirection\ei11132\Desktop\Projectos\tdin15\Client\obj\Debug\Client.Client.resources
+\\192.168.50.233\redirection\ei11132\Desktop\Projectos\tdin15\Client\obj\Debug\Client.OrderEditor.resources
+\\192.168.50.233\redirection\ei11132\Desktop\Projectos\tdin15\Client\obj\Debug\Client.Properties.Resources.resources
+\\192.168.50.233\redirection\ei11132\Desktop\Projectos\tdin15\Client\obj\Debug\Client.csproj.GenerateResource.Cache
+\\192.168.50.233\redirection\ei11132\Desktop\Projectos\tdin15\Client\obj\Debug\Client.exe
+\\192.168.50.233\redirection\ei11132\Desktop\Projectos\tdin15\Client\obj\Debug\Client.pdb
