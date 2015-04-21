@@ -34,10 +34,10 @@ public class API : MarshalByRefObject, IAPI
         RegisteredNotes = new List<Diginote>();
         RegisteredTransactions = new List<DTransaction>();
         RegisteredUsers = new Dictionary<string, User>();
-        ExchangeValue = 1.00;
         m_dbConnection = new SQLiteConnection("Data Source=../../../database.db;Version=3;");
         m_dbConnection.Open();
         this.ActiveOrders = this.GetActiveOrders();
+        ExchangeValue = GetExchangeValueDB();
         loggedInUsers = new HashSet<User>();
         logPath = "Server Log:" + getTime();
         Console.WriteLine("File path:"+logPath);
@@ -52,6 +52,34 @@ public class API : MarshalByRefObject, IAPI
     static string getTime()
     {
         return DateTime.UtcNow.ToString("yyyy/MM/dd-HH':'mm':'ss");
+    }
+
+    private double GetExchangeValueDB()
+    {
+        double value = 1.00;
+        string sql = "Select value from System";
+        SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
+        SQLiteDataReader reader = command.ExecuteReader();
+        while (reader.Read())
+        {
+            Console.WriteLine("GetExchangeValueDB reader: " + reader["value"]);
+            if (!Double.TryParse(reader["value"].ToString(), out value))
+            {
+                Console.WriteLine("GetExchangeValueDB failed to parse the value");
+                return 1.00;
+            }
+            Console.WriteLine("GetExchangeValueDB, value: "+value);
+            return value;
+        }
+        return value;
+    }
+
+    private void SetExchangeValueDB(double value)
+    {
+        string sql = "Update System set value="+value.ToString().Replace(',', '.');
+        SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
+        command.ExecuteNonQuery();
+        Console.WriteLine("New exchange value: "+GetExchangeValueDB());
     }
 
     void NotifyClients(Operation op, DOrder order)
@@ -524,7 +552,12 @@ public class API : MarshalByRefObject, IAPI
     public void EditOrder(DOrder order)
     {
         ChangeOrderDB(order);
-
+        if (order.Value != GetExchangeValueDB())
+        {
+            Console.WriteLine("EditOrder values are different order: "+order.Value+" vs database: "+GetExchangeValueDB()+";"+this.ExchangeValue);
+            SetExchangeValueDB(order.Value);
+            this.ExchangeValue = GetExchangeValueDB();
+        }
         NotifyClients(Operation.Change, order);
     }
 
@@ -610,6 +643,7 @@ public class API : MarshalByRefObject, IAPI
                 {
                     FulfillOrder(order.Source,oldestOrder);     //we fully bought someone's sell order
                     NotifyClients(Operation.Notify, dummyOrder2);
+                    Console.WriteLine("Match order, seller order progress: "+dummyOrder2.ToString());
                 }
 
                 if (order.Amount <= 0)
@@ -650,6 +684,7 @@ public class API : MarshalByRefObject, IAPI
                 {
                     FulfillOrder(order.Source, oldestOrder);     //we fully sold to someone's buy order
                     NotifyClients(Operation.Notify, dummyOrder2);
+                    Console.WriteLine("Match order, buyer order progress: " + dummyOrder2.ToString());
                 }
 
                 if (order.Amount <= 0)

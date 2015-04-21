@@ -87,12 +87,13 @@ namespace Client
         private void notifyUI(DOrder order)
         {
             diginotesLbl.Text = api.GetDiginotesByUser(this.userSession).FindAll(o => o.IsForSale == false).Count.ToString();
-            DOrder aux = api.ActiveOrders.Find(o => o.Id == order.Id);
             UpdateExchangePanel(api.ActiveOrders);
-            if (aux == null)
-                return;
-            MessageBox.Show("notifyUI\nOrder.Amount: "+order.Amount+"\naux.Amount: "+aux.Amount);
-            MessageBox.Show("Order of id:" + order.Id + " has been updated.\n"+(order.Type == OrderType.Buy ?"Bought ":"Sold ") + (order.Amount - aux.Amount) + " diginotes\n");
+            MessageBox.Show("NotifyUI: found match->" + api.ActiveOrders.Exists(o => o.Id == order.Id));
+            if(api.ActiveOrders.Exists(o => o.Id == order.Id)){
+                DOrder aux = api.ActiveOrders.Find(o => o.Id == order.Id);
+                MessageBox.Show("notifyUI\nOrder.Amount: " + order.Amount + "\naux.Amount: " + aux.Amount);
+                MessageBox.Show("Order of id:" + order.Id + " has been updated.\n" + (order.Type == OrderType.Buy ? "Bought " : "Sold ") + (order.Amount - aux.Amount) + " diginotes\n");
+            }
         }
 
         private void OnTimedEvent(object source, ElapsedEventArgs e)
@@ -127,11 +128,9 @@ namespace Client
 
         private void ChangeHandler(DOrder order)
         {
-
             string newValue = String.Format("{0:0.00}", api.ExchangeValue);
             if (!newValue.Equals(ExchangeValueLbl.Text)) //mudança de exchangeValue
             {
-
                 System.Timers.Timer aTimer = new System.Timers.Timer();
                 aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
                 aTimer.Interval = 1000;
@@ -170,7 +169,7 @@ namespace Client
             //MessageBox.Show("RemoveHandler: "+order.ToString());
             notifyUI(order);
             itemListView.Clear();
-            MessageBox.Show("Active orders:" + api.ActiveOrders.Count);
+            //MessageBox.Show("Active orders:" + api.ActiveOrders.Count);
             List<DOrder> aux = api.ActiveOrders.FindAll(o => o.Source.Nickname.Equals(userSession.Nickname));
             foreach (DOrder o in aux)
             {
@@ -309,10 +308,12 @@ namespace Client
                 if (editor.type == "Sell" && editor.value > valor)
                 {
                     MessageBox.Show("Value must be lower or equal to " + valor, "Diginote Exchange System");
+                    return;
                 }
-                else if (editor.type == "Buy" && editor.value < valor)
+                if (editor.type == "Buy" && editor.value < valor)
                 {
                     MessageBox.Show("Value must be greater or equal to " + valor, "Diginote Exchange System");
+                    return;
                 }
                 //update order
                 int quantidade = Int32.Parse(itemListView.SelectedItems[0].SubItems[3].Text.ToString());
@@ -320,8 +321,8 @@ namespace Client
                 DateTime tempo = DateTime.Parse(itemListView.SelectedItems[0].SubItems[6].Text.ToString());
                 DOrder tempOrder = new DOrder(userSession, quantidade, editor.value, tipoOrdem, tempo);
                 tempOrder.Id = id;
-                //MessageBox.Show("Update:\n" + tempOrder.ToString());
                 itemListView.SelectedItems[0].SubItems[2].Text = editor.value.ToString();
+                MessageBox.Show("Valid update, new order: "+tempOrder.ToString());
                 api.EditOrder(tempOrder);
             }
             else if (editor.updated == 2)

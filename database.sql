@@ -4,6 +4,7 @@ drop table if exists DTransaction;
 drop table if exists transStatusEnum;
 drop table if exists transTypeEnum;
 drop table if exists Diginote;
+drop table if exists System;
 
 CREATE TABLE transTypeEnum (id INTEGER PRIMARY KEY AUTOINCREMENT, transType TEXT);
 INSERT INTO transTypeEnum(transType) VALUES('BUY'), ('SELL');
@@ -11,6 +12,11 @@ INSERT INTO transTypeEnum(transType) VALUES('BUY'), ('SELL');
 CREATE TABLE transStatusEnum (id INTEGER PRIMARY KEY AUTOINCREMENT, transStatus TEXT);
 INSERT INTO transStatusEnum(transStatus) VALUES('ACTIVE'), ('FULFILLED'), ('CANCELLED');
 
+CREATE TABLE System (
+	value REAL NOT NULL
+);
+
+INSERT INTO System(value) VALUES('1,00');
 
 CREATE TABLE User (
 	id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL ,

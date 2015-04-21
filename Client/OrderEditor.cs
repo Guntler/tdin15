@@ -40,7 +40,14 @@ namespace Client
             {
                 this.textBox1.Text = "";
                 MessageBox.Show("Order value parse error", "OrderEditor");
+                return;
             }
+            if (aux <= 0.0)
+            {
+                MessageBox.Show("Order value must be greater than 0", "OrderEditor");
+                return;
+            }
+
             this.value = aux;
             this.updated = 1;
             this.Close();

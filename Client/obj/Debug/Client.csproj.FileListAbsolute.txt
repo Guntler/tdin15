@@ -33,3 +33,4 @@ C:\Users\pbpdi_000\Documents\tdin15\Client\obj\Debug\Client.OrderEditor.resource
 \\192.168.50.233\redirection\ei11132\Desktop\Projectos\tdin15\Client\obj\Debug\Client.csproj.GenerateResource.Cache
 \\192.168.50.233\redirection\ei11132\Desktop\Projectos\tdin15\Client\obj\Debug\Client.exe
 \\192.168.50.233\redirection\ei11132\Desktop\Projectos\tdin15\Client\obj\Debug\Client.pdb
+C:\Users\Pedro\documents\visual studio 2013\Projects\Diginote Exchange System\Client\obj\Debug\Client.OrderEditor.resources
