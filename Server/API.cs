@@ -39,8 +39,8 @@ public class API : MarshalByRefObject, IAPI
         this.ActiveOrders = this.GetActiveOrders();
         ExchangeValue = GetExchangeValueDB();
         loggedInUsers = new HashSet<User>();
-        logPath = "Server Log:" + getTime();
-        Console.WriteLine("File path:"+logPath);
+        logPath = "Server log " + getTime() + ".txt";
+        Console.WriteLine("File path: "+logPath);
         //maybe ask clients for their database files
     }
 
@@ -51,7 +51,7 @@ public class API : MarshalByRefObject, IAPI
 
     static string getTime()
     {
-        return DateTime.UtcNow.ToString("yyyy/MM/dd-HH':'mm':'ss");
+        return DateTime.UtcNow.ToString("yyyy-MM-dd-HH'-'mm'-'ss");
     }
 
     private double GetExchangeValueDB()
@@ -62,13 +62,10 @@ public class API : MarshalByRefObject, IAPI
         SQLiteDataReader reader = command.ExecuteReader();
         while (reader.Read())
         {
-            Console.WriteLine("GetExchangeValueDB reader: " + reader["value"]);
             if (!Double.TryParse(reader["value"].ToString(), out value))
             {
-                Console.WriteLine("GetExchangeValueDB failed to parse the value");
                 return 1.00;
             }
-            Console.WriteLine("GetExchangeValueDB, value: "+value);
             return value;
         }
         return value;
@@ -79,7 +76,6 @@ public class API : MarshalByRefObject, IAPI
         string sql = "Update System set value="+value.ToString().Replace(',', '.');
         SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
         command.ExecuteNonQuery();
-        Console.WriteLine("New exchange value: "+GetExchangeValueDB());
     }
 
     void NotifyClients(Operation op, DOrder order)
@@ -95,12 +91,10 @@ public class API : MarshalByRefObject, IAPI
                     try
                     {
                         handler(op, order);
-                        Console.WriteLine("Invoking event handler");
                     }
                     catch (Exception e)
                     {
                         alterEvent -= handler;
-                        Console.WriteLine("Exception: Removed an event handler: "+e.Message);
                     }
                 }).Start();
             }
@@ -123,8 +117,10 @@ public class API : MarshalByRefObject, IAPI
         if (user.password.Equals(pass) && loggedInUsers.Add(user))
         {
             user.wallet = GetDiginotesByUser(user);
+            logEntry(username,DateTime.Now.ToString(),"login","success");
             return user;
         }
+        logEntry(username, DateTime.Now.ToString(), "login", "fail, either logged in or password not a match");
         return null;
 
         /*if (!RegisteredUsers.ContainsKey(username)) //user does not exist
@@ -137,31 +133,31 @@ public class API : MarshalByRefObject, IAPI
     public int RegisterUser(ref User us)
     {
 
-        if (GetUserByName(us.Nickname)!=null)
+        if (GetUserByName(us.Nickname) != null)
+        {
+            logEntry(us.Nickname, DateTime.Now.ToString(), "registered", "username already exists");
             return 1; //username already exists
+        }
         else
         {
             string sql = "Insert into User (name, Nickname, password) values ('" + us.name + "','" + us.Nickname + "','" + us.password + "')";
             SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
             command.ExecuteNonQuery();
-            
+
             sql = @"select last_insert_rowid()";
             command = new SQLiteCommand(sql, m_dbConnection);
             us.Id = (long)command.ExecuteScalar();
-            Console.WriteLine(@"New id: " + us.Id);
 
             RegisteredUsers.Add(us.Nickname, us);
 
             sql = "select * from User";
             command = new SQLiteCommand(sql, m_dbConnection);
             SQLiteDataReader reader = command.ExecuteReader();
-            /*while (reader.Read())
-                Console.WriteLine("Name: " + reader["name"] + "\tnickname: " + reader["Nickname"] + "\tpassword: " + reader["password"]);*/
-
-           //Console.WriteLine("User registered:\n" + us);
 
             for (int i = 0; i < 100; i++)
                 RegisterDiginote(us);
+
+            logEntry(us.Nickname, DateTime.Now.ToString(), "registered", "sucessfully");
 
             return 0;
         }
@@ -179,10 +175,7 @@ public class API : MarshalByRefObject, IAPI
         SQLiteDataReader reader = command.ExecuteReader();
         while (reader.Read())
         {
-            Console.WriteLine("Could not remove User " + nickname);
         }
-
-        Console.WriteLine("Successfuly removed User " + nickname);
     }
 
     public User GetUserByName(string nickname)
@@ -193,11 +186,9 @@ public class API : MarshalByRefObject, IAPI
         while (reader.Read())
         {
             User user = new User(reader["name"].ToString(), reader["Nickname"].ToString(), reader["password"].ToString());
-            //Console.WriteLine("Found: " + "Name: " + reader["name"] + "\tnickname: " + reader["Nickname"] + "\tpassword: " + reader["password"]);
             return user;
         }
 
-        //Console.WriteLine("No users matched the query " + nickname);
         return null;
     }
 
@@ -226,22 +217,21 @@ public class API : MarshalByRefObject, IAPI
     public void logout(ref User us) {
         if (loggedInUsers.Contains(us))
         {
+            logEntry(us.Nickname, DateTime.Now.ToString(), "logout", "success");
             loggedInUsers.Remove(us);
         }
+        else
+            logEntry(us.Nickname, DateTime.Now.ToString(), "logout", "failed, was not logged in");
     }
 
     #endregion User
 
     #region Diginote
 
-    /**
-     * TODO Add Error Checking
-     */
     public void RegisterDiginote(User owner)
     {
         if (GetUserByName(owner.Nickname) == null)
         {
-            Console.WriteLine(@"The user appointed as owner of this Diginote does not exist.");
             return;
         }
 
@@ -255,7 +245,6 @@ public class API : MarshalByRefObject, IAPI
         sql = @"select last_insert_rowid()";
         command = new SQLiteCommand(sql, m_dbConnection);
         note.Id = (long)command.ExecuteScalar();
-        //Console.WriteLine(@"New note id: " + note.Id);
         
         RegisteredNotes.Add(note);
     }
@@ -302,14 +291,11 @@ public class API : MarshalByRefObject, IAPI
                 note = new Diginote(owner);
             else
             {
-                Console.WriteLine(@"The user specified as the owner no longer exists.");
                 return null;
             }
-            Console.WriteLine(@"Found: " + note.ToString());
             return note;
         }
 
-        Console.WriteLine(@"No notes matched the query " + id);
         return null;
     }
 
@@ -343,9 +329,6 @@ public class API : MarshalByRefObject, IAPI
             aux.RemoveAt(0);
             
         }
-        Console.WriteLine("owner getDiginotes count: " + GetDiginotesByUser(owner).Count);
-        Console.WriteLine("dest getDiginotes count: " + GetDiginotesByUser(dest).Count);
-        Console.WriteLine("purchasediginotes: amt ->"+amt);
     }
 
     public void DeleteDiginote(long id)
@@ -360,10 +343,7 @@ public class API : MarshalByRefObject, IAPI
         SQLiteDataReader reader = command.ExecuteReader();
         while (reader.Read())
         {
-            Console.WriteLine("Could not remove Diginote " + id);
         }
-
-        Console.WriteLine("Successfuly removed Diginote " + id);
     }
 
     #endregion Diginote
@@ -386,14 +366,14 @@ public class API : MarshalByRefObject, IAPI
         }
         catch (SQLiteException sqle)
         {
-            Console.WriteLine(sqle.ToString());
+            logEntry(order.Source.Nickname, DateTime.Now.ToString(), "registered order of id: " + order.Id, "fail, reason: "+sqle.ToString());
         }
         finally {
+            logEntry(order.Source.Nickname, DateTime.Now.ToString(), "registered order of id: "+order.Id, "success");
             this.ActiveOrders.Add(order);
             sql = @"select last_insert_rowid()";
             command = new SQLiteCommand(sql, m_dbConnection);
             order.Id = (long)command.ExecuteScalar();
-            Console.WriteLine(@"New order id: " + order.Id);
 
             RegisteredOrders.Add(order);
             PutDiginotesForSale(order.Source, order.Amount);
@@ -411,13 +391,11 @@ public class API : MarshalByRefObject, IAPI
         SQLiteDataReader reader = command.ExecuteReader();
         while (reader.Read())
         {
-            Console.WriteLine("In read order");
             DOrder order = null;
             User source = GetUserByName(reader["source"].ToString());
             OrderType type;
             if (!Enum.IsDefined(typeof(OrderType), (Convert.ToInt32(reader["type"].ToString())) - 1))
             {
-                Console.WriteLine(@"Type of order was in an incorrect format.");
                 continue;
             }
             type = ((OrderType)(Convert.ToInt32(reader["type"].ToString())) - 1);
@@ -425,7 +403,6 @@ public class API : MarshalByRefObject, IAPI
             OrderStatus status;
             if (!Enum.IsDefined(typeof(OrderStatus), (Convert.ToInt32(reader["status"].ToString())) - 1))
             {
-                Console.WriteLine(@"Status of order was in an incorrect format.");
                 continue;
             }
             status = ((OrderStatus)(Convert.ToInt32(reader["status"].ToString())) - 1);
@@ -433,7 +410,6 @@ public class API : MarshalByRefObject, IAPI
             //NOTE: Double.tryparse may cause problems - refer to here if anything happens
             if (source == null)
             {
-                Console.WriteLine(@"The user specified as the owner no longer exists.");
                 return null;
             }
 
@@ -441,19 +417,15 @@ public class API : MarshalByRefObject, IAPI
             double value;
             if (!Double.TryParse(reader["value"].ToString(), out value))
             {
-                Console.WriteLine(@"Could not parse value of Order.");
                 return null;
             }
 
             string date = reader["date"].ToString();
-            Console.WriteLine(type.ToString());
             long orderId = Convert.ToInt64(reader["id"].ToString());
             order = new DOrder(source, amount, value, type,DateTime.Parse(date)) { Id = orderId, Status = status };
-            Console.WriteLine(@"Found: " + order.ToString());
             return order;
         }
 
-        Console.WriteLine(@"No orders matched the query " + id);
         return null;
     }
 
@@ -511,19 +483,18 @@ public class API : MarshalByRefObject, IAPI
     public void ChangeAllUserOrders(User user, double newValue)
     {
         List<DOrder> list = ActiveOrders.FindAll(o => o.Source.Nickname.Equals(user.Nickname));
-        Console.WriteLine("ChangeAllUserOrders size: " + list.Count);
         foreach (DOrder o in list)
         {
             o.Value=newValue;
             ChangeOrderDB(o);
         }
+        logEntry("system", DateTime.Now.ToString(), "updated exchange value of all orders from user: " + user.Nickname, "success");
         NotifyClients(Operation.Change,new DOrder(user,0,0,OrderType.Buy,new DateTime(1,1,1)));
     }
 
     public void DeleteAllUserOrders(User user)
     {
         List<DOrder> list = ActiveOrders.FindAll(o => o.Source.Nickname.Equals(user.Nickname));
-        Console.WriteLine("DeleteAllUserOrders size: " + list.Count);
         foreach (DOrder o in list)
         {
             if (!o.Value.Equals(ExchangeValue))
@@ -531,6 +502,7 @@ public class API : MarshalByRefObject, IAPI
                 CancelOrderDB(o);
                 NotifyClients(Operation.Change, o);
             }
+            logEntry("system", DateTime.Now.ToString(), "user: " + user.Nickname+" declined new exchange value: "+ExchangeValue+" removing all orders... ", "success");
         }
     }
 
@@ -558,7 +530,8 @@ public class API : MarshalByRefObject, IAPI
             this.ExchangeValue = GetExchangeValueDB();
             NotifyClients(Operation.ChangeAll, order);
         }
-            NotifyClients(Operation.Change, order);
+        NotifyClients(Operation.Change, order);
+        logEntry(order.Source.Nickname, DateTime.Now.ToString(), "edited order of id: "+order.Id+"with new exchange value: " + ExchangeValue, "success");
     }
 
     public void DeleteOrder(DOrder order)
@@ -573,10 +546,7 @@ public class API : MarshalByRefObject, IAPI
         SQLiteDataReader reader = command.ExecuteReader();
         while (reader.Read())
         {
-            Console.WriteLine("Could not remove Order " + order.Id);
         }
-
-        Console.WriteLine("Successfuly removed Order " + order.Id);
     }
 
     public void CancelOrderDB(DOrder order)
@@ -596,6 +566,8 @@ public class API : MarshalByRefObject, IAPI
         TakeDiginotesFromSale(order.Source, order.Amount);
         CancelOrderDB(order);
         NotifyClients(Operation.Change,order);
+        logEntry(order.Source.Nickname, DateTime.Now.ToString(), "cancelled order of id: "+order.Id, "success");
+
     }
 
     public void FulfillOrder(User buyer, DOrder order, int originalAmount)
@@ -612,6 +584,9 @@ public class API : MarshalByRefObject, IAPI
         RegisterTransaction(new DTransaction(buyer,order.Value,order, originalAmount));
 
         NotifyClients(Operation.Remove, order);
+
+        logEntry("system", DateTime.Now.ToString(), "fulfilled order of id: "+order.Id+" transactioning: "+originalAmount+" to "+buyer.Nickname, "success");
+
     }
 
     public void MatchOrder(DOrder order)
@@ -633,7 +608,6 @@ public class API : MarshalByRefObject, IAPI
                 int currentAmount = order.Amount;
                 oldestOrder.Amount -= order.Amount;
                 order.Amount -= oldestAmount;
-                Console.WriteLine("MatchOrder: oldestOrder.amount: " + oldestOrder.Amount + ", order.Amount: " + order.Amount);
                 if (oldestOrder.Amount < 0) oldestOrder.Amount = 0;
                 if (order.Amount < 0) order.Amount = 0;
                 EditOrder(order);
@@ -645,7 +619,6 @@ public class API : MarshalByRefObject, IAPI
                     FulfillOrder(order.Source, oldestOrder, oldestAmount);     //we fully bought someone's sell order
                     NotifyClients(Operation.Notify, dummyOrder2);
                     NotifyClients(Operation.Change, dummyOrder);
-                    Console.WriteLine("Match order, seller order progress: "+dummyOrder2.ToString());
                 }
 
                 if (order.Amount <= 0)
@@ -688,7 +661,6 @@ public class API : MarshalByRefObject, IAPI
                     FulfillOrder(order.Source, oldestOrder, oldestAmount);     //we fully sold to someone's buy order
                     NotifyClients(Operation.Notify, dummyOrder2);
                     NotifyClients(Operation.Change, dummyOrder);
-                    Console.WriteLine("Match order, buyer order progress: " + dummyOrder2.ToString());
                 }
 
                 if (order.Amount <= 0)
@@ -729,11 +701,14 @@ public class API : MarshalByRefObject, IAPI
 
         SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
         if (command.ExecuteNonQuery() < 0)
-            Console.WriteLine("Error registering a Transaction.");
+        {
+            logEntry("system", DateTime.Now.ToString(), "registering transaction from " + transaction.Order.Source.Nickname + " to " + transaction.Destination.Nickname + " of amount " + transaction.Amount, "failed");
+        }
         else
-            Console.WriteLine("Successfully registered a Transaction.");
-
-        RegisteredTransactions.Add(transaction);
+        {
+            RegisteredTransactions.Add(transaction);
+            logEntry("system", DateTime.Now.ToString(), "registering transaction from " + transaction.Order.Source.Nickname + " to " + transaction.Destination.Nickname + " of amount " + transaction.Amount, "success");
+        }
     }
 
     public DTransaction GetTransaction(long id)
@@ -749,23 +724,17 @@ public class API : MarshalByRefObject, IAPI
             DOrder order = GetOrder(Convert.ToInt64(reader["id"].ToString()));
             if (order == null)
             {
-                Console.WriteLine(@"The Order of this Transaction could not be found.");
                 return null;
             }
 
             if (dest == null)
             {
-                Console.WriteLine(@"The user specified as the Destination no longer exists.");
                 return null;
             }
 
             trans = new DTransaction(dest, Double.Parse(reader["value"].ToString()), order, Int32.Parse(reader["amount"].ToString()));
-
-            Console.WriteLine(@"Found: " + trans.ToString());
             return trans;
         }
-
-        Console.WriteLine(@"No Transactions matched the query " + id);
         return null;
     }
 
@@ -782,10 +751,7 @@ public class API : MarshalByRefObject, IAPI
         SQLiteDataReader reader = command.ExecuteReader();
         while (reader.Read())
         {
-            Console.WriteLine("Could not remove Transaction pertaining to Order " + transaction.Order.Id);
         }
-
-        Console.WriteLine("Successfuly removed Transaction pertaining to Order " + transaction.Order.Id);
     }
 
     #endregion Transaction

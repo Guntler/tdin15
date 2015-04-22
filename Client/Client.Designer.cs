@@ -40,10 +40,10 @@
             this.label2 = new System.Windows.Forms.Label();
             this.loginPanel = new System.Windows.Forms.Panel();
             this.textBox5 = new System.Windows.Forms.TextBox();
-            this.loginButton = new System.Windows.Forms.Button();
             this.textBox4 = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
+            this.loginButton = new System.Windows.Forms.Button();
             this.ExchangePanel = new System.Windows.Forms.Panel();
             this.itemListView = new System.Windows.Forms.ListView();
             this.Id = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -89,7 +89,7 @@
             this.registerPanel.Location = new System.Drawing.Point(0, 0);
             this.registerPanel.Margin = new System.Windows.Forms.Padding(0);
             this.registerPanel.Name = "registerPanel";
-            this.registerPanel.Size = new System.Drawing.Size(243, 274);
+            this.registerPanel.Size = new System.Drawing.Size(243, 336);
             this.registerPanel.TabIndex = 0;
             // 
             // label5
@@ -174,15 +174,15 @@
             // loginPanel
             // 
             this.loginPanel.Controls.Add(this.textBox5);
-            this.loginPanel.Controls.Add(this.loginButton);
             this.loginPanel.Controls.Add(this.textBox4);
             this.loginPanel.Controls.Add(this.label7);
             this.loginPanel.Controls.Add(this.label6);
             this.loginPanel.Controls.Add(this.label2);
+            this.loginPanel.Controls.Add(this.loginButton);
             this.loginPanel.Location = new System.Drawing.Point(243, 0);
             this.loginPanel.Margin = new System.Windows.Forms.Padding(0);
             this.loginPanel.Name = "loginPanel";
-            this.loginPanel.Size = new System.Drawing.Size(248, 274);
+            this.loginPanel.Size = new System.Drawing.Size(248, 336);
             this.loginPanel.TabIndex = 1;
             // 
             // textBox5
@@ -192,16 +192,6 @@
             this.textBox5.PasswordChar = '*';
             this.textBox5.Size = new System.Drawing.Size(116, 20);
             this.textBox5.TabIndex = 7;
-            // 
-            // loginButton
-            // 
-            this.loginButton.Location = new System.Drawing.Point(102, 214);
-            this.loginButton.Name = "loginButton";
-            this.loginButton.Size = new System.Drawing.Size(75, 23);
-            this.loginButton.TabIndex = 10;
-            this.loginButton.Text = "Login";
-            this.loginButton.UseVisualStyleBackColor = true;
-            this.loginButton.Click += new System.EventHandler(this.button2_Click);
             // 
             // textBox4
             // 
@@ -227,6 +217,16 @@
             this.label6.Size = new System.Drawing.Size(55, 13);
             this.label6.TabIndex = 6;
             this.label6.Text = "Nickname";
+            // 
+            // loginButton
+            // 
+            this.loginButton.Location = new System.Drawing.Point(102, 214);
+            this.loginButton.Name = "loginButton";
+            this.loginButton.Size = new System.Drawing.Size(75, 23);
+            this.loginButton.TabIndex = 10;
+            this.loginButton.Text = "Login";
+            this.loginButton.UseVisualStyleBackColor = true;
+            this.loginButton.Click += new System.EventHandler(this.button2_Click);
             // 
             // ExchangePanel
             // 
@@ -400,7 +400,6 @@
             this.label12.Size = new System.Drawing.Size(141, 13);
             this.label12.TabIndex = 12;
             this.label12.Text = "Number of Diginotes owned:";
-            this.label12.Click += new System.EventHandler(this.label12_Click);
             // 
             // ExchangeValueLbl
             // 
@@ -481,9 +480,9 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(491, 274);
-            this.Controls.Add(this.ExchangePanel);
             this.Controls.Add(this.registerPanel);
             this.Controls.Add(this.loginPanel);
+            this.Controls.Add(this.ExchangePanel);
             this.Name = "Client";
             this.Text = "Diginote Exchange System";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.logout);

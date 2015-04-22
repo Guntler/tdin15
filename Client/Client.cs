@@ -29,6 +29,8 @@ namespace Client
         AlterDelegate DelRepeater;
         delegate void timerDelegate(System.Timers.Timer aTimer);
         delegate void timerEventDelegate();
+        Popup questionBox;
+        System.Timers.Timer aTimer;
         public Client()
         {
             RemotingConfiguration.Configure("Client.exe.config", false);
@@ -110,40 +112,43 @@ namespace Client
         private void ChangeAllHandler(DOrder order)
         {
             string newValue = String.Format("{0:0.00}", api.ExchangeValue);
-            MessageBox.Show("ChangeAllHandler |"+newValue+"| vs |"+ExchangeValueLbl.Text+"|");
             var aux = api.GetActiveOrders().FindAll(o=> o.Source.Nickname.Equals(userSession.Nickname) && !o.Value.Equals(api.ExchangeValue));
-            MessageBox.Show("count: "+aux.Count);
             if (aux.Count>0) //mudança de exchangeValue
             {
-                MessageBox.Show("ExchangeValues are different!");
-                Thread t = new Thread(new ThreadStart(DialogBox));
-                t.Start();
-                Thread.Sleep(5000);
-                if (t.IsAlive) {
-                    t.Abort();
+                questionBox = new Popup("Would you accept the new exchange value: " + api.ExchangeValue + "?\n");
+                aTimer = new System.Timers.Timer();
+                aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
+                aTimer.Interval = 60000;
+                aTimer.Enabled = true;
+                aTimer.Start();
+                questionBox.ShowDialog(this);
+
+                if (questionBox.accept)
+                {
+                    aTimer.Stop();
                     api.ChangeAllUserOrders(this.userSession, api.ExchangeValue);
+                    UpdateExchangePanel();
+                }
+                else
+                {
+                    aTimer.Stop();
+                    api.DeleteAllUserOrders(this.userSession);
                     UpdateExchangePanel();
                 }
             }
         }
 
-        void DialogBox()
+        void OnTimedEvent(object source, ElapsedEventArgs e) {
+            aTimer.Stop();
+            var chChomm = new timerEventDelegate(closeBox);
+            Invoke(chChomm, new object[] {});
+        }
+
+        void closeBox()
         {
-            DialogResult dialogResult = MessageBox.Show("Would you accept the new exchange value: " + api.ExchangeValue + "?\n", "New exchange value!", MessageBoxButtons.YesNo);
-            
-            if (dialogResult == DialogResult.Yes)
-            {
-                MessageBox.Show("You said yes");
-                api.ChangeAllUserOrders(this.userSession, api.ExchangeValue);
-                UpdateExchangePanel();
-            }
-            else if (dialogResult == DialogResult.No)
-            {
-                MessageBox.Show("You said no");
-                api.DeleteAllUserOrders(this.userSession);
-                UpdateExchangePanel();
-            }
-            return;
+            questionBox.Close();
+            api.ChangeAllUserOrders(this.userSession, api.ExchangeValue);
+            UpdateExchangePanel();
         }
 
         private void RemoveHandler(DOrder ord)
@@ -184,6 +189,7 @@ namespace Client
                 diginotesLbl.Text = api.GetDiginotesByUser(this.userSession).FindAll(o => o.IsForSale == false).Count.ToString();
                 UpdateExchangePanel();
                 showExchangePanel();
+                ChangeAllHandler(new DOrder(this.userSession,0,0,OrderType.Sell,DateTime.Now)); //force update value of order
             }
             else
             {
