@@ -68,12 +68,15 @@ public class DTransaction
     public User Destination { get; set; }
     public DateTime Date { get; set; }
 
-    public DTransaction(User destination, double value, DOrder order)
+    public int Amount { get; set; }
+
+    public DTransaction(User destination, double value, DOrder order, int amount)
     {
         Destination = destination;
         Value = value;
         Order = order;
         Date = DateTime.Today;
+        Amount = amount;
     }
 
 }
@@ -204,6 +207,8 @@ public interface IAPI
 
     void ChangeAllUserOrders(User user, double newValue);
 
+    List<DOrder> GetActiveOrders();
+
     void ChangeOrderDB(DOrder order);
 
     void EditOrder(DOrder order);
@@ -214,7 +219,7 @@ public interface IAPI
 
     void CancelOrder(DOrder order);
 
-    void FulfillOrder(User buyer, DOrder order);
+    void FulfillOrder(User buyer, DOrder order, int originalAmount);
 
     void MatchOrder(DOrder order);
 

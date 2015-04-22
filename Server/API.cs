@@ -378,7 +378,7 @@ public class API : MarshalByRefObject, IAPI
         try
         {
             sql = "Insert into DOrder (type,status,date,source,value,amount) values ('"
-                        + (((int)order.Type) + 1) + "','" + (((int)order.Status) + 1) + "','" + order.Date.ToString("yyyyMMddHHmmss") + "','" + order.Source.Nickname + "','" + order.Value + "','"
+                        + (((int)order.Type) + 1) + "','" + (((int)order.Status) + 1) + "','" + order.Date.ToString("yyyyMMddHHmmss") + "','" + order.Source.Nickname + "','" + order.Value.ToString().Replace(',', '.') +"','"
                         + order.Amount + "')";
 
             command = new SQLiteCommand(sql, m_dbConnection);
@@ -457,7 +457,7 @@ public class API : MarshalByRefObject, IAPI
         return null;
     }
 
-    private List<DOrder> GetActiveOrders()
+    public List<DOrder> GetActiveOrders()
     {
         string sql = "select * from DOrder where status = 1 ORDER BY id";
         SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
@@ -536,7 +536,7 @@ public class API : MarshalByRefObject, IAPI
 
     public void ChangeOrderDB(DOrder order)
     {
-        string sql = "Update DOrder SET value = '" + order.Value + "', amount = '" + order.Amount + "' where id = '" + order.Id + "'";
+        string sql = "Update DOrder SET value = '" + order.Value.ToString().Replace(',', '.') +"', amount = '" + order.Amount + "' where id = '" + order.Id + "'";
 
         SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
         command.ExecuteNonQuery();
@@ -554,11 +554,11 @@ public class API : MarshalByRefObject, IAPI
         ChangeOrderDB(order);
         if (order.Value != GetExchangeValueDB())
         {
-            Console.WriteLine("EditOrder values are different order: "+order.Value+" vs database: "+GetExchangeValueDB()+";"+this.ExchangeValue);
             SetExchangeValueDB(order.Value);
             this.ExchangeValue = GetExchangeValueDB();
+            NotifyClients(Operation.ChangeAll, order);
         }
-        NotifyClients(Operation.Change, order);
+            NotifyClients(Operation.Change, order);
     }
 
     public void DeleteOrder(DOrder order)
@@ -598,7 +598,7 @@ public class API : MarshalByRefObject, IAPI
         NotifyClients(Operation.Change,order);
     }
 
-    public void FulfillOrder(User buyer, DOrder order)
+    public void FulfillOrder(User buyer, DOrder order, int originalAmount)
     {
         
         order.Status = OrderStatus.Fulfilled;
@@ -609,7 +609,7 @@ public class API : MarshalByRefObject, IAPI
         command.ExecuteNonQuery();
 
         ActiveOrders.Remove(order);
-        RegisterTransaction(new DTransaction(buyer,order.Value,order));
+        RegisterTransaction(new DTransaction(buyer,order.Value,order, originalAmount));
 
         NotifyClients(Operation.Remove, order);
     }
@@ -623,13 +623,14 @@ public class API : MarshalByRefObject, IAPI
 
             while (oldestOrder != null)
             {
-                DOrder dummyOrder = new DOrder(order.Source,order.Amount,0,OrderType.Buy, new DateTime(1,1,1));
-                DOrder dummyOrder2 = new DOrder(oldestOrder.Source, oldestOrder.Amount, 0, OrderType.Sell, new DateTime(1, 1, 1));
-                PurchaseDiginotes(oldestOrder.Source, oldestOrder.Amount, order.Source);
+                DOrder dummyOrder = new DOrder(order.Source, Math.Min(oldestOrder.Amount, order.Amount), 0, OrderType.Buy, new DateTime(1, 1, 1));
+                DOrder dummyOrder2 = new DOrder(oldestOrder.Source, Math.Min(oldestOrder.Amount, order.Amount), 0, OrderType.Sell, new DateTime(1, 1, 1));
+                PurchaseDiginotes(oldestOrder.Source, Math.Min(oldestOrder.Amount,order.Amount), order.Source);
 
                 dummyOrder.Id = order.Id;
                 dummyOrder2.Id = oldestOrder.Id;
                 int oldestAmount = oldestOrder.Amount;
+                int currentAmount = order.Amount;
                 oldestOrder.Amount -= order.Amount;
                 order.Amount -= oldestAmount;
                 Console.WriteLine("MatchOrder: oldestOrder.amount: " + oldestOrder.Amount + ", order.Amount: " + order.Amount);
@@ -641,14 +642,15 @@ public class API : MarshalByRefObject, IAPI
 
                 if (oldestOrder.Amount <= 0)
                 {
-                    FulfillOrder(order.Source,oldestOrder);     //we fully bought someone's sell order
+                    FulfillOrder(order.Source, oldestOrder, oldestAmount);     //we fully bought someone's sell order
                     NotifyClients(Operation.Notify, dummyOrder2);
+                    NotifyClients(Operation.Change, dummyOrder);
                     Console.WriteLine("Match order, seller order progress: "+dummyOrder2.ToString());
                 }
 
                 if (order.Amount <= 0)
                 {
-                    FulfillOrder(oldestOrder.Source, order);     //someone fully sold to our buy order
+                    FulfillOrder(oldestOrder.Source, order, currentAmount);     //someone fully sold to our buy order
                     NotifyClients(Operation.Notify, dummyOrder);
                     NotifyClients(Operation.Remove, dummyOrder);
                     break;
@@ -666,13 +668,14 @@ public class API : MarshalByRefObject, IAPI
 
             while (oldestOrder != null)
             {
-                DOrder dummyOrder = new DOrder(order.Source, order.Amount, 0, OrderType.Buy, new DateTime(1, 1, 1));
-                DOrder dummyOrder2 = new DOrder(oldestOrder.Source, oldestOrder.Amount, 0, OrderType.Sell, new DateTime(1, 1, 1));
-                PurchaseDiginotes(order.Source, order.Amount, oldestOrder.Source);
+                DOrder dummyOrder = new DOrder(order.Source, Math.Min(oldestOrder.Amount, order.Amount), 0, OrderType.Sell, new DateTime(1, 1, 1));
+                DOrder dummyOrder2 = new DOrder(oldestOrder.Source, Math.Min(oldestOrder.Amount, order.Amount), 0, OrderType.Buy, new DateTime(1, 1, 1));
+                PurchaseDiginotes(order.Source, Math.Min(oldestOrder.Amount, order.Amount), oldestOrder.Source);
 
                 dummyOrder.Id = order.Id;
                 dummyOrder2.Id = oldestOrder.Id;
                 int oldestAmount = oldestOrder.Amount;
+                int currentAmount = order.Amount;
                 oldestOrder.Amount -= order.Amount;
                 order.Amount -= oldestAmount;
                 if (oldestOrder.Amount < 0) oldestOrder.Amount = 0;
@@ -682,19 +685,19 @@ public class API : MarshalByRefObject, IAPI
 
                 if (oldestOrder.Amount <= 0)
                 {
-                    FulfillOrder(order.Source, oldestOrder);     //we fully sold to someone's buy order
+                    FulfillOrder(order.Source, oldestOrder, oldestAmount);     //we fully sold to someone's buy order
                     NotifyClients(Operation.Notify, dummyOrder2);
+                    NotifyClients(Operation.Change, dummyOrder);
                     Console.WriteLine("Match order, buyer order progress: " + dummyOrder2.ToString());
                 }
 
                 if (order.Amount <= 0)
                 {
-                    FulfillOrder(oldestOrder.Source, order);     //someone fully bought to our sell order
+                    FulfillOrder(oldestOrder.Source, order, currentAmount);     //someone fully bought to our sell order
                     NotifyClients(Operation.Notify, dummyOrder);
                     NotifyClients(Operation.Remove, dummyOrder);
                     break;
                 }
-               // NotifyClients(Operation.Notify, dummyOrder);
 
                 oldestOrder = FindOldestOrder(OrderType.Buy, order.Source.Nickname);
             }
@@ -721,8 +724,8 @@ public class API : MarshalByRefObject, IAPI
 
     public void RegisterTransaction(DTransaction transaction)
     {
-        string sql = "Insert into DTransaction (id,destination,value) values ('"
-                        + transaction.Order.Id + "','" + transaction.Destination.Nickname + "','" + transaction.Value + "')";
+        string sql = "Insert into DTransaction (id,destination,value, amount) values ('"
+                        + transaction.Order.Id + "','" + transaction.Destination.Nickname + "','" + transaction.Value.ToString().Replace(',', '.') +"','"+transaction.Amount+"')";
 
         SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
         if (command.ExecuteNonQuery() < 0)
@@ -756,7 +759,7 @@ public class API : MarshalByRefObject, IAPI
                 return null;
             }
 
-            trans = new DTransaction(dest, Double.Parse(reader["value"].ToString()), order);
+            trans = new DTransaction(dest, Double.Parse(reader["value"].ToString()), order, Int32.Parse(reader["amount"].ToString()));
 
             Console.WriteLine(@"Found: " + trans.ToString());
             return trans;

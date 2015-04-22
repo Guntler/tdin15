@@ -400,6 +400,7 @@
             this.label12.Size = new System.Drawing.Size(141, 13);
             this.label12.TabIndex = 12;
             this.label12.Text = "Number of Diginotes owned:";
+            this.label12.Click += new System.EventHandler(this.label12_Click);
             // 
             // ExchangeValueLbl
             // 
