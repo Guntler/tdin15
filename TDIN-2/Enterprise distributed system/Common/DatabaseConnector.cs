@@ -3,7 +3,7 @@ using MongoDB.Driver;
 
 namespace Common
 {
-    class DatabaseConnector
+    public class DatabaseConnector
     {
         public IMongoDatabase Database { get; set; }
         public DatabaseConnector(string username, string password, string databaseName)

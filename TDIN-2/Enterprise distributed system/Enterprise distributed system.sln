@@ -27,6 +27,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "WebStore", "http://localhos
 		Release.AspNetCompiler.Debug = "False"
 		SlnRelativePath = "WebStore\"
 		DefaultWebSiteLanguage = "Visual C#"
+		StartServerOnDebug = "false"
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Warehouse", "Warehouse\Warehouse.csproj", "{BB6F2047-14E5-4109-99AF-7D15F536866C}"

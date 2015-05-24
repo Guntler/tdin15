@@ -57,6 +57,7 @@
     <Compile Include="Book.cs" />
     <Compile Include="Client.cs" />
     <Compile Include="DatabaseConnector.cs" />
+    <Compile Include="Message.cs" />
     <Compile Include="Order.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace Common
 {
     [DataContract]
-    class Order
+    public class Order
     {
         [DataMember]
-        public ObjectId Id { get; set; }
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id { get; set; }
 
         [DataMember]
         public string Title { get; set; }
@@ -29,7 +32,7 @@ namespace Common
             var machine = random.Next(0, 16777215);
             var pid = (short) random.Next(0, 32768);
             var increment = random.Next(0, 16777215);
-            Id = new ObjectId(timestamp, machine, pid, increment);
+            Id = new ObjectId(timestamp, machine, pid, increment).ToString();
             Title = title;
             Quantity = quantity;
             ClientId = clientId;
@@ -38,7 +41,7 @@ namespace Common
     }
 
     [DataContract(Name = "State")]
-    class StateEnum
+    public class StateEnum
     {
         public StateEnum()
         {

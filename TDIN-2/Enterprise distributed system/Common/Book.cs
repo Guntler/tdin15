@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace Common
 {
     [DataContract]
-    class Book
+    public class Book
     {
-        [DataMember] public ObjectId Id { get; set; }
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        [DataMember] public string Id { get; set; }
         [DataMember] public string Title { get; set; }
         [DataMember] public string Author { get; set; }
         [DataMember] public int Price { get; set; }
@@ -18,7 +21,7 @@ namespace Common
             var machine = random.Next(0, 16777215);
             var pid = (short)random.Next(0, 32768);
             var increment = random.Next(0, 16777215);
-            Id = new ObjectId(timestamp, machine, pid, increment);
+            Id = new ObjectId(timestamp, machine, pid, increment).ToString();
             Title = title;
             Author = author;
             Price = price;
