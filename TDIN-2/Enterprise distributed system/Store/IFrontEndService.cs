@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.IO;
 using System.ServiceModel;
 using System.ServiceModel.Web;
 using Common;
@@ -16,7 +15,7 @@ namespace Store
             ResponseFormat = WebMessageFormat.Json,
             BodyStyle = WebMessageBodyStyle.Bare,
             UriTemplate = "/login")]
-        string Login(Client cliente);
+        Stream Login(Client cliente);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -24,7 +23,7 @@ namespace Store
             ResponseFormat = WebMessageFormat.Json,
             BodyStyle = WebMessageBodyStyle.Bare,
             UriTemplate = "/register")]
-        AjaxDictionary<string, object> Register(Client cliente);
+        Stream Register(Client cliente);
         /*
         //CRUD OPs Order
         [OperationContract]

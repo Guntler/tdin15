@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.IO;
 using System.Net;
-using System.ServiceModel;
 using System.ServiceModel.Web;
+using System.Text;
+using System.Web.Script.Serialization;
 using Common;
-using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Store
@@ -14,11 +14,13 @@ namespace Store
     // NOTE: In order to launch WCF Test Client for testing this service, please select FrontEndService.svc or FrontEndService.svc.cs at the Solution Explorer and start debugging.
     public class FrontEndService : IFrontEndService
     {
-        private AjaxDictionary<string, object> _result;
 
-        public string Login(Client cliente)
+        private Dictionary<string, object> _result;
+        private JavaScriptSerializer s = new JavaScriptSerializer();
+
+        public Stream Login(Client cliente)
         {
-            _result = new AjaxDictionary<string, object>();
+            _result = new Dictionary<string, object>();
             try
             {
                 DatabaseConnector client = new DatabaseConnector("tdin", "tdin", "store");
@@ -29,7 +31,8 @@ namespace Store
                 {
                     if (list.Result[0].Password.Equals(cliente.Password))
                     {
-                        _result.Add("Client", list.Result[0]);
+                        _result.Add("Client",list.Result[0]);
+                        _result.Add("Token", 0009);
                     }
                     else
                     {
@@ -49,13 +52,15 @@ namespace Store
                 _result.Add("Error", true);
                 _result.Add("Reason", e.Message);
             }
-            return _result.ToString();   
+            string result = s.Serialize(_result);
+            if (WebOperationContext.Current != null)
+                WebOperationContext.Current.OutgoingResponse.ContentType = "application/json; charset=utf-8";
+            return new MemoryStream(Encoding.UTF8.GetBytes(result));
         }
 
-        public AjaxDictionary<string, object> Register(Client cliente)
+        public Stream Register(Client cliente)
         {
-            Console.WriteLine("Entered in store register:\n");
-            _result = new AjaxDictionary<string, object>();
+            _result = new Dictionary<string, object>();
             try
             {
                 if (cliente.Username.Equals("") || cliente.Password.Equals(""))
@@ -69,17 +74,16 @@ namespace Store
                     throw new Exception("User already exists");
 
                 Client aux = new Client(cliente.Username, cliente.Password);
-                var result = collection.InsertOneAsync(aux);
-                result.Wait();
-                Console.WriteLine("aqui: \n"+aux);
-                if (result.IsCompleted)
+                var queryResult = collection.InsertOneAsync(aux);
+                queryResult.Wait();
+                if (queryResult.IsCompleted)
                 {
                     _result.Add("Text", "User registered sucessfully");
                     _result.Add("Data", aux);
                 }
                 else
                 {
-                    throw new Exception(string.Format("Failed to register user: \n{0}", result));    
+                    throw new Exception(string.Format("Failed to register user: \n{0}", queryResult));    
                 }
             }
             catch (Exception e)
@@ -92,7 +96,10 @@ namespace Store
                 _result.Add("Error", true);
                 _result.Add("Reason", e.Message);
             }
-            return _result;
+            string result = s.Serialize(_result);
+            if (WebOperationContext.Current != null)
+                WebOperationContext.Current.OutgoingResponse.ContentType = "application/json; charset=utf-8";
+            return new MemoryStream(Encoding.UTF8.GetBytes(result));
 
 
         }

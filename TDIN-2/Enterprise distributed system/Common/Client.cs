@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
 
 namespace Common
 {
-    [Serializable]
     [DataContract]
     public class Client
     {
         [DataMember(Name = "id")]
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
         public string Id;
         [DataMember(Name = "Email")]
         public string Email { get; set; }
@@ -47,11 +43,6 @@ namespace Common
             if (Email.Equals(""))
                 return "email";
             return "true";
-        }
-
-        public override string ToString()
-        {
-            return String.Format("ToString Id: {0}, Username: {1}, Password: {2}, Address: {3}, Email: {4}", Id.ToJson(), Username, Password, Password, Address);
         }
     }
 }
