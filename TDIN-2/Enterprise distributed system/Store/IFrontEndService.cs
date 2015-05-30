@@ -23,6 +23,7 @@ namespace Store
             ResponseFormat = WebMessageFormat.Json,
             BodyStyle = WebMessageBodyStyle.Bare,
             UriTemplate = "api/login")]
+        [Description("Validates login for a given user and returns a session token used for authentication of the api")]
         Stream Login(Client cliente);
 
         [OperationContract]
@@ -31,14 +32,22 @@ namespace Store
             ResponseFormat = WebMessageFormat.Json,
             BodyStyle = WebMessageBodyStyle.Bare,
             UriTemplate = "api/register")]
+        [Description("Registers a client, all fields (username, password, email, address) must be filled")]
         Stream Register(Client cliente);
 
         [OperationContract]
         [WebInvoke(Method = "GET",
             UriTemplate = "api/books/{token}", 
             ResponseFormat=WebMessageFormat.Json)]
-        [Description("Gets all books available.")]
+        [Description("Lists all books available.")]
         Stream GetBooks(string token);
+
+        [OperationContract]
+        [WebInvoke(Method = "GET",
+            UriTemplate = "api/books/{title}/{token}",
+            ResponseFormat = WebMessageFormat.Json)]
+        [Description("Returns a book with the specified title.")]
+        Stream GetBookByTitle(string title, string token);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -47,6 +56,19 @@ namespace Store
             BodyStyle = WebMessageBodyStyle.Bare,
             UriTemplate = "api/book")]
         Stream AddBook(Book book);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+           RequestFormat = WebMessageFormat.Json,
+           ResponseFormat = WebMessageFormat.Json,
+           BodyStyle = WebMessageBodyStyle.Bare,
+           UriTemplate = "api/order")]
+        [Description("")]
+        Stream AddOrder(Order order, string token);
+
+        [OperationContract]
+        Stream GetOrderByClient(string clientId);
+
         /*
         //CRUD OPs Order
         [OperationContract]
@@ -60,13 +82,7 @@ namespace Store
         
         [OperationContract]
         Order ChangeOrder(Order newOrder, string id);
-
-        //List all books
-        [OperationContract]
-        Collection<Book> GetBooks();
-
-        [OperationContract]
-        Book GetBookByTitle(string title);
+        
          * */
     }
 }
