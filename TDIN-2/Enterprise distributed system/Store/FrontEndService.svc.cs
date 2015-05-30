@@ -25,7 +25,7 @@ namespace Store
             if (WebOperationContext.Current != null)
             {
                 OutgoingWebResponseContext response = WebOperationContext.Current.OutgoingResponse;
-                string path = "www/" + (string.IsNullOrEmpty(content) ? "index.html" : content);
+                string path = "public/" + (string.IsNullOrEmpty(content) ? "index.html" : content);
                 string extension = Path.GetExtension(path);
                 string contentType = string.Empty;
 
@@ -43,6 +43,9 @@ namespace Store
                         break;
                     case ".js":
                         contentType = "application/javascript";
+                        break;
+                    case ".css":
+                        contentType = "text/css";
                         break;
                 }
 
