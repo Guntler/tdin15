@@ -5,7 +5,7 @@ using MongoDB.Bson;
 namespace Common
 {
     [DataContract]
-    public class Client
+    public class Client : IComparable<Client>
     {
         [DataMember(Name = "id")]
         public string Id;
@@ -43,6 +43,29 @@ namespace Common
             if (Email.Equals(""))
                 return "email";
             return "true";
+        }
+
+        public override string ToString()
+        {
+            return String.Format("Username: {0}, Password:{1}, Email:{2}, Address:{3}", Username, Password, Email, Address);
+        }
+
+        public int CompareTo(Client other)
+        {
+            return String.Compare(Username, other.Username, StringComparison.Ordinal);
+        }
+
+        public override int GetHashCode()
+        {
+            if (Username == null) return 0;
+            return Username.GetHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            Client other = (Client)obj;
+            Console.WriteLine("Equals: "+this.ToString()+" "+other.ToString());
+            return other.Username == this.Username;
         }
     }
 }

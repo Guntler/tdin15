@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.ComponentModel;
+using System.IO;
 using System.ServiceModel;
 using System.ServiceModel.Web;
 using Common;
@@ -24,6 +26,20 @@ namespace Store
             BodyStyle = WebMessageBodyStyle.Bare,
             UriTemplate = "/register")]
         Stream Register(Client cliente);
+
+        [OperationContract]
+        [WebGet(UriTemplate="/books/{token}", 
+            ResponseFormat=WebMessageFormat.Json)]
+        [Description("Gets all books available.")]
+        Stream GetBooks(string guid);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json,
+            BodyStyle = WebMessageBodyStyle.Bare,
+            UriTemplate = "/book")]
+        Stream AddBook(Book book);
         /*
         //CRUD OPs Order
         [OperationContract]
