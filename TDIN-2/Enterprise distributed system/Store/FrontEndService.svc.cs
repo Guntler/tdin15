@@ -16,7 +16,7 @@ namespace Store
     // NOTE: In order to launch WCF Test Client for testing this service, please select FrontEndService.svc or FrontEndService.svc.cs at the Solution Explorer and start debugging.
     public class FrontEndService : IFrontEndService
     {
-        public static readonly Dictionary<Guid, Client> LoggedinUsers = new Dictionary<Guid, Client>(); 
+        public static readonly Dictionary<Guid, Client> LoggedinUsers = new Dictionary<Guid, Client>();
         private Dictionary<string, object> _result;
         private JavaScriptSerializer s = new JavaScriptSerializer();
 
@@ -105,7 +105,9 @@ namespace Store
                     {
                         throw new Exception("Invalid credentials");
                     }
-                }else{
+                }
+                else
+                {
                     throw new Exception("No match found");
                 }
             }
@@ -137,7 +139,7 @@ namespace Store
                 var collection = client.Database.GetCollection<Client>("clients");
                 var list = collection.Find(x => x.Username == cliente.Username).ToListAsync();
                 list.Wait();
-                if(list.Result.Count>0)
+                if (list.Result.Count > 0)
                     throw new Exception("User already exists");
 
                 Client aux = new Client(cliente.Username, cliente.Password);
@@ -150,7 +152,7 @@ namespace Store
                 }
                 else
                 {
-                    throw new Exception(string.Format("Failed to register user: \n{0}", queryResult));    
+                    throw new Exception(string.Format("Failed to register user: \n{0}", queryResult));
                 }
             }
             catch (Exception e)
@@ -179,9 +181,37 @@ namespace Store
                 Client user = validateClient(Guid.Parse(token));
                 DatabaseConnector client = new DatabaseConnector("tdin", "tdin", "store");
                 var collection = client.Database.GetCollection<Book>("books");
-                var list = collection.Find(x => x.Title !="").ToListAsync();
+                var list = collection.Find(x => x.Title != "").ToListAsync();
                 list.Wait();
-                _result.Add("Books",list.Result);
+                _result.Add("Books", list.Result);
+            }
+            catch (Exception e)
+            {
+                if (WebOperationContext.Current != null)
+                {
+                    OutgoingWebResponseContext response = WebOperationContext.Current.OutgoingResponse;
+                    response.StatusCode = HttpStatusCode.NotAcceptable;
+                }
+                _result.Add("Error", true);
+                _result.Add("Reason", e.Message);
+            }
+            string result = s.Serialize(_result);
+            if (WebOperationContext.Current != null)
+                WebOperationContext.Current.OutgoingResponse.ContentType = "application/json; charset=utf-8";
+            return new MemoryStream(Encoding.UTF8.GetBytes(result));
+        }
+
+        public Stream GetBookByTitle(string title, string token)
+        {
+            _result = new Dictionary<string, object>();
+            try
+            {
+                Client user = validateClient(Guid.Parse(token));
+                DatabaseConnector client = new DatabaseConnector("tdin", "tdin", "store");
+                var collection = client.Database.GetCollection<Book>("books");
+                var list = collection.Find(x => x.Title == title).ToListAsync();
+                list.Wait();
+                _result.Add("Book", list.Result);
             }
             catch (Exception e)
             {
@@ -216,6 +246,41 @@ namespace Store
                 else
                 {
                     throw new Exception(string.Format("Failed to register book: \n{0}", query));
+                }
+            }
+            catch (Exception e)
+            {
+                if (WebOperationContext.Current != null)
+                {
+                    OutgoingWebResponseContext response = WebOperationContext.Current.OutgoingResponse;
+                    response.StatusCode = HttpStatusCode.NotAcceptable;
+                }
+                _result.Add("Error", true);
+                _result.Add("Reason", e.Message);
+            }
+            string result = s.Serialize(_result);
+            if (WebOperationContext.Current != null)
+                WebOperationContext.Current.OutgoingResponse.ContentType = "application/json; charset=utf-8";
+            return new MemoryStream(Encoding.UTF8.GetBytes(result));
+        }
+
+        public Stream AddOrder(Order order, string token)
+        {
+            _result = new Dictionary<string, object>();
+            try
+            {
+                DatabaseConnector client = new DatabaseConnector("tdin", "tdin", "store");
+                var collection = client.Database.GetCollection<Order>("orders");
+                var query = collection.InsertOneAsync(order);
+                query.Wait();
+                if (query.IsCompleted)
+                {
+                    _result.Add("Text", "Order add sucessfully");
+                    _result.Add("Data", order);
+                }
+                else
+                {
+                    throw new Exception(string.Format("Failed to register order: \n{0}", query));
                 }
             }
             catch (Exception e)
