@@ -76,6 +76,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="FrontEndService.svc" />
+    <Content Include="index.html" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -120,16 +121,7 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>False</UseIIS>
-          <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>2667</DevelopmentServerPort>
-          <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:2667/</IISUrl>
-          <NTLMAuthentication>False</NTLMAuthentication>
-          <UseCustomServer>True</UseCustomServer>
-          <CustomServerUrl>
-          </CustomServerUrl>
-          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+          <SaveServerSettingsInUserFile>True</SaveServerSettingsInUserFile>
           <servers defaultServer="SelfHostServer">
             <server name="SelfHostServer" exePath="" cmdArgs="" url="http://localhost:2667/" workingDir="" />
           </servers>

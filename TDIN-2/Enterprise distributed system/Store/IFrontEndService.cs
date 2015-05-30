@@ -12,11 +12,17 @@ namespace Store
     public interface IFrontEndService
     {
         [OperationContract]
+        [WebInvoke(Method = "GET",
+            BodyStyle = WebMessageBodyStyle.Bare,
+            UriTemplate = "/{*content}")]
+        Stream StaticContent(string content);
+
+        [OperationContract]
         [WebInvoke(Method = "POST",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json,
             BodyStyle = WebMessageBodyStyle.Bare,
-            UriTemplate = "/login")]
+            UriTemplate = "api/login")]
         Stream Login(Client cliente);
 
         [OperationContract]
@@ -24,21 +30,22 @@ namespace Store
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json,
             BodyStyle = WebMessageBodyStyle.Bare,
-            UriTemplate = "/register")]
+            UriTemplate = "api/register")]
         Stream Register(Client cliente);
 
         [OperationContract]
-        [WebGet(UriTemplate="/books/{token}", 
+        [WebInvoke(Method = "GET",
+            UriTemplate = "api/books/{token}", 
             ResponseFormat=WebMessageFormat.Json)]
         [Description("Gets all books available.")]
-        Stream GetBooks(string guid);
+        Stream GetBooks(string token);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json,
             BodyStyle = WebMessageBodyStyle.Bare,
-            UriTemplate = "/book")]
+            UriTemplate = "api/book")]
         Stream AddBook(Book book);
         /*
         //CRUD OPs Order

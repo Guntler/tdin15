@@ -7,6 +7,7 @@ using System.ServiceModel.Web;
 using System.Text;
 using System.Web.Script.Serialization;
 using Common;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Store
@@ -18,6 +19,47 @@ namespace Store
         public static readonly Dictionary<Guid, Client> LoggedinUsers = new Dictionary<Guid, Client>(); 
         private Dictionary<string, object> _result;
         private JavaScriptSerializer s = new JavaScriptSerializer();
+
+        public Stream StaticContent(string content)
+        {
+            if (WebOperationContext.Current != null)
+            {
+                OutgoingWebResponseContext response = WebOperationContext.Current.OutgoingResponse;
+                string path = "www/" + (string.IsNullOrEmpty(content) ? "index.html" : content);
+                string extension = Path.GetExtension(path);
+                string contentType = string.Empty;
+
+                switch (extension)
+                {
+                    case ".htm":
+                    case ".html":
+                        contentType = "text/html";
+                        break;
+                    case ".jpg":
+                        contentType = "image/jpeg";
+                        break;
+                    case ".png":
+                        contentType = "image/png";
+                        break;
+                    case ".js":
+                        contentType = "application/javascript";
+                        break;
+                }
+
+                if (File.Exists(path) && !string.IsNullOrEmpty(contentType))
+                {
+                    response.ContentType = contentType;
+                    response.StatusCode = System.Net.HttpStatusCode.OK;
+                    return File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                }
+                else
+                {
+                    response.StatusCode = System.Net.HttpStatusCode.NotFound;
+                    return null;
+                }
+            }
+            return null;
+        }
 
         private Client validateClient(Guid token)
         {
@@ -126,15 +168,15 @@ namespace Store
 
         }
 
-        public Stream GetBooks(string guid)
+        public Stream GetBooks(string token)
         {
             _result = new Dictionary<string, object>();
             try
             {
-                Client user = validateClient(Guid.Parse(guid));
+                Client user = validateClient(Guid.Parse(token));
                 DatabaseConnector client = new DatabaseConnector("tdin", "tdin", "store");
                 var collection = client.Database.GetCollection<Book>("books");
-                var list = collection.Find("").ToListAsync();
+                var list = collection.Find(x => x.Title !="").ToListAsync();
                 list.Wait();
                 _result.Add("Books",list.Result);
             }
