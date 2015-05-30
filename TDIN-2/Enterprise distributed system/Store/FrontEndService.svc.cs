@@ -269,6 +269,7 @@ namespace Store
             _result = new Dictionary<string, object>();
             try
             {
+                Client user = validateClient(Guid.Parse(token));
                 DatabaseConnector client = new DatabaseConnector("tdin", "tdin", "store");
                 var collection = client.Database.GetCollection<Order>("orders");
                 var query = collection.InsertOneAsync(order);
