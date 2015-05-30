@@ -81,16 +81,19 @@ namespace Store
             _result = new Dictionary<string, object>();
             try
             {
+                Console.WriteLine("in login: "+cliente.ToString());
                 DatabaseConnector client = new DatabaseConnector("tdin", "tdin", "store");
                 var collection = client.Database.GetCollection<Client>("clients");
                 var list = collection.Find(x => x.Username == cliente.Username).ToListAsync();
                 list.Wait();
                 if (list.Result.Count == 1)
                 {
+                    Console.WriteLine("aqui: "+list.Result[0]);
                     if (list.Result[0].Password.Equals(cliente.Password))
                     {
                         if (!LoggedinUsers.ContainsValue(cliente))
                         {
+                            Console.WriteLine("Success!");
                             var newToken = Guid.NewGuid();
                             LoggedinUsers.Add(newToken, list.Result[0]);
                             _result.Add("Client", list.Result[0]);

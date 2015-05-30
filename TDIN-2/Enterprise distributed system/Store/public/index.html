@@ -42,6 +42,31 @@
 	
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+	<script type="text/javascript">
+		$("#submitbutton").click(function() {
+			var body = {};
+			body['Username'] = "test5";
+			body['Password'] = "test";
+			var json = JSON.stringify(body);
+
+			$.ajax({
+				method: "POST",
+				url: "api/login",
+				headers: { 
+					"Content-Type" : "application/json"
+				},
+				data: json,success: function(xhr,result) {
+					console.log("SUCCESS");
+					console.log(xhr);
+					console.log(result);
+				},
+				error: function(jqXHR, textStatus, errorThrown) {
+					console.log("login error: "+JSON.stringify(jqXHR)+" "+textStatus+" "+errorThrown );
+				}
+			});
+			
+		});
+	</script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="js/bootstrap.min.js"></script>
 	<script type="text/javascript">
