@@ -62,7 +62,7 @@ namespace Store
            RequestFormat = WebMessageFormat.Json,
            ResponseFormat = WebMessageFormat.Json,
            BodyStyle = WebMessageBodyStyle.Bare,
-           UriTemplate = "api/order")]
+           UriTemplate = "api/order/{token}")]
         [Description("")]
         Stream AddOrder(Order order, string token);
 

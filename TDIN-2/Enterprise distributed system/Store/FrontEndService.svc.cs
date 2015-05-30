@@ -269,6 +269,7 @@ namespace Store
             _result = new Dictionary<string, object>();
             try
             {
+                Client user = validateClient(Guid.Parse(token));
                 DatabaseConnector client = new DatabaseConnector("tdin", "tdin", "store");
                 var collection = client.Database.GetCollection<Order>("orders");
                 var query = collection.InsertOneAsync(order);
@@ -297,6 +298,11 @@ namespace Store
             if (WebOperationContext.Current != null)
                 WebOperationContext.Current.OutgoingResponse.ContentType = "application/json; charset=utf-8";
             return new MemoryStream(Encoding.UTF8.GetBytes(result));
+        }
+
+        public Stream GetOrderByClient(string clientId)
+        {
+            throw new NotImplementedException();
         }
 
         /*
