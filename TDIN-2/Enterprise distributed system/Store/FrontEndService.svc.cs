@@ -299,6 +299,11 @@ namespace Store
             return new MemoryStream(Encoding.UTF8.GetBytes(result));
         }
 
+        public Stream GetOrderByClient(string clientId)
+        {
+            throw new NotImplementedException();
+        }
+
         /*
         public Collection<Order> GetOrderByClient(string clientId)
         {
