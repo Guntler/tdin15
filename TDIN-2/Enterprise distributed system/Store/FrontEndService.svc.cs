@@ -76,6 +76,24 @@ namespace Store
             }
         }
 
+        private Book getBook(string title)
+        {
+            DatabaseConnector client = new DatabaseConnector("tdin", "tdin", "store");
+            var collection = client.Database.GetCollection<Book>("books");
+            var list = collection.Find(x => x.Title.Equals(title)).ToListAsync();
+            list.Wait();
+            if (list.Result.Count == 1)
+                return list.Result[0];
+            else if (list.Result.Count < 1)
+            {
+                throw new Exception("No record of book with title: " + title);
+            }
+            else
+            {
+                throw new Exception("something went wrong with the book registration: " + list.Result.ToArray().ToString());
+            }
+        }
+
         public Stream Login(Client cliente)
         {
             _result = new Dictionary<string, object>();
@@ -148,7 +166,7 @@ namespace Store
                         else
                         {
                             LoggedinUsers.Remove(Guid.Parse(token));
-                            _result.Add("success", "user: "+user.Username+" logged off");
+                            _result.Add("success", "user: " + user.Username + " logged off");
                         }
                     }
                     else
@@ -310,26 +328,17 @@ namespace Store
                 WebOperationContext.Current.OutgoingResponse.ContentType = "application/json; charset=utf-8";
             return new MemoryStream(Encoding.UTF8.GetBytes(result));
         }
-
-        public Stream AddOrder(Order order, string token)
+      
+        public Stream UpdateBook(Book newBook)
         {
             _result = new Dictionary<string, object>();
             try
             {
-                Client user = validateClient(Guid.Parse(token));
                 DatabaseConnector client = new DatabaseConnector("tdin", "tdin", "store");
-                var collection = client.Database.GetCollection<Order>("orders");
-                var query = collection.InsertOneAsync(order);
-                query.Wait();
-                if (query.IsCompleted)
-                {
-                    _result.Add("Text", "Order add sucessfully");
-                    _result.Add("Data", order);
-                }
-                else
-                {
-                    throw new Exception(string.Format("Failed to register order: \n{0}", query));
-                }
+                var collection = client.Database.GetCollection<Book>("books");
+                var list = collection.Find(x => x.Title == newBook.Title).ToListAsync();
+                list.Wait();
+                _result.Add("updated book", list.Result);
             }
             catch (Exception e)
             {
@@ -347,7 +356,85 @@ namespace Store
             return new MemoryStream(Encoding.UTF8.GetBytes(result));
         }
 
-        public Stream GetOrderByClient(string token)
+        public Stream AddOrder(Order order, string token)
+        {
+            _result = new Dictionary<string, object>();
+            try
+            {
+                Client user = validateClient(Guid.Parse(token));
+                DatabaseConnector client = new DatabaseConnector("tdin", "tdin", "store");
+                var collection = client.Database.GetCollection<Order>("orders");
+                var book = getBook(order.Title);
+                if (book.Quantity >= order.Quantity)
+                {
+                    var random = new Random();
+                    var timestamp = DateTime.UtcNow;
+                    var machine = random.Next(0, 16777215);
+                    var pid = (short) random.Next(0, 32768);
+                    var increment = random.Next(0, 16777215);
+                    order.Id = new ObjectId(timestamp, machine, pid, increment).ToString();
+                    order.State = new StateEnum();
+                    order.State.CurrentState = StateEnum.State.Dispatched;
+                    order.State.Date = DateTime.Now.AddDays(1);
+                    var query = collection.InsertOneAsync(order);
+                    query.Wait();
+                    if (query.IsCompleted)
+                    {
+                        _result.Add("Text", "Order add sucessfully");
+                        _result.Add("Data", order);
+                        book.Quantity -= order.Quantity;
+                        UpdateBook(book);
+                    }
+                    else
+                    {
+                        throw new Exception(string.Format("Failed to register order: \n{0}", query));
+                    }
+                }
+                else //send to mq
+                {
+                    //create message and send
+
+                    var random = new Random();
+                    var timestamp = DateTime.UtcNow;
+                    var machine = random.Next(0, 16777215);
+                    var pid = (short)random.Next(0, 32768);
+                    var increment = random.Next(0, 16777215);
+                    order.Id = new ObjectId(timestamp, machine, pid, increment).ToString();
+                    order.State = new StateEnum();
+                    order.State.CurrentState = StateEnum.State.WaitingDispatch;
+                    var query = collection.InsertOneAsync(order);
+                    query.Wait();
+                    if (query.IsCompleted)
+                    {
+                        _result.Add("Text", "Order add sucessfully");
+                        _result.Add("Data", order);
+                        book.Quantity -= order.Quantity;
+                        UpdateBook(book);
+                    }
+                    else
+                    {
+                        throw new Exception(string.Format("Failed to register order: \n{0}", query));
+                    }
+                }
+
+            }
+            catch (Exception e)
+            {
+                if (WebOperationContext.Current != null)
+                {
+                    OutgoingWebResponseContext response = WebOperationContext.Current.OutgoingResponse;
+                    response.StatusCode = HttpStatusCode.NotAcceptable;
+                }
+                _result.Add("Error", true);
+                _result.Add("Reason", e.Message);
+            }
+            string result = s.Serialize(_result);
+            if (WebOperationContext.Current != null)
+                WebOperationContext.Current.OutgoingResponse.ContentType = "application/json; charset=utf-8";
+            return new MemoryStream(Encoding.UTF8.GetBytes(result));
+        }
+
+        public Stream GetOrdersForClient(string token)
         {
             _result = new Dictionary<string, object>();
             try
@@ -375,41 +462,70 @@ namespace Store
             return new MemoryStream(Encoding.UTF8.GetBytes(result));
         }
 
-        public bool CancelOrder(string id)
+        public Stream GetOrderById(string token, string id)
         {
-            throw new NotImplementedException();
+            _result = new Dictionary<string, object>();
+            try
+            {
+                Client user = validateClient(Guid.Parse(token));
+                DatabaseConnector client = new DatabaseConnector("tdin", "tdin", "store");
+                var collection = client.Database.GetCollection<Order>("orders");
+                var list = collection.Find(x => x.Id.Equals(id)).ToListAsync();
+                list.Wait();
+                _result.Add("result", list.Result);
+            }
+            catch (Exception e)
+            {
+                if (WebOperationContext.Current != null)
+                {
+                    OutgoingWebResponseContext response = WebOperationContext.Current.OutgoingResponse;
+                    response.StatusCode = HttpStatusCode.NotAcceptable;
+                }
+                _result.Add("Error", true);
+                _result.Add("Reason", e.Message);
+            }
+            string result = s.Serialize(_result);
+            if (WebOperationContext.Current != null)
+                WebOperationContext.Current.OutgoingResponse.ContentType = "application/json; charset=utf-8";
+            return new MemoryStream(Encoding.UTF8.GetBytes(result));
         }
 
-        /*
-        public Collection<Order> GetOrderByClient(string clientId)
+        public Stream CancelOrder(string id, string token)
         {
-            throw new NotImplementedException();
+            _result = new Dictionary<string, object>();
+            try
+            {
+                Client user = validateClient(Guid.Parse(token));
+                DatabaseConnector client = new DatabaseConnector("tdin", "tdin", "store");
+                var collection = client.Database.GetCollection<Order>("orders");
+                var query = collection.FindOneAndDeleteAsync(x => x.Id == id);
+                query.Wait();
+                if (query.IsCompleted)
+                {
+                    _result.Add("Text", "Order canceled sucessfully");
+                    _result.Add("Data", query.Result);
+                }
+                else
+                {
+                    throw new Exception(string.Format("Failed to cancel order: \n{0}", query));
+                }
+            }
+            catch (Exception e)
+            {
+                if (WebOperationContext.Current != null)
+                {
+                    OutgoingWebResponseContext response = WebOperationContext.Current.OutgoingResponse;
+                    response.StatusCode = HttpStatusCode.NotAcceptable;
+                }
+                _result.Add("Error", true);
+                _result.Add("Reason", e.Message);
+            }
+            string result = s.Serialize(_result);
+            if (WebOperationContext.Current != null)
+                WebOperationContext.Current.OutgoingResponse.ContentType = "application/json; charset=utf-8";
+            return new MemoryStream(Encoding.UTF8.GetBytes(result));
         }
 
-        public Order AddOrder(string title, int quantity, string clientId)
-        {
-            throw new NotImplementedException();
-        }
 
-        public bool CancelOrder(string id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Order ChangeOrder(Order newOrder, string id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Collection<Book> GetBooks()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Book GetBookByTitle(string title)
-        {
-            throw new NotImplementedException();
-        }
-         */
     }
 }

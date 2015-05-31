@@ -11,7 +11,9 @@ namespace Common
         [DataMember(Name = "Title")]public string Title { get; set; }
         [DataMember(Name = "Author")]public string Author { get; set; }
         [DataMember(Name = "Price")]public double Price { get; set; }
-        public Book(string title, string author, int price)
+        [DataMember(Name = "Quantity")]
+        public double Quantity { get; set; }
+        public Book(string title, string author, int price, int quantity)
         {
             var random = new Random();
             var timestamp = DateTime.UtcNow;
@@ -22,6 +24,7 @@ namespace Common
             Title = title;
             Author = author;
             Price = price;
+            Quantity = quantity;
         }
     }
 }

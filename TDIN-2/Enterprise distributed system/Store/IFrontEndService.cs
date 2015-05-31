@@ -80,10 +80,22 @@ namespace Store
             UriTemplate = "api/orders/{token}",
             ResponseFormat = WebMessageFormat.Json)]
         [Description("Lists all orders made by the user identified in the token")]
-        Stream GetOrderByClient(string token);
+        Stream GetOrdersForClient(string token);
 
         [OperationContract]
-        Boolean CancelOrder(string id);
+        [WebInvoke(Method = "GET",
+            UriTemplate = "api/orders/{id}/{token}",
+            ResponseFormat = WebMessageFormat.Json)]
+        [Description("Returns the order made by the user identified in the token and id")]
+        Stream GetOrderById(string token, string id);
+
+        [OperationContract]
+        [WebInvoke(Method = "DELETE",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json,
+            BodyStyle = WebMessageBodyStyle.Bare,
+            UriTemplate = "api/order/{token}")]
+        Stream CancelOrder(string id, string token);
 
         /*
         //CRUD OPs Order

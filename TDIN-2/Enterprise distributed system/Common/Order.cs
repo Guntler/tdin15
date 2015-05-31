@@ -8,21 +8,19 @@ namespace Common
     [DataContract]
     public class Order
     {
-        [DataMember]
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
+        [DataMember (Name = "id")]
         public string Id { get; set; }
 
-        [DataMember]
+        [DataMember(Name = "Title")]
         public string Title { get; set; }
 
-        [DataMember]
+        [DataMember(Name = "Quantity")]
         public int Quantity { get; set; }
 
-        [DataMember]
+        [DataMember(Name = "ClientId")]
         public string ClientId { get; set; }
 
-        [DataMember]
+        [DataMember(Name = "State")]
         public StateEnum State { get; set; }
 
         public Order(string title, int quantity, string clientId)
