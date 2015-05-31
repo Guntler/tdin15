@@ -18,7 +18,7 @@ namespace Common
         [DataMember(Name = "Password")]
         public string Password { get; set; }
 
-        public Client(string username, string password, string address="", string email="")
+        public Client(string username, string password, string address = "", string email = "")
         {
             var random = new Random();
             var timestamp = DateTime.UtcNow;
@@ -32,17 +32,17 @@ namespace Common
             Email = email;
         }
 
-        public string IsComplete()
+        public Field IsComplete()
         {
             if (Username.Equals(""))
-                return "username";
+                return Field.Username;
             if (Password.Equals(""))
-                return "password";
+                return Field.Password;
             if (Address.Equals(""))
-                return "address";
+                return Field.Address;
             if (Email.Equals(""))
-                return "email";
-            return "true";
+                return Field.Email;
+            return Field.OK;
         }
 
         public override string ToString()
@@ -64,8 +64,14 @@ namespace Common
         public override bool Equals(object obj)
         {
             Client other = (Client)obj;
-            Console.WriteLine("Equals: "+this.ToString()+" "+other.ToString());
+            Console.WriteLine("Equals: " + this.ToString() + " " + other.ToString());
             return other.Username == this.Username;
         }
     }
+    public enum Field
+    {
+        Username, Password, Email, Address, OK
+    }
+
+
 }
