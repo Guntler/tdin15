@@ -375,6 +375,11 @@ namespace Store
             return new MemoryStream(Encoding.UTF8.GetBytes(result));
         }
 
+        public bool CancelOrder(string id)
+        {
+            throw new NotImplementedException();
+        }
+
         /*
         public Collection<Order> GetOrderByClient(string clientId)
         {

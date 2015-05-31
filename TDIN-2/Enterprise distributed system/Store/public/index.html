@@ -26,9 +26,12 @@
 		
 		</div>
 		<div class="col-md-4">
-			<div id="books" />
+			<fieldset id="bookArray">
+			</fieldset>
+			<div id="siteAlert"></div>
 		</div>
 		<div class="col-md-4">
+			<button id="submitButton" type="submit" class="btn btn-info">Submit Order</button>
 			<button id="logoutButton" type="submit" class="btn btn-danger">Log out</button>
 		</div>
 	</div>
@@ -50,13 +53,13 @@
 					console.log(xhr);
 					console.log(result);
 					for(var b in xhr.Books) {
-						$("#books").append($('<div class="alert alert-danger" role="alert">' + xhr.Books[b].Author +','+ xhr.Books[b].Id +','+ xhr.Books[b].Price +','+ xhr.Books[b].Title +'</div>'));
+						$("#bookArray").append($('<div class="alert alert-danger" role="alert"><input class="bookCheck" type="checkbox" name="chk[]" value="'+ xhr.Books[b].Title +'">' + xhr.Books[b].Author +','+ xhr.Books[b].Id +','+ xhr.Books[b].Price +','+ xhr.Books[b].Title +'</div>'));
 					}
 					
 				},
 				error: function(jqXHR, textStatus, errorThrown) {
 					console.log("get books error: "+JSON.stringify(jqXHR)+" "+textStatus+" "+errorThrown );
-					//$("#loginAlert").html($('<div class="alert alert-danger" id="loginAlert" role="alert">').text(jqXHR.responseJSON.Reason));
+					$("#siteAlert").html($('<div id="alert" class="alert alert-danger" role="alert">').text(jqXHR.responseJSON.Reason));
 				}
 			});
 			return false;
@@ -64,8 +67,45 @@
 	</script>
 	<script type="text/javascript">
 		$("#logoutButton").click(function() {
-			delete sessvars.sessionInfo;
-			window.location.replace("login.html");
+			$.ajax({
+				method: "GET",
+				url: "api/logout/"+sessvars.sessionToken,
+				success: function(xhr,result) {
+					delete sessvars.sessionInfo;
+					delete sessvars.sessionToken;
+					window.location.replace("login.html");
+				},
+				error: function(jqXHR, textStatus, errorThrown) {
+					console.log("get books error: "+JSON.stringify(jqXHR)+" "+textStatus+" "+errorThrown );
+					$("#siteAlert").html($('<div id="alert" class="alert alert-danger" role="alert">').text(jqXHR.responseJSON.Reason));
+				}
+			});
+		});
+	</script>
+	<script type="text/javascript">
+		$("#submitButton").click(function() {
+			if($('input[name="chk[]"]:checked').length > 0) {
+				$("#alert").remove();
+				$.each($('input[name="chk[]"]:checked'), function() {
+				  console.log($(this).val());
+				  // or you can do something to the actual checked checkboxes by working directly with  'this'
+				  // something like $(this).hide() (only something useful, probably) :P
+				});
+				console.log("they're checked");
+			}
+			else {
+				$("#siteAlert").html($('<div id="alert" class="alert alert-danger" role="alert">').text("You must check at least one Book before submitting your order."));
+			}
+		});
+	</script>
+	<script type="text/javascript">
+		$(document).on("change", "input[class='bookCheck']",function(){
+			if(this.checked) {
+				$(this).parent().append($('<input class="bookAmount" type="number" name="amount" default="1" min="1" max="3" value="1">'));
+			}
+			else {
+				$(this).parent().find("input.bookAmount").remove();
+			}
 		});
 	</script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
