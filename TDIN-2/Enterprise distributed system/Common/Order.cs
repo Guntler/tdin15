@@ -20,12 +20,12 @@ namespace Common
         public int Quantity { get; set; }
 
         [DataMember]
-        public ObjectId ClientId { get; set; }
+        public string ClientId { get; set; }
 
         [DataMember]
         public StateEnum State { get; set; }
 
-        public Order(string title, int quantity, ObjectId clientId)
+        public Order(string title, int quantity, string clientId)
         {
             var random = new Random();
             var timestamp = DateTime.UtcNow;

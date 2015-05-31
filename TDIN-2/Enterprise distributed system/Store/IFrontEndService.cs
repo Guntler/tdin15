@@ -27,6 +27,15 @@ namespace Store
         Stream Login(Client cliente);
 
         [OperationContract]
+        [WebInvoke(Method = "GET",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json,
+            BodyStyle = WebMessageBodyStyle.Bare,
+            UriTemplate = "api/logout/{token}")]
+        [Description("Logout of user, identified by the pair token Client given.")]
+        Stream Logout(string token);
+
+        [OperationContract]
         [WebInvoke(Method = "POST",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json,
@@ -67,7 +76,14 @@ namespace Store
         Stream AddOrder(Order order, string token);
 
         [OperationContract]
-        Stream GetOrderByClient(string clientId);
+        [WebInvoke(Method = "GET",
+            UriTemplate = "api/orders/{token}",
+            ResponseFormat = WebMessageFormat.Json)]
+        [Description("Lists all orders made by the user identified in the token")]
+        Stream GetOrderByClient(string token);
+
+        [OperationContract]
+        Boolean CancelOrder(string id);
 
         /*
         //CRUD OPs Order

@@ -127,6 +127,56 @@ namespace Store
             return new MemoryStream(Encoding.UTF8.GetBytes(result));
         }
 
+        public Stream Logout(string token)
+        {
+            _result = new Dictionary<string, object>();
+            try
+            {
+                Client user = validateClient(Guid.Parse(token));
+                DatabaseConnector client = new DatabaseConnector("tdin", "tdin", "store");
+                var collection = client.Database.GetCollection<Client>("clients");
+                var list = collection.Find(x => x.Username == user.Username).ToListAsync();
+                list.Wait();
+                if (list.Result.Count == 1)
+                {
+                    if (list.Result[0].Password.Equals(user.Password))
+                    {
+                        if (!LoggedinUsers.ContainsValue(user))
+                        {
+                            throw new Exception("User not logged in!");
+                        }
+                        else
+                        {
+                            LoggedinUsers.Remove(Guid.Parse(token));
+                            _result.Add("success", "user: "+user.Username+" logged off");
+                        }
+                    }
+                    else
+                    {
+                        throw new Exception("Invalid credentials");
+                    }
+                }
+                else
+                {
+                    throw new Exception("No match found");
+                }
+            }
+            catch (Exception e)
+            {
+                if (WebOperationContext.Current != null)
+                {
+                    OutgoingWebResponseContext response = WebOperationContext.Current.OutgoingResponse;
+                    response.StatusCode = HttpStatusCode.NotAcceptable;
+                }
+                _result.Add("Error", true);
+                _result.Add("Reason", e.Message);
+            }
+            string result = s.Serialize(_result);
+            if (WebOperationContext.Current != null)
+                WebOperationContext.Current.OutgoingResponse.ContentType = "application/json; charset=utf-8";
+            return new MemoryStream(Encoding.UTF8.GetBytes(result));
+        }
+
         public Stream Register(Client cliente)
         {
             _result = new Dictionary<string, object>();
@@ -297,9 +347,32 @@ namespace Store
             return new MemoryStream(Encoding.UTF8.GetBytes(result));
         }
 
-        public Stream GetOrderByClient(string clientId)
+        public Stream GetOrderByClient(string token)
         {
-            throw new NotImplementedException();
+            _result = new Dictionary<string, object>();
+            try
+            {
+                Client user = validateClient(Guid.Parse(token));
+                DatabaseConnector client = new DatabaseConnector("tdin", "tdin", "store");
+                var collection = client.Database.GetCollection<Order>("orders");
+                var list = collection.Find(x => x.ClientId.Equals(user.Id)).ToListAsync();
+                list.Wait();
+                _result.Add("Orders", list.Result);
+            }
+            catch (Exception e)
+            {
+                if (WebOperationContext.Current != null)
+                {
+                    OutgoingWebResponseContext response = WebOperationContext.Current.OutgoingResponse;
+                    response.StatusCode = HttpStatusCode.NotAcceptable;
+                }
+                _result.Add("Error", true);
+                _result.Add("Reason", e.Message);
+            }
+            string result = s.Serialize(_result);
+            if (WebOperationContext.Current != null)
+                WebOperationContext.Current.OutgoingResponse.ContentType = "application/json; charset=utf-8";
+            return new MemoryStream(Encoding.UTF8.GetBytes(result));
         }
 
         /*
