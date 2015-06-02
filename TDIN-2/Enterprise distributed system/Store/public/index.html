@@ -83,15 +83,43 @@
 		});
 	</script>
 	<script type="text/javascript">
+		var submitOrder = function(book) {
+			console.log("HERE");
+			$("#alert").remove();
+		
+			console.log(book.val());
+		  
+			var body = {};
+			body['Title'] = book.val();
+			body['Quantity'] = book.parent().find("input.bookAmount").val();
+			body['ClientId'] = sessvars.sessionInfo.Id;
+			var json = JSON.stringify(body);
+
+			$.ajax({
+				method: "POST",
+				url: "api/order/"+sessvars.sessionToken,
+				headers: {
+					"Content-Type" : "application/json"
+				},
+				data: json,
+				success: function(xhr,result) {
+					console.log("Submitted an order");
+				},
+				error: function(jqXHR, textStatus, errorThrown) {
+					console.log("login error: "+JSON.stringify(jqXHR)+" "+textStatus+" "+errorThrown );
+					$("#loginAlert").html($('<div class="alert alert-danger" id="loginAlert" role="alert">').text(jqXHR.responseJSON.Reason));
+				}
+			});
+		};
 		$("#submitButton").click(function() {
 			if($('input[name="chk[]"]:checked').length > 0) {
-				$("#alert").remove();
 				$.each($('input[name="chk[]"]:checked'), function() {
-				  console.log($(this).val());
-				  // or you can do something to the actual checked checkboxes by working directly with  'this'
-				  // something like $(this).hide() (only something useful, probably) :P
-				});
-				console.log("they're checked");
+					$.when( submitOrder($(this))).done(
+						function(atxArgs, greenlingArgs, momandpopsArgs){
+							console.log("All orders submitted!");
+						});
+						return false;
+					});
 			}
 			else {
 				$("#siteAlert").html($('<div id="alert" class="alert alert-danger" role="alert">').text("You must check at least one Book before submitting your order."));
