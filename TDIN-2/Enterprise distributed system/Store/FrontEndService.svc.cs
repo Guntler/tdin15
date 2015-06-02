@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
+using System.Messaging;
 using System.Net;
 using System.ServiceModel.Web;
 using System.Text;
@@ -17,6 +17,8 @@ namespace Store
     public class FrontEndService : IFrontEndService
     {
         public static readonly Dictionary<Guid, Client> LoggedinUsers = new Dictionary<Guid, Client>();
+        private static MessageQueue mq = null;
+        private static string queueName = @".\private$\tdin";
         private Dictionary<string, object> _result;
         private JavaScriptSerializer s = new JavaScriptSerializer();
 
@@ -52,14 +54,11 @@ namespace Store
                 if (File.Exists(path) && !string.IsNullOrEmpty(contentType))
                 {
                     response.ContentType = contentType;
-                    response.StatusCode = System.Net.HttpStatusCode.OK;
+                    response.StatusCode = HttpStatusCode.OK;
                     return File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
                 }
-                else
-                {
-                    response.StatusCode = System.Net.HttpStatusCode.NotFound;
-                    return null;
-                }
+                response.StatusCode = HttpStatusCode.NotFound;
+                return null;
             }
             return null;
         }
@@ -70,10 +69,7 @@ namespace Store
             {
                 return LoggedinUsers[token];
             }
-            else
-            {
-                throw new Exception("Invalid token");
-            }
+            throw new Exception("Invalid token");
         }
 
         private Book getBook(string title)
@@ -84,14 +80,21 @@ namespace Store
             list.Wait();
             if (list.Result.Count == 1)
                 return list.Result[0];
-            else if (list.Result.Count < 1)
+            if (list.Result.Count < 1)
             {
                 throw new Exception("No record of book with title: " + title);
             }
-            else
+            throw new Exception("something went wrong with the book registration: " + list.Result.ToArray());
+        }
+
+        private void SendMessage(object obj, string title)
+        {
+            if (MessageQueue.Exists(queueName))
             {
-                throw new Exception("something went wrong with the book registration: " + list.Result.ToArray().ToString());
+                mq = new MessageQueue(queueName);
             }
+            mq.Formatter = new BinaryMessageFormatter(); //default: XmlMessageFormatter
+            mq.Send(obj, title);
         }
 
         public Stream Login(Client cliente)
@@ -163,11 +166,8 @@ namespace Store
                         {
                             throw new Exception("User not logged in!");
                         }
-                        else
-                        {
-                            LoggedinUsers.Remove(Guid.Parse(token));
-                            _result.Add("success", "user: " + user.Username + " logged off");
-                        }
+                        LoggedinUsers.Remove(Guid.Parse(token));
+                        _result.Add("success", "user: " + user.Username + " logged off");
                     }
                     else
                     {

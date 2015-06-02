@@ -64,8 +64,8 @@ namespace Common
         public override bool Equals(object obj)
         {
             Client other = (Client)obj;
-            Console.WriteLine("Equals: " + this.ToString() + " " + other.ToString());
-            return other.Username == this.Username;
+            Console.WriteLine("Equals: " + ToString() + " " + other);
+            return other.Username == Username;
         }
     }
     public enum Field
