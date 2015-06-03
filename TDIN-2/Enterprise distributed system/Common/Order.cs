@@ -35,6 +35,11 @@ namespace Common
             ClientId = clientId;
             State = new StateEnum();
         }
+
+        public override string ToString()
+        {
+            return String.Format("Order Id: {0}, Title:{1}, Quantity:{2}, ClientId: {3}, {4}", Id, Title, Quantity, ClientId, State.ToString());
+        }
     }
 
     [DataContract(Name = "State")]
@@ -55,6 +60,10 @@ namespace Common
         [DataMember(Name = "dateTime")]
         public DateTime Date { get; set; }
 
+        public override string ToString()
+        {
+            return String.Format("State Current: {0}, Date:{1}", CurrentState, Date);
+        }
     }
 
 }

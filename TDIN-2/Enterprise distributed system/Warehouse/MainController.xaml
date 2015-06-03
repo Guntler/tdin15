@@ -17,21 +17,14 @@
                     </Style>
                 </StackPanel.Resources>
                 <TextBlock FontWeight="Bold" Margin="0,0,0,10">Operations</TextBlock>
-                <Button Name="BtnShowSelectedItem" >Show more info</Button>
-                <Button Name="BtnSelectAll" >Select all</Button>
-                <Button Name="BtnRestock" >Restock</Button>
+                <Button Name="BtnShowSelectedItem" Click="btnShowSelectedItem_Click">Show more info</Button>
+                <Button Name="BtnSelectAll" Click="btnSelectAll_Click">Select all</Button>
+                <Button Name="BtnRestock" Click="BtnRestock_OnClick">Restock</Button>
             </StackPanel>
             <ListBox Name="LbTodoList" HorizontalContentAlignment="Stretch" SelectionMode="Extended" Height="255" Canvas.Top="40" Width="365" Canvas.Left="10" ItemsSource="{Binding Source={x:Static warehouse:MainView.MessageList}}" >
                 <ListBox.ItemTemplate>
-                    <DataTemplate  DataType="common:Message">
-                        <Grid Margin="0,2">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="100" />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="{Binding Title}" />
-                            <TextBlock Text="{Binding Message}" />
-                        </Grid>
+                    <DataTemplate DataType="common:Message">
+                        <CheckBox Name="CheckBoxZone" Content="{Binding Book.Title}" Checked="CheckBoxZone_Checked"/>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>

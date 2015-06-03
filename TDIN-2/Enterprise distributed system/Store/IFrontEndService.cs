@@ -96,6 +96,15 @@ namespace Store
             UriTemplate = "api/order/{token}")]
         Stream CancelOrder(string id, string token);
 
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+           RequestFormat = WebMessageFormat.Json,
+           ResponseFormat = WebMessageFormat.Json,
+           BodyStyle = WebMessageBodyStyle.Bare,
+           UriTemplate = "api/shipment")]
+        [Description("")]
+        Stream ReceiveFromWarehouse(Message order);
+
         /*
         //CRUD OPs Order
         [OperationContract]

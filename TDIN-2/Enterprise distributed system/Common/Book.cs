@@ -26,5 +26,9 @@ namespace Common
             Price = price;
             Quantity = quantity;
         }
+        public override string ToString()
+        {
+            return String.Format("Book Id: {0}, Title:{1}, Author:{2}, Price:{3}, Quantity:{4}", Id, Title, Author, Price, Quantity);
+        }
     }
 }
