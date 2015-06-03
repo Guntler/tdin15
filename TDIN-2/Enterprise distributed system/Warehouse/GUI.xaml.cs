@@ -23,20 +23,34 @@ namespace Warehouse
     /// </summary>
     public partial class GUI : Window
     {
+        private LoginView login;
+        private MainView main;
         public GUI()
         {
             InitializeComponent();
+            login = new LoginView(this);
+            main = new MainView(this);
             this.ShowLogin();
         }
 
         public void ShowLogin()
         {
-            this.ContentHolder.Content = new LoginView(this);
+            this.ContentHolder.Content = login;
         }
 
         public void ShowMain()
         {
-            this.ContentHolder.Content = new MainView(this);
+            this.ContentHolder.Content = main;
+        }
+
+        public static void AddMsgToList(Message msg)
+        {
+            Application.Current.Dispatcher.BeginInvoke(
+                System.Windows.Threading.DispatcherPriority.Normal,
+                (Action)delegate()
+                {
+                    MainView.MessageList.Add(msg);
+                });
         }
     }
 }

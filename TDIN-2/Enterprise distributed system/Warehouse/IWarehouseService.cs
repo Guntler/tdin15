@@ -10,8 +10,5 @@ namespace Warehouse
         [OperationContract(IsOneWay = true)]
         [TransactionFlow(TransactionFlowOption.Allowed)]
         void SendToWarehouse(Message msg);
-
-        [OperationContract(IsOneWay = true)]
-        void ShowMessage(string msg);
     }
 }
