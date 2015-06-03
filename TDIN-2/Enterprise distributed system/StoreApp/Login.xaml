@@ -10,8 +10,8 @@
         <Button Content="Login" HorizontalAlignment="Left" Margin="172,161,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
         <Label Content="username" HorizontalAlignment="Left" Margin="55,86,0,0" VerticalAlignment="Top" Width="75"/>
         <Label Content="Password" HorizontalAlignment="Left" Margin="55,112,0,0" VerticalAlignment="Top"/>
-        <PasswordBox Width="120" Height="23"  Margin="127,120,45,0" VerticalAlignment="Top"/>
-        <TextBox HorizontalAlignment="Left" Height="23" Margin="127,90,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+        <PasswordBox Name="PasswordBox" Width="120" Height="23"  Margin="127,120,45,0" VerticalAlignment="Top"/>
+        <TextBox Name="UsernameBox" HorizontalAlignment="Left" Height="23" Margin="127,90,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
 
     </Grid>
 </Window>
