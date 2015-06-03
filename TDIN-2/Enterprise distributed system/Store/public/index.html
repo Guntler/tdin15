@@ -40,6 +40,14 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 	<script type="text/javascript">
 		$( document ).ready(function() {
+			if(typeof sessvars.sessionInfo !== 'undefined') {}
+			else {
+				window.location.replace("login.html");
+			}
+		});
+	</script>
+	<script type="text/javascript">
+		$( document ).ready(function() {
 		console.log(window);
 			var body = {};
 			var json = JSON.stringify(body);
@@ -53,7 +61,7 @@
 					console.log(xhr);
 					console.log(result);
 					for(var b in xhr.Books) {
-						$("#bookArray").append($('<div class="alert alert-danger" role="alert"><input class="bookCheck" type="checkbox" name="chk[]" value="'+ xhr.Books[b].Title +'">' + xhr.Books[b].Author +','+ xhr.Books[b].Id +','+ xhr.Books[b].Price +','+ xhr.Books[b].Title +'</div>'));
+						$("#bookArray").append($('<div max="'+ xhr.Books[b].Quantity +'" class="alert alert-danger" role="alert"><input class="bookCheck" type="checkbox" name="chk[]" value="'+ xhr.Books[b].Title +'">' + xhr.Books[b].Author +','+ xhr.Books[b].Id +','+ xhr.Books[b].Price +','+ xhr.Books[b].Title + ' Disponíveis: ' + xhr.Books[b].Quantity +'</div>'));
 					}
 					
 				},
@@ -129,7 +137,7 @@
 	<script type="text/javascript">
 		$(document).on("change", "input[class='bookCheck']",function(){
 			if(this.checked) {
-				$(this).parent().append($('<input class="bookAmount" type="number" name="amount" default="1" min="1" max="3" value="1">'));
+				$(this).parent().append($('<input class="bookAmount" type="number" name="amount" default="1" min="1" max="'+$(this).parent().attr('max')+'" value="1">'));
 			}
 			else {
 				$(this).parent().find("input.bookAmount").remove();

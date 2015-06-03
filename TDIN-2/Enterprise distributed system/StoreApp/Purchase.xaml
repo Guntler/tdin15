@@ -1,0 +1,11 @@
+﻿<Window x:Class="StoreApp.Purchase"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Purchase" Height="300" Width="300">
+    <Grid>
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="69,39,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+        <Label Content="Book" HorizontalAlignment="Left" Margin="69,13,0,0" VerticalAlignment="Top"/>
+        <Button Content="Purchase" HorizontalAlignment="Left" Margin="114,84,0,0" VerticalAlignment="Top" Width="75"/>
+
+    </Grid>
+</Window>
