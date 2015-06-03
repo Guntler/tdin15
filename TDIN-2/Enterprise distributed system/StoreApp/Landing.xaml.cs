@@ -11,29 +11,23 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Common;
 
 namespace StoreApp
 {
-    struct User
-    {
-        public string Username;
 
-        public User(string username)
-        {
-            Username = username;
-        }
-    }
     /// <summary>
     /// Interaction logic for Landing.xaml
     /// </summary>
     public partial class Landing : Window
     {
-        private readonly User _user;
-
-        public Landing(string username)
+        private readonly Client _user;
+        private readonly object _token;
+        public Landing(Client user, object o)
         {
             InitializeComponent();
-            _user = new User(username);
+            _user = user;
+            _token = o;
             WelcomeBox.Text = "Welcome, " + _user.Username;
         }
 
@@ -44,7 +38,7 @@ namespace StoreApp
 
         private void Button_Click_Purchase(object sender, RoutedEventArgs e)
         {
-            Purchase dialog = new Purchase()
+            Purchase dialog = new Purchase(_token)
             {
                 Title = "Purchase",
                 ShowInTaskbar = false,

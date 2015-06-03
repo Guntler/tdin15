@@ -351,6 +351,7 @@ namespace Store
 
         public Stream AddOrder(Order order, string token)
         {
+            Console.WriteLine("STUFF");
             _result = new Dictionary<string, object>();
             Console.WriteLine("In addOrder: "+order.Title+" "+order.Quantity+" "+order.ClientId+"\n");
             try
@@ -526,5 +527,9 @@ namespace Store
             return new MemoryStream(Encoding.UTF8.GetBytes(result));
         }
 
+        public Stream ReceiveFromWarehouse(Message order)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

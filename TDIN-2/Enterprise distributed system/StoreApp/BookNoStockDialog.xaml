@@ -3,9 +3,13 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="BookNoStockDialog" Height="300" Width="300">
     <Grid>
-        <Button Content="Send" HorizontalAlignment="Left" Margin="41,195,0,0" VerticalAlignment="Top" Width="109" Height="34" Click="Button_Click"/>
-        <Button Content="Cancel" HorizontalAlignment="Left" Margin="155,195,0,0" VerticalAlignment="Top" Width="109" Height="34" Click="Button_Click_1"/>
-        <TextBlock HorizontalAlignment="Left" Margin="100,41,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top"/>
+        <Button Content="Send" HorizontalAlignment="Left" Margin="41,207,0,0" VerticalAlignment="Top" Width="109" Height="34" Click="Button_Click"/>
+        <Button Content="Cancel" HorizontalAlignment="Left" Margin="155,207,0,0" VerticalAlignment="Top" Width="109" Height="34" Click="Button_Click_1"/>
+        <TextBlock Name="NoStockMessage" HorizontalAlignment="Left" Margin="41,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="73" Width="223"/>
+        <TextBox Name="UserBox" HorizontalAlignment="Left" Height="23" Margin="41,109,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+        <TextBlock HorizontalAlignment="Left" Margin="41,88,0,0" TextWrapping="Wrap" Text="Client Name" VerticalAlignment="Top" Width="66"/>
+        <Button Content="Search" HorizontalAlignment="Left" Margin="189,109,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_Search"/>
+        <TextBlock Name="SearchResultBox" HorizontalAlignment="Left" Margin="41,137,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="65" Width="223"/>
 
     </Grid>
 </Window>

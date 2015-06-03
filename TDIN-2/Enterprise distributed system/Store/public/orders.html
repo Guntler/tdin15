@@ -23,7 +23,7 @@
     <h1>ENTERPRISE DISTRIBUTED SYSTEM</h1>
 	<div class="row">
 		<div class="col-md-4">
-			<button id="ordersButton" type="submit" href="orders.html" class="btn btn-success">Check Orders</button>
+			<button id="submitButton" type="submit" href="orders.html" class="btn btn-success">Check Orders</button>
 		</div>
 		<div class="col-md-4">
 			<fieldset id="bookArray">
@@ -111,7 +111,6 @@
 				},
 				data: json,
 				success: function(xhr,result) {
-					console.log(xhr);
 					console.log("Submitted an order");
 				},
 				error: function(jqXHR, textStatus, errorThrown) {
@@ -121,15 +120,14 @@
 			});
 		};
 		$("#submitButton").click(function() {
-			console.log("click!");
 			if($('input[name="chk[]"]:checked').length > 0) {
-				$.when(
-					$.each($('input[name="chk[]"]:checked'), function() {submitOrder($(this))})
-							).done(
-							function(atxArgs, greenlingArgs, momandpopsArgs){
-								console.log("All orders submitted!");
-								location.reload();
+				$.each($('input[name="chk[]"]:checked'), function() {
+					$.when( submitOrder($(this))).done(
+						function(atxArgs, greenlingArgs, momandpopsArgs){
+							console.log("All orders submitted!");
 						});
+						return false;
+					});
 			}
 			else {
 				$("#siteAlert").html($('<div id="alert" class="alert alert-danger" role="alert">').text("You must check at least one Book before submitting your order."));

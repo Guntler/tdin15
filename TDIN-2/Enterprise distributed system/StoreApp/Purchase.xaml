@@ -3,10 +3,16 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Purchase" Height="300" Width="300">
     <Grid>
-        <TextBox HorizontalAlignment="Left" Height="23" Margin="69,39,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+        <TextBox Name="BookBox"  HorizontalAlignment="Left" Height="23" Margin="69,39,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
         <Label Content="Book" HorizontalAlignment="Left" Margin="69,13,0,0" VerticalAlignment="Top"/>
-        <Button Content="Purchase" HorizontalAlignment="Left" Margin="114,223,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
-        <TextBlock HorizontalAlignment="Left" Margin="69,67,0,0" TextWrapping="Wrap" Text="Book Information:" VerticalAlignment="Top" Height="134" Width="198"/>
+        <Button Content="Purchase" HorizontalAlignment="Left" Margin="97,234,0,0" VerticalAlignment="Top" Width="92" Click="Button_Click_Purchase" Height="25"/>
+        <TextBlock HorizontalAlignment="Left" Margin="69,66,0,0" TextWrapping="Wrap" Text="Book Information:" VerticalAlignment="Top" Height="17" Width="198"/>
+        <Button Content="Search" HorizontalAlignment="Left" Margin="207,39,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_Search"/>
+        <TextBlock Name="WarningBox" HorizontalAlignment="Left" Margin="30,206,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="237" Height="26"/>
+        <TextBlock Name="AuthorBox" HorizontalAlignment="Left" Margin="69,85,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="17" Width="198"/>
+        <TextBlock Name="TitleBox" HorizontalAlignment="Left" Margin="69,102,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="17" Width="198"/>
+        <TextBlock Name="QuantityBox" HorizontalAlignment="Left" Margin="69,119,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="17" Width="198"/>
+        <TextBlock Name="PriceBox" HorizontalAlignment="Left" Margin="69,136,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="17" Width="198"/>
 
     </Grid>
 </Window>
