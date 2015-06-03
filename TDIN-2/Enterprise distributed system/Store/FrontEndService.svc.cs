@@ -324,8 +324,11 @@ namespace Store
             _result = new Dictionary<string, object>();
             try
             {
+                Console.WriteLine("In updateBook: "+newBook.ToString());
                 DatabaseConnector client = new DatabaseConnector("mongodb://tdin:tdin@ds031942.mongolab.com:31942/", "store");
                 var collection = client.Database.GetCollection<Book>("books");
+                var task = collection.ReplaceOneAsync(o => o.Title == newBook.Title, newBook);
+                task.Wait();
                 var list = collection.Find(x => x.Title == newBook.Title).ToListAsync();
                 list.Wait();
                 _result.Add("updated book", list.Result);
@@ -349,14 +352,17 @@ namespace Store
         public Stream AddOrder(Order order, string token)
         {
             _result = new Dictionary<string, object>();
+            Console.WriteLine("In addOrder: "+order.Title+" "+order.Quantity+" "+order.ClientId+"\n");
             try
             {
                 Client user = validateClient(Guid.Parse(token));
                 DatabaseConnector client = new DatabaseConnector("mongodb://tdin:tdin@ds031942.mongolab.com:31942/", "store");
                 var collection = client.Database.GetCollection<Order>("orders");
                 var book = getBook(order.Title);
+                Console.WriteLine("The selected book is: "+book.ToString()+"\n");
                 if (book.Quantity >= order.Quantity)
                 {
+                    Console.WriteLine("Still have enough stock\n");
                     var random = new Random();
                     var timestamp = DateTime.UtcNow;
                     var machine = random.Next(0, 16777215);
@@ -373,6 +379,7 @@ namespace Store
                         _result.Add("Text", "Order add sucessfully");
                         _result.Add("Data", order);
                         book.Quantity -= order.Quantity;
+                        Console.WriteLine("Order inserted: "+order+"\n updating book "+book+"\n");
                         UpdateBook(book);
                     }
                     else
@@ -382,8 +389,11 @@ namespace Store
                 }
                 else //send to mq
                 {
+                    Console.WriteLine("Send restock request to warehouse!");
+                    var msg = new Message("restock", order.Quantity*10, book);
+                    Console.WriteLine(msg.ToString());
                     WarehouseServiceClient warehouse = new WarehouseServiceClient();
-                    warehouse.SendToWarehouseAsync(new Message("restock", order.Quantity*10, book));
+                    warehouse.SendToWarehouseAsync(msg);
                     var random = new Random();
                     var timestamp = DateTime.UtcNow;
                     var machine = random.Next(0, 16777215);

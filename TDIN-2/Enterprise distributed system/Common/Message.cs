@@ -1,4 +1,5 @@
-﻿using System.Runtime.Serialization;
+﻿using System;
+using System.Runtime.Serialization;
 
 namespace Common
 {
@@ -19,6 +20,11 @@ namespace Common
             Action = action;
             Book = book;
             Amount = quantity;
+        }
+
+        public override string ToString()
+        {
+            return String.Format("Message Action: {0}, Restock {1}, by {2} amount", Action,Book, Amount);
         }
     }
 }

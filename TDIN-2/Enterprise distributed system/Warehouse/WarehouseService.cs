@@ -15,6 +15,8 @@ namespace Warehouse
     {
         public void SendToWarehouse(Message msg)
         {
+            Debug.WriteLine("WAREHOUSE RECEIVED SOMETHING!");
+            Debug.WriteLine(msg.ToString());
             GUI.AddMsgToList(msg);
             this.addToDatabase(msg);
         }
