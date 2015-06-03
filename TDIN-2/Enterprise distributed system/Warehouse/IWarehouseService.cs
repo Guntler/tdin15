@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.ServiceModel;
-using System.Text;
+﻿using System.ServiceModel;
 using Common;
 
 namespace Warehouse
@@ -14,6 +9,9 @@ namespace Warehouse
     {
         [OperationContract(IsOneWay = true)]
         [TransactionFlow(TransactionFlowOption.Allowed)]
-        void sendToWarehouse(Order order);
+        void SendToWarehouse(Message msg);
+
+        [OperationContract(IsOneWay = true)]
+        void ShowMessage(string msg);
     }
 }

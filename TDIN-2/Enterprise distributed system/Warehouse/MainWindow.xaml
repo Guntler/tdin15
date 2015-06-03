@@ -3,6 +3,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="MainWindow" Height="350" Width="525">
     <Grid>
-        
+        <TextBox Name="UsernameBox"  HorizontalAlignment="Left" Height="23" Margin="38,70,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="411"/>
+        <PasswordBox  Name="PasswordBox" HorizontalAlignment="Left" Height="23" Margin="38,138,0,0"  VerticalAlignment="Top" Width="411"/>        
+        <Label Content="Username&#xD;&#xA;" HorizontalAlignment="Left" Margin="38,38,0,0" VerticalAlignment="Top" Width="168" Height="33"/>
+        <Label Content="Password" HorizontalAlignment="Left" Margin="38,105,0,0" VerticalAlignment="Top" Width="168" Height="33"/>
+        <Button Content="Login&#xD;&#xA;" HorizontalAlignment="Left" Margin="178,211,0,0" VerticalAlignment="Top" Width="135" Height="26" Click="Button_Click"/>
+
     </Grid>
 </Window>

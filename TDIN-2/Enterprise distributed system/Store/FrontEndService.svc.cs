@@ -9,6 +9,8 @@ using System.Web.Script.Serialization;
 using Common;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using Store.WarehouseService;
+using Message = Common.Message;
 
 namespace Store
 {
@@ -17,8 +19,6 @@ namespace Store
     public class FrontEndService : IFrontEndService
     {
         public static readonly Dictionary<Guid, Client> LoggedinUsers = new Dictionary<Guid, Client>();
-        private static MessageQueue mq = null;
-        private static string queueName = @".\private$\tdin";
         private Dictionary<string, object> _result;
         private JavaScriptSerializer s = new JavaScriptSerializer();
 
@@ -85,16 +85,6 @@ namespace Store
                 throw new Exception("No record of book with title: " + title);
             }
             throw new Exception("something went wrong with the book registration: " + list.Result.ToArray());
-        }
-
-        private void SendMessage(object obj, string title)
-        {
-            if (MessageQueue.Exists(queueName))
-            {
-                mq = new MessageQueue(queueName);
-            }
-            mq.Formatter = new BinaryMessageFormatter(); //default: XmlMessageFormatter
-            mq.Send(obj, title);
         }
 
         public Stream Login(Client cliente)
@@ -392,8 +382,8 @@ namespace Store
                 }
                 else //send to mq
                 {
-                    //create message and send
-
+                    WarehouseServiceClient warehouse = new WarehouseServiceClient();
+                    warehouse.SendToWarehouseAsync(new Message("restock", order.Quantity*10, book));
                     var random = new Random();
                     var timestamp = DateTime.UtcNow;
                     var machine = random.Next(0, 16777215);
@@ -525,7 +515,6 @@ namespace Store
                 WebOperationContext.Current.OutgoingResponse.ContentType = "application/json; charset=utf-8";
             return new MemoryStream(Encoding.UTF8.GetBytes(result));
         }
-
 
     }
 }
