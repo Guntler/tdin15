@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.Text;
+using System.Windows;
 using Common;
 
 namespace Warehouse
@@ -14,13 +15,15 @@ namespace Warehouse
     {
         public void SendToWarehouse(Message msg)
         {
-            Debug.WriteLine("SENDTOWAREHOUSE DATA RECEIVED");
-            Debug.WriteLine(msg.ToString());
+            GUI.AddMsgToList(msg);
+            this.addToDatabase(msg);
         }
 
-        public void ShowMessage(string msg)
+        private void addToDatabase(Message msg)
         {
-            Debug.WriteLine(msg + " Received at: " + System.DateTime.Now.ToString());
+            DatabaseConnector client = new DatabaseConnector("mongodb://tdin:tdin@ds031812.mongolab.com:31812/", "warehouse");
+            var collection = client.Database.GetCollection<Message>("requests");
+            var task = collection.InsertOneAsync(msg);
         }
     }
 }
