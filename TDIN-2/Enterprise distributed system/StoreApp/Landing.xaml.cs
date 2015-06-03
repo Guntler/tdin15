@@ -19,6 +19,7 @@ namespace StoreApp
     /// </summary>
     public partial class Landing : Window
     {
+
         public Landing()
         {
             InitializeComponent();
@@ -31,6 +32,35 @@ namespace StoreApp
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
+            Purchase dialog = new Purchase()
+            {
+                Title = "Purchase",
+                ShowInTaskbar = false,
+                ResizeMode = ResizeMode.NoResize,
+                Topmost = true,
+                Owner = this
+            };
+
+            if (dialog.ShowDialog() == true)
+            {
+            }
+        }
+
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            //if stock<=0...
+            Shippings dialog = new Shippings()
+            {
+                Title = "Notifications",
+                ShowInTaskbar = false,
+                ResizeMode = ResizeMode.NoResize,
+                Topmost = true,
+                Owner = this
+            };
+
+            if (dialog.ShowDialog() == true)
+            {
+            }
 
         }
     }

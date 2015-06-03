@@ -23,5 +23,23 @@ namespace StoreApp
         {
             InitializeComponent();
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            //if stock<=0...
+            BookNoStockDialog dialog = new BookNoStockDialog()
+            {
+                Title = "No stock available!",
+                ShowInTaskbar = false,
+                ResizeMode = ResizeMode.NoResize,
+                Topmost = true,
+                Owner = this
+            };
+            
+            if (dialog.ShowDialog() == true)
+            {
+                MessageBox.Show("You said: " + dialog.WillSend.ToString());
+            }
+        }
     }
 }

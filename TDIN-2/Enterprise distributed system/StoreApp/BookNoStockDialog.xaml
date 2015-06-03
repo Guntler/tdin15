@@ -3,8 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="BookNoStockDialog" Height="300" Width="300">
     <Grid>
-        <Button Content="Send" HorizontalAlignment="Left" Margin="41,195,0,0" VerticalAlignment="Top" Width="109" Height="34"/>
-        <Button Content="Cancel" HorizontalAlignment="Left" Margin="155,195,0,0" VerticalAlignment="Top" Width="109" Height="34"/>
+        <Button Content="Send" HorizontalAlignment="Left" Margin="41,195,0,0" VerticalAlignment="Top" Width="109" Height="34" Click="Button_Click"/>
+        <Button Content="Cancel" HorizontalAlignment="Left" Margin="155,195,0,0" VerticalAlignment="Top" Width="109" Height="34" Click="Button_Click_1"/>
         <TextBlock HorizontalAlignment="Left" Margin="100,41,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top"/>
 
     </Grid>

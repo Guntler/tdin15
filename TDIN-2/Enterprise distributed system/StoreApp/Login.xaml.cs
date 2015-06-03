@@ -26,7 +26,10 @@ namespace StoreApp
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            Landing obj = new Landing();
 
+            obj.Show(); //after login Redirect to second window  
+            Hide();
         }
     }
 }

@@ -59,6 +59,9 @@
     <Compile Include="Purchase.xaml.cs">
       <DependentUpon>Purchase.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Shippings.xaml.cs">
+      <DependentUpon>Shippings.xaml</DependentUpon>
+    </Compile>
     <Page Include="BookNoStockDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -90,6 +93,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Purchase.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Shippings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

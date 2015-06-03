@@ -15,27 +15,28 @@ using System.Windows.Shapes;
 namespace StoreApp
 {
     /// <summary>
-    /// Interaction logic for BookNoStockDialog.xaml
+    /// Interaction logic for Shippings.xaml
     /// </summary>
-    public partial class BookNoStockDialog : Window
+    public partial class Shippings : Window
     {
-        public bool WillSend { get; set; }
-
-        public BookNoStockDialog()
+        public Shippings()
         {
             InitializeComponent();
-            WillSend = false;
+        }
+
+        private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
+
+        private void ListBoxItem_Selected(object sender, RoutedEventArgs e)
+        {
+
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            WillSend = true;
-            DialogResult = true;
-        }
 
-        private void Button_Click_1(object sender, RoutedEventArgs e)
-        {
-            DialogResult = true;
         }
     }
 }
