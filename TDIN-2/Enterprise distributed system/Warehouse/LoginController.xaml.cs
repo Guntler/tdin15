@@ -19,12 +19,14 @@ using MongoDB.Driver;
 namespace Warehouse
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for UserControl1.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class LoginView : UserControl
     {
-        public MainWindow()
+        private readonly GUI _parent;
+        public LoginView(GUI parent)
         {
+            this._parent = parent;
             InitializeComponent();
         }
 
@@ -32,8 +34,8 @@ namespace Warehouse
         {
             string user = UsernameBox.Text;
             string pass = PasswordBox.Password;
-            Debug.WriteLine("User: "+user+", pass: "+pass);
-            DatabaseConnector client = new DatabaseConnector("tdin", "tdin", "warehouse");
+            Debug.WriteLine("User: " + user + ", pass: " + pass);
+            DatabaseConnector client = new DatabaseConnector("mongodb://tdin:tdin@ds031812.mongolab.com:31812/", "warehouse");
             var collection = client.Database.GetCollection<WarehouseWorker>("users");
             var list = collection.Find(x => x.Username.Equals(user)).ToListAsync();
             list.Wait();
@@ -41,7 +43,7 @@ namespace Warehouse
             {
                 if (list.Result[0].Password.Equals(pass))
                 {
-                    Debug.WriteLine("YOU ARE OK TO GO!");
+                    _parent.ShowMain();
                 }
                 else
                 {

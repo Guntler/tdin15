@@ -3,7 +3,7 @@ using System.ServiceModel.Web;
 
 namespace Store
 {
-    public class Store
+    public class App
     {
         private static void Main(string[] args)
         {

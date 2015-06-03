@@ -69,17 +69,31 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LoginController.xaml.cs">
+      <DependentUpon>LoginController.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MainController.xaml.cs">
+      <DependentUpon>MainController.xaml</DependentUpon>
+    </Compile>
     <Compile Include="WarehouseService.cs" />
-    <Page Include="MainWindow.xaml">
+    <Page Include="GUI.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
     <Compile Include="App.cs" />
     <Compile Include="IWarehouseService.cs" />
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
+    <Compile Include="GUI.xaml.cs">
+      <DependentUpon>GUI.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="LoginController.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MainController.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">

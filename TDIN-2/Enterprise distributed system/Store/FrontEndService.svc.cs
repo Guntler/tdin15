@@ -74,7 +74,7 @@ namespace Store
 
         private Book getBook(string title)
         {
-            DatabaseConnector client = new DatabaseConnector("tdin", "tdin", "store");
+            DatabaseConnector client = new DatabaseConnector("mongodb://tdin:tdin@ds031942.mongolab.com:31942/", "store");
             var collection = client.Database.GetCollection<Book>("books");
             var list = collection.Find(x => x.Title.Equals(title)).ToListAsync();
             list.Wait();
@@ -92,7 +92,7 @@ namespace Store
             _result = new Dictionary<string, object>();
             try
             {
-                DatabaseConnector client = new DatabaseConnector("tdin", "tdin", "store");
+                DatabaseConnector client = new DatabaseConnector("mongodb://tdin:tdin@ds031942.mongolab.com:31942/", "store");
                 var collection = client.Database.GetCollection<Client>("clients");
                 var list = collection.Find(x => x.Username == cliente.Username).ToListAsync();
                 list.Wait();
@@ -144,7 +144,7 @@ namespace Store
             try
             {
                 Client user = validateClient(Guid.Parse(token));
-                DatabaseConnector client = new DatabaseConnector("tdin", "tdin", "store");
+                DatabaseConnector client = new DatabaseConnector("mongodb://tdin:tdin@ds031942.mongolab.com:31942/", "store");
                 var collection = client.Database.GetCollection<Client>("clients");
                 var list = collection.Find(x => x.Username == user.Username).ToListAsync();
                 list.Wait();
@@ -190,7 +190,7 @@ namespace Store
             _result = new Dictionary<string, object>();
             try
             {
-                DatabaseConnector client = new DatabaseConnector("tdin", "tdin", "store");
+                DatabaseConnector client = new DatabaseConnector("mongodb://tdin:tdin@ds031942.mongolab.com:31942/", "store");
                 var collection = client.Database.GetCollection<Client>("clients");
                 var list = collection.Find(x => x.Username == cliente.Username).ToListAsync();
                 list.Wait();
@@ -234,7 +234,7 @@ namespace Store
             try
             {
                 Client user = validateClient(Guid.Parse(token));
-                DatabaseConnector client = new DatabaseConnector("tdin", "tdin", "store");
+                DatabaseConnector client = new DatabaseConnector("mongodb://tdin:tdin@ds031942.mongolab.com:31942/", "store");
                 var collection = client.Database.GetCollection<Book>("books");
                 var list = collection.Find(x => x.Title != "").ToListAsync();
                 list.Wait();
@@ -262,7 +262,7 @@ namespace Store
             try
             {
                 Client user = validateClient(Guid.Parse(token));
-                DatabaseConnector client = new DatabaseConnector("tdin", "tdin", "store");
+                DatabaseConnector client = new DatabaseConnector("mongodb://tdin:tdin@ds031942.mongolab.com:31942/", "store");
                 var collection = client.Database.GetCollection<Book>("books");
                 var list = collection.Find(x => x.Title == title).ToListAsync();
                 list.Wait();
@@ -289,7 +289,7 @@ namespace Store
             _result = new Dictionary<string, object>();
             try
             {
-                DatabaseConnector client = new DatabaseConnector("tdin", "tdin", "store");
+                DatabaseConnector client = new DatabaseConnector("mongodb://tdin:tdin@ds031942.mongolab.com:31942/", "store");
                 var collection = client.Database.GetCollection<Book>("books");
                 var query = collection.InsertOneAsync(book);
                 query.Wait();
@@ -324,7 +324,7 @@ namespace Store
             _result = new Dictionary<string, object>();
             try
             {
-                DatabaseConnector client = new DatabaseConnector("tdin", "tdin", "store");
+                DatabaseConnector client = new DatabaseConnector("mongodb://tdin:tdin@ds031942.mongolab.com:31942/", "store");
                 var collection = client.Database.GetCollection<Book>("books");
                 var list = collection.Find(x => x.Title == newBook.Title).ToListAsync();
                 list.Wait();
@@ -352,7 +352,7 @@ namespace Store
             try
             {
                 Client user = validateClient(Guid.Parse(token));
-                DatabaseConnector client = new DatabaseConnector("tdin", "tdin", "store");
+                DatabaseConnector client = new DatabaseConnector("mongodb://tdin:tdin@ds031942.mongolab.com:31942/", "store");
                 var collection = client.Database.GetCollection<Order>("orders");
                 var book = getBook(order.Title);
                 if (book.Quantity >= order.Quantity)
@@ -430,7 +430,7 @@ namespace Store
             try
             {
                 Client user = validateClient(Guid.Parse(token));
-                DatabaseConnector client = new DatabaseConnector("tdin", "tdin", "store");
+                DatabaseConnector client = new DatabaseConnector("mongodb://tdin:tdin@ds031942.mongolab.com:31942/", "store");
                 var collection = client.Database.GetCollection<Order>("orders");
                 var list = collection.Find(x => x.ClientId.Equals(user.Id)).ToListAsync();
                 list.Wait();
@@ -458,7 +458,7 @@ namespace Store
             try
             {
                 Client user = validateClient(Guid.Parse(token));
-                DatabaseConnector client = new DatabaseConnector("tdin", "tdin", "store");
+                DatabaseConnector client = new DatabaseConnector("mongodb://tdin:tdin@ds031942.mongolab.com:31942/", "store");
                 var collection = client.Database.GetCollection<Order>("orders");
                 var list = collection.Find(x => x.Id.Equals(id)).ToListAsync();
                 list.Wait();
@@ -486,7 +486,7 @@ namespace Store
             try
             {
                 Client user = validateClient(Guid.Parse(token));
-                DatabaseConnector client = new DatabaseConnector("tdin", "tdin", "store");
+                DatabaseConnector client = new DatabaseConnector("mongodb://tdin:tdin@ds031942.mongolab.com:31942/", "store");
                 var collection = client.Database.GetCollection<Order>("orders");
                 var query = collection.FindOneAndDeleteAsync(x => x.Id == id);
                 query.Wait();

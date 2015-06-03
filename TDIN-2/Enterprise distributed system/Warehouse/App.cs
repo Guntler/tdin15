@@ -15,7 +15,7 @@ namespace Warehouse
         public static void Main()
         {
             App app = new App();
-            app.StartupUri = new System.Uri("MainWindow.xaml", System.UriKind.Relative);
+            app.StartupUri = new System.Uri("GUI.xaml", System.UriKind.Relative);
             ServiceHost host = new ServiceHost(typeof(Warehouse.WarehouseService));
             host.Open();
             app.Run();
