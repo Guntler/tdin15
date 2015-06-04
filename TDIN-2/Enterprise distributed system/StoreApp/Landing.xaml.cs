@@ -31,7 +31,6 @@ namespace StoreApp
                 Title = "Purchase",
                 ShowInTaskbar = false,
                 ResizeMode = ResizeMode.NoResize,
-                Topmost = true,
                 Owner = this
             };
 
@@ -47,7 +46,6 @@ namespace StoreApp
                 Title = "Notifications",
                 ShowInTaskbar = false,
                 ResizeMode = ResizeMode.NoResize,
-                Topmost = true,
                 Owner = this
             };
 
