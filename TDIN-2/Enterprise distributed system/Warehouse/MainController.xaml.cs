@@ -45,15 +45,23 @@ namespace Warehouse
 
         private void CheckBoxZone_Checked(object sender, RoutedEventArgs e)
         {
+            Debug.WriteLine("CheckBoxZone!");
             CheckBox checkedItem = (CheckBox)e.OriginalSource;
             if (checkedItem.Content != null)
             {
-                foreach (var msg in MessageList.Where(msg => msg.Book.Title.Equals(checkedItem.Content)))
+                Debug.WriteLine(checkedItem);
+
+                foreach (var msg in MessageList.Where(msg => msg.Id.Equals(checkedItem.Content)))
                 {
+                    Debug.WriteLine("Found the message");
                     _selectedMessage = msg;
                     break;
                 }
-
+            }
+            else
+            {
+                Debug.WriteLine("ITS NULL");
+                Debug.WriteLine(checkedItem);
             }
         }
 
@@ -65,6 +73,7 @@ namespace Warehouse
 
         private void BtnRestock_OnClick(object sender, RoutedEventArgs e)
         {
+            Debug.WriteLine(_selectedMessage.ToString());
             handleShipment(_selectedMessage);
         }
 
@@ -103,10 +112,12 @@ namespace Warehouse
                     var collection = client.Database.GetCollection<Message>("requests");
                     var list = collection.DeleteOneAsync(o => o.Id.Equals(msg.Id));
                     list.Wait();
+                    MessageList.Remove(msg);
                 }
                 else
                 {
                     Debug.WriteLine("Store did not accept shipment");
+                    Console.WriteLine(httpResponse.StatusCode);
                 }
 
             }

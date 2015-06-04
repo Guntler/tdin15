@@ -23,7 +23,7 @@
             <ListBox Name="LbTodoList" HorizontalContentAlignment="Stretch" SelectionMode="Extended" Height="255" Canvas.Top="40" Width="365" Canvas.Left="10" ItemsSource="{Binding Source={x:Static warehouse:MainView.MessageList}}" >
                 <ListBox.ItemTemplate>
                     <DataTemplate DataType="common:Message">
-                        <CheckBox Name="CheckBoxZone" Content="{Binding Book.Title}" Checked="CheckBoxZone_Checked"/>
+                        <CheckBox Name="CheckBoxZone" Content="{Binding Id}" Checked="CheckBoxZone_Checked"/>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>

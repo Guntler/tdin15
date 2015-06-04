@@ -410,10 +410,8 @@ namespace Store
                     query.Wait();
                     if (query.IsCompleted)
                     {
-                        _result.Add("Text", "Order add sucessfully");
+                        _result.Add("Text", "Order could not be fulfilled, sent message to warehouse to restock");
                         _result.Add("Data", order);
-                        book.Quantity -= order.Quantity;
-                        UpdateBook(book);
                     }
                     else
                     {
@@ -533,7 +531,18 @@ namespace Store
         public Stream ReceiveFromWarehouse(Message order)
         {
             ReceivedMessages.Add(order);
-            throw new NotImplementedException();
+            Console.WriteLine(ReceivedMessages.ToArray().ToString());
+            _result = new Dictionary<string, object> {{"Success", ""}};
+            string result = s.Serialize(_result);
+
+            if (WebOperationContext.Current != null)
+                WebOperationContext.Current.OutgoingResponse.ContentType = "application/json; charset=utf-8";
+            if (WebOperationContext.Current != null)
+            {
+                OutgoingWebResponseContext response = WebOperationContext.Current.OutgoingResponse;
+                response.StatusCode = HttpStatusCode.Accepted;
+            }
+            return new MemoryStream(Encoding.UTF8.GetBytes(result));
         }
 
         private void printReceipt(Order ord)
