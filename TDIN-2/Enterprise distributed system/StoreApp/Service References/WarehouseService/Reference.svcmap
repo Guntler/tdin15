@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="8211707e-051a-455d-a2aa-8a2d6d1dff73" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <GenerateTaskBasedAsynchronousMethod>true</GenerateTaskBasedAsynchronousMethod>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings />
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://localhost:8733/Design_Time_Addresses/Warehouse/WarehouseService/" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="item.xsd" MetadataType="Schema" ID="490b147d-6791-40c0-a474-d4564262ac46" SourceId="1" SourceUrl="http://localhost:8733/Design_Time_Addresses/Warehouse/WarehouseService/?xsd=xsd0" />
+    <MetadataFile FileName="item1.xsd" MetadataType="Schema" ID="13c18ecb-1b79-47ff-94d8-457c49279085" SourceId="1" SourceUrl="http://localhost:8733/Design_Time_Addresses/Warehouse/WarehouseService/?xsd=xsd2" />
+    <MetadataFile FileName="item2.xsd" MetadataType="Schema" ID="c70e67e5-a6c5-48fd-b832-bd350074d12d" SourceId="1" SourceUrl="http://localhost:8733/Design_Time_Addresses/Warehouse/WarehouseService/?xsd=xsd1" />
+    <MetadataFile FileName="WarehouseService.wsdl" MetadataType="Wsdl" ID="31b50ea6-e653-4352-8e7a-beead5d84c31" SourceId="1" SourceUrl="http://localhost:8733/Design_Time_Addresses/Warehouse/WarehouseService/?wsdl" />
+    <MetadataFile FileName="item.disco" MetadataType="Disco" ID="558877ef-a097-4353-adf2-15dc326a697c" SourceId="1" SourceUrl="http://localhost:8733/Design_Time_Addresses/Warehouse/WarehouseService/?disco" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>
