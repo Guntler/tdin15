@@ -5,6 +5,7 @@
       <xs:element minOccurs="0" name="Amount" type="xs:int" />
       <xs:element minOccurs="0" name="action" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="book" nillable="true" type="tns:Book" />
+      <xs:element minOccurs="0" name="id" nillable="true" type="xs:string" />
     </xs:sequence>
   </xs:complexType>
   <xs:element name="Message" nillable="true" type="tns:Message" />

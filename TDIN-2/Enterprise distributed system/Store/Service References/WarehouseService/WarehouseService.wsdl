@@ -18,15 +18,9 @@
   <wsdl:message name="IWarehouseService_SendToWarehouse_InputMessage">
     <wsdl:part name="parameters" element="tns:SendToWarehouse" />
   </wsdl:message>
-  <wsdl:message name="IWarehouseService_ShowMessage_InputMessage">
-    <wsdl:part name="parameters" element="tns:ShowMessage" />
-  </wsdl:message>
   <wsdl:portType name="IWarehouseService">
     <wsdl:operation name="SendToWarehouse">
       <wsdl:input wsaw:Action="http://tempuri.org/IWarehouseService/SendToWarehouse" message="tns:IWarehouseService_SendToWarehouse_InputMessage" />
-    </wsdl:operation>
-    <wsdl:operation name="ShowMessage">
-      <wsdl:input wsaw:Action="http://tempuri.org/IWarehouseService/ShowMessage" message="tns:IWarehouseService_ShowMessage_InputMessage" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="NetMsmqBinding_IWarehouseService" type="tns:IWarehouseService">
@@ -34,12 +28,6 @@
     <soap12:binding transport="http://schemas.microsoft.com/soap/msmq" />
     <wsdl:operation name="SendToWarehouse">
       <soap12:operation soapAction="http://tempuri.org/IWarehouseService/SendToWarehouse" style="document" />
-      <wsdl:input>
-        <soap12:body use="literal" />
-      </wsdl:input>
-    </wsdl:operation>
-    <wsdl:operation name="ShowMessage">
-      <soap12:operation soapAction="http://tempuri.org/IWarehouseService/ShowMessage" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>

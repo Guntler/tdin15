@@ -20,12 +20,6 @@ namespace Store.WarehouseService {
         
         [System.ServiceModel.OperationContractAttribute(IsOneWay=true, Action="http://tempuri.org/IWarehouseService/SendToWarehouse")]
         System.Threading.Tasks.Task SendToWarehouseAsync(Common.Message msg);
-        
-        [System.ServiceModel.OperationContractAttribute(IsOneWay=true, Action="http://tempuri.org/IWarehouseService/ShowMessage")]
-        void ShowMessage(string msg);
-        
-        [System.ServiceModel.OperationContractAttribute(IsOneWay=true, Action="http://tempuri.org/IWarehouseService/ShowMessage")]
-        System.Threading.Tasks.Task ShowMessageAsync(string msg);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -61,14 +55,6 @@ namespace Store.WarehouseService {
         
         public System.Threading.Tasks.Task SendToWarehouseAsync(Common.Message msg) {
             return base.Channel.SendToWarehouseAsync(msg);
-        }
-        
-        public void ShowMessage(string msg) {
-            base.Channel.ShowMessage(msg);
-        }
-        
-        public System.Threading.Tasks.Task ShowMessageAsync(string msg) {
-            return base.Channel.ShowMessageAsync(msg);
         }
     }
 }

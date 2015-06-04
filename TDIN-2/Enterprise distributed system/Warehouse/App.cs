@@ -1,22 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.ServiceModel;
-using System.ServiceProcess;
-using System.Text;
-using System.Threading.Tasks;
+using System.Windows;
 
 namespace Warehouse
 {
-    public class App : System.Windows.Application
+    public class App : Application
     {
         [STAThread]
         public static void Main()
         {
             App app = new App();
-            app.StartupUri = new System.Uri("GUI.xaml", System.UriKind.Relative);
-            ServiceHost host = new ServiceHost(typeof(Warehouse.WarehouseService));
+            app.StartupUri = new Uri("GUI.xaml", UriKind.Relative);
+            ServiceHost host = new ServiceHost(typeof(WarehouseService));
             host.Open();
             app.Run();
 

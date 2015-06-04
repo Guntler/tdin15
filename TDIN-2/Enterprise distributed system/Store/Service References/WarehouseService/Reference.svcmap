@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="e81aed08-392b-4abb-822f-d7f053f6a38e" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="aecc7902-da58-4c52-b74b-28a3b0eb2312" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
   <ClientOptions>
     <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
     <GenerateTaskBasedAsynchronousMethod>true</GenerateTaskBasedAsynchronousMethod>
@@ -22,11 +22,11 @@
     <MetadataSource Address="http://localhost:8733/Design_Time_Addresses/Warehouse/WarehouseService/" Protocol="http" SourceId="1" />
   </MetadataSources>
   <Metadata>
-    <MetadataFile FileName="item.xsd" MetadataType="Schema" ID="befe689d-ac93-4c02-810a-b71902980506" SourceId="1" SourceUrl="http://localhost:8733/Design_Time_Addresses/Warehouse/WarehouseService/?xsd=xsd0" />
-    <MetadataFile FileName="item1.xsd" MetadataType="Schema" ID="d9cfaf97-1433-4a88-bb1b-72559c4884ab" SourceId="1" SourceUrl="http://localhost:8733/Design_Time_Addresses/Warehouse/WarehouseService/?xsd=xsd2" />
-    <MetadataFile FileName="item2.xsd" MetadataType="Schema" ID="2a36d1f2-e0c3-4c95-9612-1118b7620a57" SourceId="1" SourceUrl="http://localhost:8733/Design_Time_Addresses/Warehouse/WarehouseService/?xsd=xsd1" />
-    <MetadataFile FileName="WarehouseService.wsdl" MetadataType="Wsdl" ID="b1ebf6bc-0948-4aa4-91ec-8b186b9eacca" SourceId="1" SourceUrl="http://localhost:8733/Design_Time_Addresses/Warehouse/WarehouseService/?wsdl" />
-    <MetadataFile FileName="item.disco" MetadataType="Disco" ID="8157f968-4d4a-4942-89b6-48d21e6cf84d" SourceId="1" SourceUrl="http://localhost:8733/Design_Time_Addresses/Warehouse/WarehouseService/?disco" />
+    <MetadataFile FileName="item.xsd" MetadataType="Schema" ID="e9c3210e-757b-41d5-9117-f795aa9cc126" SourceId="1" SourceUrl="http://localhost:8733/Design_Time_Addresses/Warehouse/WarehouseService/?xsd=xsd0" />
+    <MetadataFile FileName="item1.xsd" MetadataType="Schema" ID="ba52329b-cc6d-4abc-b54b-14ca1ae2e23c" SourceId="1" SourceUrl="http://localhost:8733/Design_Time_Addresses/Warehouse/WarehouseService/?xsd=xsd2" />
+    <MetadataFile FileName="item2.xsd" MetadataType="Schema" ID="ca706931-5dfb-4813-8db7-d3054a97f619" SourceId="1" SourceUrl="http://localhost:8733/Design_Time_Addresses/Warehouse/WarehouseService/?xsd=xsd1" />
+    <MetadataFile FileName="WarehouseService.wsdl" MetadataType="Wsdl" ID="f86fff7d-577d-4051-bc54-e2bba8176ed0" SourceId="1" SourceUrl="http://localhost:8733/Design_Time_Addresses/Warehouse/WarehouseService/?wsdl" />
+    <MetadataFile FileName="item.disco" MetadataType="Disco" ID="865c43e9-5d7a-4391-bc41-d0cccaa7275f" SourceId="1" SourceUrl="http://localhost:8733/Design_Time_Addresses/Warehouse/WarehouseService/?disco" />
   </Metadata>
   <Extensions>
     <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />

@@ -38,7 +38,7 @@ namespace Common
 
         public override string ToString()
         {
-            return String.Format("Order Id: {0}, Title:{1}, Quantity:{2}, ClientId: {3}, {4}", Id, Title, Quantity, ClientId, State.ToString());
+            return String.Format("Order Id: {0}, Title:{1}, Quantity:{2}, ClientId: {3}, {4}", Id, Title, Quantity, ClientId, State);
         }
     }
 
