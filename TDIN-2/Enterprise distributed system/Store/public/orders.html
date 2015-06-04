@@ -23,7 +23,6 @@
     <h1>ENTERPRISE DISTRIBUTED SYSTEM</h1>
 	<div class="row">
 		<div class="col-md-4">
-			<button id="submitButton" type="submit" href="orders.html" class="btn btn-success">Check Orders</button>
 		</div>
 		<div class="col-md-4">
 			<fieldset id="bookArray">
@@ -31,8 +30,6 @@
 			<div id="siteAlert"></div>
 		</div>
 		<div class="col-md-4">
-			<button id="submitButton" type="submit" class="btn btn-info">Submit Order</button>
-			<button id="logoutButton" type="submit" class="btn btn-danger">Log out</button>
 		</div>
 	</div>
 	
@@ -55,13 +52,13 @@
 			console.log(sessvars.sessionToken);
 			$.ajax({
 				method: "GET",
-				url: "api/books/"+sessvars.sessionToken,
+				url: "api/orders/"+sessvars.sessionToken,
 				success: function(xhr,result) {
 					console.log("SUCCESS");
 					console.log(xhr);
 					console.log(result);
 					for(var b in xhr.Books) {
-						$("#bookArray").append($('<div max="'+ xhr.Books[b].Quantity +'" class="alert alert-danger" role="alert"><input class="bookCheck" type="checkbox" name="chk[]" value="'+ xhr.Books[b].Title +'">' + xhr.Books[b].Author +','+ xhr.Books[b].Id +','+ xhr.Books[b].Price +','+ xhr.Books[b].Title + ' Disponíveis: ' + xhr.Books[b].Quantity +'</div>'));
+						$("#bookArray").append($('<div max="'+ xhr.Orders[b].Quantity +'" class="alert alert-danger" role="alert"><input class="bookCheck" type="checkbox" name="chk[]" value="'+ xhr.Orders[b].Title +'">' + xhr.Orders[b].Quantity +','+ xhr.Orders[b].State +'</div>'));
 					}
 					
 				},
@@ -71,77 +68,6 @@
 				}
 			});
 			return false;
-		});
-	</script>
-	<script type="text/javascript">
-		$("#logoutButton").click(function() {
-			$.ajax({
-				method: "GET",
-				url: "api/logout/"+sessvars.sessionToken,
-				success: function(xhr,result) {
-					delete sessvars.sessionInfo;
-					delete sessvars.sessionToken;
-					window.location.replace("login.html");
-				},
-				error: function(jqXHR, textStatus, errorThrown) {
-					console.log("get books error: "+JSON.stringify(jqXHR)+" "+textStatus+" "+errorThrown );
-					$("#siteAlert").html($('<div id="alert" class="alert alert-danger" role="alert">').text(jqXHR.responseJSON.Reason));
-				}
-			});
-		});
-	</script>
-	<script type="text/javascript">
-		var submitOrder = function(book) {
-			console.log("HERE");
-			$("#alert").remove();
-		
-			console.log(book.val());
-		  
-			var body = {};
-			body['Title'] = book.val();
-			body['Quantity'] = book.parent().find("input.bookAmount").val();
-			body['ClientId'] = sessvars.sessionInfo.Id;
-			var json = JSON.stringify(body);
-
-			$.ajax({
-				method: "POST",
-				url: "api/order/"+sessvars.sessionToken,
-				headers: {
-					"Content-Type" : "application/json"
-				},
-				data: json,
-				success: function(xhr,result) {
-					console.log("Submitted an order");
-				},
-				error: function(jqXHR, textStatus, errorThrown) {
-					console.log("login error: "+JSON.stringify(jqXHR)+" "+textStatus+" "+errorThrown );
-					$("#loginAlert").html($('<div class="alert alert-danger" id="loginAlert" role="alert">').text(jqXHR.responseJSON.Reason));
-				}
-			});
-		};
-		$("#submitButton").click(function() {
-			if($('input[name="chk[]"]:checked').length > 0) {
-				$.each($('input[name="chk[]"]:checked'), function() {
-					$.when( submitOrder($(this))).done(
-						function(atxArgs, greenlingArgs, momandpopsArgs){
-							console.log("All orders submitted!");
-						});
-						return false;
-					});
-			}
-			else {
-				$("#siteAlert").html($('<div id="alert" class="alert alert-danger" role="alert">').text("You must check at least one Book before submitting your order."));
-			}
-		});
-	</script>
-	<script type="text/javascript">
-		$(document).on("change", "input[class='bookCheck']",function(){
-			if(this.checked) {
-				$(this).parent().append($('<input class="bookAmount" type="number" name="amount" default="1" min="1" max="'+$(this).parent().attr('max')+'" value="1">'));
-			}
-			else {
-				$(this).parent().find("input.bookAmount").remove();
-			}
 		});
 	</script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
