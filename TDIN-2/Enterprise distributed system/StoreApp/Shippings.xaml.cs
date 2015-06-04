@@ -57,7 +57,7 @@ namespace StoreApp
             FrontEndService.ReceivedMessages.Remove(m);
             var d = messages.Find(c => c.Book == button.Tag.ToString());
             messages.Remove(d);
-            Hide();
+            DialogResult = true;
         }
 
         private void ListContainer_SelectionChanged(object sender, SelectionChangedEventArgs e)
