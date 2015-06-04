@@ -18,15 +18,22 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
   </head>
-  <body>
+  <body style="background-color: #AA3939;">
   
-    <h1>ENTERPRISE DISTRIBUTED SYSTEM</h1>
+	<div style="background-color: #FFAAAA;" class="row">
+		<h1 style="text-align:center;">ENTERPRISE DISTRIBUTED SYSTEM</h1>
+	</div>
 	<div class="row">
-		<div class="col-md-4">
+		<div class="col-md-3">
 		</div>
-		<div class="col-md-4">
-			<fieldset id="bookArray">
-			</fieldset>
+		<div style="background-color: #D46A6A;" class="col-md-5">
+			<table class="table" id="bookArray">
+				<tr>
+				<th>Title</th>
+				<th>Amount</th>
+				<th>State</th>
+				</tr>
+			</table>
 			<div id="siteAlert"></div>
 		</div>
 		<div class="col-md-4">
@@ -57,8 +64,15 @@
 					console.log("SUCCESS");
 					console.log(xhr);
 					console.log(result);
-					for(var b in xhr.Books) {
-						$("#bookArray").append($('<div max="'+ xhr.Orders[b].Quantity +'" class="alert alert-danger" role="alert"><input class="bookCheck" type="checkbox" name="chk[]" value="'+ xhr.Orders[b].Title +'">' + xhr.Orders[b].Quantity +','+ xhr.Orders[b].State +'</div>'));
+					for(var b in xhr.Orders) {
+						var state="";
+						if(xhr.Orders[b].State.CurrentState==0)
+							state="Waiting to be dispatched...";
+						else if(xhr.Orders[b].State.CurrentState==1)
+							state="Waiting...";
+						else if(xhr.Orders[b].State.CurrentState==2)
+							state="Dispatched.";
+						$("#bookArray").append($('<tr><td>' + xhr.Orders[b].Title + '</td><td>' + xhr.Orders[b].Quantity + '</td><td>' + state +'</td></tr>'));
 					}
 					
 				},

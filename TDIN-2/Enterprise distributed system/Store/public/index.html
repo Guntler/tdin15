@@ -18,14 +18,26 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
   </head>
-  <body>
+  <body style="background-color: #AA3939;">
   
-    <h1>ENTERPRISE DISTRIBUTED SYSTEM</h1>
+    <div style="background-color: #FFAAAA;" class="row">
+		<h1 style="text-align:center;">ENTERPRISE DISTRIBUTED SYSTEM</h1>
+	</div>
 	<div class="row">
-		<div class="col-md-4">
-			<button id="ordersButton" type="submit" onclick="location.href = 'orders.html';" class="btn btn-success">Check Orders</button>
+		<div class="col-md-3">
+			<button style="float:right;" id="ordersButton" type="submit" onclick="location.href = 'orders.html';" class="btn btn-success">Check Orders</button>
 		</div>
-		<div class="col-md-4">
+		<div style="background-color: #D46A6A;" class="col-md-5">
+			<table class="table" id="bookArray">
+				<tr>
+				<th></th>
+				<th>Author</th>
+				<th>Id</th>
+				<th>Price</th>
+				<th>Title</th>
+				<th>Stock</th>
+				</tr>
+			</table>
 			<fieldset id="bookArray">
 			</fieldset>
 			<div id="siteAlert"></div>
@@ -61,7 +73,10 @@
 					console.log(xhr);
 					console.log(result);
 					for(var b in xhr.Books) {
-						$("#bookArray").append($('<div max="'+ xhr.Books[b].Quantity +'" class="alert alert-danger" role="alert"><input class="bookCheck" type="checkbox" name="chk[]" value="'+ xhr.Books[b].Title +'">' + xhr.Books[b].Author +','+ xhr.Books[b].Id +','+ xhr.Books[b].Price +','+ xhr.Books[b].Title + ' Disponíveis: ' + xhr.Books[b].Quantity +'</div>'));
+						$("#bookArray").append(
+						$('<tr><td max="'+ xhr.Books[b].Quantity +
+						'" class="alert alert-danger" role="alert"><input class="bookCheck" type="checkbox" name="chk[]" value="'+ xhr.Books[b].Title +'"></td>'
+						+ '<td>'+xhr.Books[b].Author+'</td><td>'+xhr.Books[b].Id+'</td><td>'+xhr.Books[b].Price+'</td><td>'+xhr.Books[b].Title + '</td><td>' + xhr.Books[b].Quantity +'</td></tr>'));
 					}
 					
 				},
