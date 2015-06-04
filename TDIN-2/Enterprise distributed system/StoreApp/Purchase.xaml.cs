@@ -22,9 +22,10 @@ namespace StoreApp
 
         private void Button_Click_Purchase(object sender, RoutedEventArgs e)
         {
-            if (book != null)
+            int amount=0;
+            if (book != null && AmountBox.Text != "" && int.TryParse(AmountBox.Text, out amount) && amount>0)
             {
-                var amount = Convert.ToInt32(AmountBox.Text);
+                amount = Convert.ToInt32(AmountBox.Text);
                 if (book.Quantity <= 0 || book.Quantity < amount)
                 {
                     BookNoStockDialog dialog = new BookNoStockDialog(book.Title)
@@ -64,7 +65,7 @@ namespace StoreApp
             }
             else
             {
-                WarningBox.Text = "No book selected!";
+                WarningBox.Text = "No book/amount selected!";
             }
         }
 
