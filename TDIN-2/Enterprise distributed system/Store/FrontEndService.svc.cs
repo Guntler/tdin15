@@ -21,7 +21,7 @@ namespace Store
         public static readonly Dictionary<Guid, Client> LoggedinUsers = new Dictionary<Guid, Client>();
         private Dictionary<string, object> _result;
         private JavaScriptSerializer s = new JavaScriptSerializer();
-
+        public static List<Message> ReceivedMessages = new List<Message>();
         public Stream StaticContent(string content)
         {
             if (WebOperationContext.Current != null)
@@ -529,6 +529,7 @@ namespace Store
 
         public Stream ReceiveFromWarehouse(Message order)
         {
+            ReceivedMessages.Add(order);
             throw new NotImplementedException();
         }
     }
