@@ -1,3 +1,4 @@
+﻿using System;
 ﻿using System.Windows;
 ﻿using Common;
 ﻿using MongoDB.Driver;
@@ -23,7 +24,8 @@ namespace StoreApp
         {
             if (book != null)
             {
-                if (book.Quantity <= 0)
+                var amount = Convert.ToInt32(AmountBox.Text);
+                if (book.Quantity <= 0 || book.Quantity < amount)
                 {
                     BookNoStockDialog dialog = new BookNoStockDialog(book.Title)
                     {
@@ -35,16 +37,29 @@ namespace StoreApp
 
                     if (dialog.ShowDialog() == true)
                     {
-                        MessageBox.Show("You said: " + dialog.WillSend);
                         if (dialog.WillSend)
                         {
-                            new FrontEndService().AddOrder(new Order(book.Title, 1, dialog.User.Id), _token.ToString());
+                            new FrontEndService().AddOrder(new Order(book.Title, amount, dialog.User.Id), _token.ToString());
                         }
                     }
                 }
                 else
                 {
-                    //Print receipt
+                    BookPickClient dialog = new BookPickClient()
+                    {
+                        Title = "Input Client Name",
+                        ShowInTaskbar = false,
+                        ResizeMode = ResizeMode.NoResize,
+                        Owner = this
+                    };
+
+                    if (dialog.ShowDialog() == true)
+                    {
+                        if (dialog.WillSend)
+                        {
+                            new FrontEndService().printReceipt(new Order(book.Title, amount, new Client(dialog.user,"asdfgh","","").Id));
+                        }
+                    }
                 }
             }
             else

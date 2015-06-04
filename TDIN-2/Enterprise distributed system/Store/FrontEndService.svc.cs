@@ -545,7 +545,7 @@ namespace Store
             return new MemoryStream(Encoding.UTF8.GetBytes(result));
         }
 
-        private void printReceipt(Order ord)
+        public void printReceipt(Order ord)
         {
             var orderClient = getClient(ord.ClientId);
             var orderBook = GetBook(ord.Title);

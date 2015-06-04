@@ -12,7 +12,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using Store;
+﻿using Common;
+﻿using Store;
 
 
 namespace StoreApp
@@ -22,11 +23,12 @@ namespace StoreApp
     /// </summary>
     public partial class Shippings : Window
     {
+        List<MessageItem> messages = new List<MessageItem>(); 
         public Shippings()
         {
             InitializeComponent();
             this.DataContext = this;
-            var messages = new List<MessageItem>();
+            
             foreach(var m in FrontEndService.ReceivedMessages)
             {
                 messages.Add(new MessageItem() { Book=m.Book.Title,Amount=m.Amount });
@@ -50,7 +52,14 @@ namespace StoreApp
         private void AddButton(object sender, RoutedEventArgs e)
         {
             Button button = sender as Button;
-            Debug.WriteLine(button.Tag);
+            Book aux = new FrontEndService().GetBook(button.Tag.ToString());
+            aux.Quantity = messages.Find(c => c.Book == button.Tag.ToString()).Amount;
+            new FrontEndService().UpdateBook(aux);
+            var m = FrontEndService.ReceivedMessages.Find(c => c.Book.Title == button.Tag.ToString());
+            FrontEndService.ReceivedMessages.Remove(m);
+            var d = messages.Find(c => c.Book == button.Tag.ToString());
+            messages.Remove(d);
+            Hide();
         }
 
         private void ListContainer_SelectionChanged(object sender, SelectionChangedEventArgs e)

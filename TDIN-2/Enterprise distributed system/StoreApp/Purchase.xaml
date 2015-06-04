@@ -13,6 +13,8 @@
         <TextBlock Name="TitleBox" HorizontalAlignment="Left" Margin="69,102,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="17" Width="198"/>
         <TextBlock Name="QuantityBox" HorizontalAlignment="Left" Margin="69,119,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="17" Width="198"/>
         <TextBlock Name="PriceBox" HorizontalAlignment="Left" Margin="69,136,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="17" Width="198"/>
+        <TextBox Name="AmountBox" HorizontalAlignment="Left" Height="23" Margin="69,178,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+        <Label Content="Amount" HorizontalAlignment="Left" Margin="69,158,0,0" VerticalAlignment="Top"/>
 
     </Grid>
 </Window>
