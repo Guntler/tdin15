@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.ServiceModel;
-using System.Text;
-using System.Windows;
+﻿using System.Diagnostics;
 using Common;
 
 namespace Warehouse
@@ -18,7 +11,7 @@ namespace Warehouse
             Debug.WriteLine("WAREHOUSE RECEIVED SOMETHING!");
             Debug.WriteLine(msg.ToString());
             GUI.AddMsgToList(msg);
-            this.addToDatabase(msg);
+            addToDatabase(msg);
         }
 
         private void addToDatabase(Message msg)

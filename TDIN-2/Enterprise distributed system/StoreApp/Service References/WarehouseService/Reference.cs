@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Store.WarehouseService {
+namespace StoreApp.WarehouseService {
     
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -23,12 +23,12 @@ namespace Store.WarehouseService {
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    public interface IWarehouseServiceChannel : Store.WarehouseService.IWarehouseService, System.ServiceModel.IClientChannel {
+    public interface IWarehouseServiceChannel : StoreApp.WarehouseService.IWarehouseService, System.ServiceModel.IClientChannel {
     }
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    public partial class WarehouseServiceClient : System.ServiceModel.ClientBase<Store.WarehouseService.IWarehouseService>, Store.WarehouseService.IWarehouseService {
+    public partial class WarehouseServiceClient : System.ServiceModel.ClientBase<StoreApp.WarehouseService.IWarehouseService>, StoreApp.WarehouseService.IWarehouseService {
         
         public WarehouseServiceClient() {
         }

@@ -18,7 +18,6 @@
                 </StackPanel.Resources>
                 <TextBlock FontWeight="Bold" Margin="0,0,0,10">Operations</TextBlock>
                 <Button Name="BtnShowSelectedItem" Click="btnShowSelectedItem_Click">Show more info</Button>
-                <Button Name="BtnSelectAll" Click="btnSelectAll_Click">Select all</Button>
                 <Button Name="BtnRestock" Click="BtnRestock_OnClick">Restock</Button>
             </StackPanel>
             <ListBox Name="LbTodoList" HorizontalContentAlignment="Stretch" SelectionMode="Extended" Height="255" Canvas.Top="40" Width="365" Canvas.Left="10" ItemsSource="{Binding Source={x:Static warehouse:MainView.MessageList}}" >

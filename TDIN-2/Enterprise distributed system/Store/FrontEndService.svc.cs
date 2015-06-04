@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
-using System.Messaging;
 using System.Net;
 using System.ServiceModel.Web;
 using System.Text;
@@ -10,7 +10,6 @@ using Common;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using Store.WarehouseService;
-using Message = Common.Message;
 
 namespace Store
 {
@@ -72,7 +71,7 @@ namespace Store
             throw new Exception("Invalid token");
         }
 
-        private Book getBook(string title)
+        public Book GetBook(string title)
         {
             DatabaseConnector client = new DatabaseConnector("mongodb://tdin:tdin@ds031942.mongolab.com:31942/", "store");
             var collection = client.Database.GetCollection<Book>("books");
@@ -324,7 +323,7 @@ namespace Store
             _result = new Dictionary<string, object>();
             try
             {
-                Console.WriteLine("In updateBook: "+newBook.ToString());
+                Console.WriteLine("In updateBook: "+newBook);
                 DatabaseConnector client = new DatabaseConnector("mongodb://tdin:tdin@ds031942.mongolab.com:31942/", "store");
                 var collection = client.Database.GetCollection<Book>("books");
                 var task = collection.ReplaceOneAsync(o => o.Title == newBook.Title, newBook);
@@ -351,19 +350,15 @@ namespace Store
 
         public Stream AddOrder(Order order, string token)
         {
-            Console.WriteLine("STUFF");
             _result = new Dictionary<string, object>();
-            Console.WriteLine("In addOrder: "+order.Title+" "+order.Quantity+" "+order.ClientId+"\n");
             try
             {
                 Client user = validateClient(Guid.Parse(token));
                 DatabaseConnector client = new DatabaseConnector("mongodb://tdin:tdin@ds031942.mongolab.com:31942/", "store");
                 var collection = client.Database.GetCollection<Order>("orders");
-                var book = getBook(order.Title);
-                Console.WriteLine("The selected book is: "+book.ToString()+"\n");
+                var book = GetBook(order.Title);
                 if (book.Quantity >= order.Quantity)
                 {
-                    Console.WriteLine("Still have enough stock\n");
                     var random = new Random();
                     var timestamp = DateTime.UtcNow;
                     var machine = random.Next(0, 16777215);
@@ -380,7 +375,6 @@ namespace Store
                         _result.Add("Text", "Order add sucessfully");
                         _result.Add("Data", order);
                         book.Quantity -= order.Quantity;
-                        Console.WriteLine("Order inserted: "+order+"\n updating book "+book+"\n");
                         UpdateBook(book);
                     }
                     else
@@ -390,11 +384,20 @@ namespace Store
                 }
                 else //send to mq
                 {
-                    Console.WriteLine("Send restock request to warehouse!");
                     var msg = new Message("restock", order.Quantity*10, book);
                     Console.WriteLine(msg.ToString());
-                    WarehouseServiceClient warehouse = new WarehouseServiceClient();
-                    warehouse.SendToWarehouseAsync(msg);
+                    try
+                    {
+                        WarehouseServiceClient warehouse = new WarehouseServiceClient();
+                        warehouse.SendToWarehouseAsync(msg);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.WriteLine(e.Message);
+                        Debug.WriteLine(e.StackTrace);
+                        throw;
+                    }
+                   
                     var random = new Random();
                     var timestamp = DateTime.UtcNow;
                     var machine = random.Next(0, 16777215);
@@ -532,5 +535,46 @@ namespace Store
             ReceivedMessages.Add(order);
             throw new NotImplementedException();
         }
+
+        private void printReceipt(Order ord)
+        {
+            var orderClient = getClient(ord.ClientId);
+            var orderBook = GetBook(ord.Title);
+            Console.WriteLine("New receipt for order\n");
+            Console.WriteLine("\tId: " + ord.Id + "\n");
+            Console.WriteLine("\tState: " + ord.State.CurrentState + "\n");
+            Console.WriteLine("\tDate: " + ord.State.Date + "\n");
+            Console.WriteLine("\tFor client: \n");
+            Console.WriteLine("\t\tId:" + orderClient.Id + "\n");
+            Console.WriteLine("\t\tUsername:" + orderClient.Username + "\n");
+            Console.WriteLine("\t\tEmail:" + orderClient.Email + "\n");
+            Console.WriteLine("\t\tAddress:" + orderClient.Address + "\n");
+            Console.WriteLine("\tBook information: \n");
+            Console.WriteLine("\t\tTitle: " + orderBook.Title + "\n");
+            Console.WriteLine("\t\tAuthor: " + orderBook.Author + "\n");
+            Console.WriteLine("\t\tPrice per unit: " + orderBook.Price + "\n");
+            Console.WriteLine("\tQuantity: " + ord.Quantity + "\n");
+            Console.WriteLine("\tTotal price: " + ord.Quantity * orderBook.Price + "\n");
+            Console.WriteLine("\n\n");
+        }
+
+        private Client getClient(string id)
+        {
+            DatabaseConnector client = new DatabaseConnector("mongodb://tdin:tdin@ds031942.mongolab.com:31942/", "store");
+            var collection = client.Database.GetCollection<Client>("clients");
+            var task = collection.Find(cli => cli.Id.Equals(id)).ToListAsync();
+            task.Wait();
+            if (task.IsCompleted)
+            {
+                if (task.Result.Count == 1)
+                {
+                    return task.Result[0];
+                }
+                Debug.WriteLine("couldnt find unique user");
+                return task.Result[0];
+            }
+            return null;
+        }
+    
     }
 }

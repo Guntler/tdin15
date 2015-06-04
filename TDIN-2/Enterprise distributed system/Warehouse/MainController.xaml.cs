@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -8,6 +9,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using Common;
+using MongoDB.Driver;
 
 namespace Warehouse
 {
@@ -24,7 +26,21 @@ namespace Warehouse
         {
             _parent = parent;
             _allSelected = false;
+            loadMessages();
             InitializeComponent();
+        }
+
+        private void loadMessages()
+        {
+            DatabaseConnector client = new DatabaseConnector("mongodb://tdin:tdin@ds031812.mongolab.com:31812/", "warehouse");
+            var collection = client.Database.GetCollection<Message>("requests");
+            var list = collection.Find(o => o.Action.Equals("restock")).ToListAsync();
+            list.Wait();
+            foreach (var msg in list.Result)
+            {
+                MessageList.Add(msg);
+
+            }
         }
 
         private void CheckBoxZone_Checked(object sender, RoutedEventArgs e)
@@ -43,27 +59,13 @@ namespace Warehouse
 
         private void btnShowSelectedItem_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show(_selectedMessage.ToString());
-        }
-
-        private void btnSelectAll_Click(object sender, RoutedEventArgs e)
-        {
-            _allSelected = true;
+            string text = String.Format("Message Received:\n\t Id: {0}\nBook information\n\tTitle: {1}\n\tAuthor: {2}\n\tQuantity available: {3}\nAmount to restock: {4}", _selectedMessage.Id,_selectedMessage.Book.Title, _selectedMessage.Book.Author, _selectedMessage.Book.Quantity, _selectedMessage.Amount);
+            MessageBox.Show(text);
         }
 
         private void BtnRestock_OnClick(object sender, RoutedEventArgs e)
         {
-            if (_allSelected)
-            {
-                foreach (var msg in MessageList)
-                {
-                    handleShipment(msg);
-                }
-            }
-            else
-            {
-                handleShipment(_selectedMessage);   
-            }
+            handleShipment(_selectedMessage);
         }
 
         private void handleShipment(Message msg)
@@ -84,7 +86,6 @@ namespace Warehouse
                     string jsonString = Encoding.UTF8.GetString(ms.ToArray());
                     ms.Close();
                     streamWriter.Write(jsonString);
-
                 }
 
                 var httpResponse = (HttpWebResponse) httpWebRequest.GetResponse();
@@ -94,6 +95,20 @@ namespace Warehouse
                     Debug.WriteLine("result of shipment request: ");
                     Debug.WriteLine(result);
                 }
+
+                if (httpResponse.StatusCode == HttpStatusCode.Accepted)
+                {
+                    DatabaseConnector client = new DatabaseConnector(
+                        "mongodb://tdin:tdin@ds031812.mongolab.com:31812/", "warehouse");
+                    var collection = client.Database.GetCollection<Message>("requests");
+                    var list = collection.DeleteOneAsync(o => o.Id.Equals(msg.Id));
+                    list.Wait();
+                }
+                else
+                {
+                    Debug.WriteLine("Store did not accept shipment");
+                }
+
             }
             else
             {

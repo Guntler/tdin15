@@ -1,23 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Runtime.Serialization.Json;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using Common;
-using MongoDB.Driver;
-using Store;
+﻿using System.Windows;
+﻿using Common;
+﻿using MongoDB.Driver;
+﻿using Store;
 
 namespace StoreApp
 {
@@ -52,16 +36,12 @@ namespace StoreApp
 
                     if (dialog.ShowDialog() == true)
                     {
-                        MessageBox.Show("You said: " + dialog.WillSend.ToString());
+                        MessageBox.Show("You said: " + dialog.WillSend);
                         if (dialog.WillSend)
                         {
                               new FrontEndService().AddOrder(new Order(book.Title, 1, dialog.User.Id), _token.ToString());
                         }
                     }
-                }
-                else
-                {
-                    //print receipt
                 }
             }
             else
