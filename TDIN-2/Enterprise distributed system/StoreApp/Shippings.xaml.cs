@@ -33,8 +33,6 @@ namespace StoreApp
             {
                 messages.Add(new MessageItem() { Book=m.Book.Title,Amount=m.Amount });
             }
-            messages.Add(new MessageItem() { Book = "Novo Titulo", Amount = 5 });
-            messages.Add(new MessageItem() { Book = "Novossssso", Amount = 10 });
             ListContainer.ItemsSource = messages;
             Debug.WriteLine(messages.Count);
         }
