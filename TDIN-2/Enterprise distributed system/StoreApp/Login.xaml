@@ -7,10 +7,10 @@
             <RowDefinition Height="215*"/>
             <RowDefinition Height="54*"/>
         </Grid.RowDefinitions>
-        <Label Content="username" HorizontalAlignment="Left" Margin="40,101,0,0" VerticalAlignment="Top" Width="75"/>
-        <Label Content="Password" HorizontalAlignment="Left" Margin="40,127,0,0" VerticalAlignment="Top"/>
+        <Label Content="Username" HorizontalAlignment="Left" Margin="63,101,0,0" VerticalAlignment="Top" Width="75"/>
+        <Label Content="Password" HorizontalAlignment="Left" Margin="63,127,0,0" VerticalAlignment="Top"/>
         <PasswordBox Name="PasswordBox" Width="120" Height="23"  Margin="105,130,0,0" VerticalAlignment="Top"/>
-        <TextBox Name="UsernameBox" HorizontalAlignment="Left" Height="23" Margin="105,105,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+        <TextBox Name="UsernameBox" HorizontalAlignment="Left" Height="23" Margin="138,104,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
         <Button Content="Login" HorizontalAlignment="Left" Margin="123,158,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
     </Grid>
 </Window>
