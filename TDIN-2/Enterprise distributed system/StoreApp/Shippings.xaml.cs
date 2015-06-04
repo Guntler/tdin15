@@ -25,11 +25,14 @@ namespace StoreApp
         public Shippings()
         {
             InitializeComponent();
+            this.DataContext = this;
             var messages = new List<MessageItem>();
             foreach(var m in FrontEndService.ReceivedMessages)
             {
                 messages.Add(new MessageItem() { Book=m.Book.Title,Amount=m.Amount });
             }
+            messages.Add(new MessageItem() { Book = "Novo Titulo", Amount = 5 });
+            messages.Add(new MessageItem() { Book = "Novossssso", Amount = 10 });
             ListContainer.ItemsSource = messages;
             Debug.WriteLine(messages.Count);
         }
@@ -44,9 +47,10 @@ namespace StoreApp
 
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void AddButton(object sender, RoutedEventArgs e)
         {
-
+            Button button = sender as Button;
+            Debug.WriteLine(button.Tag);
         }
 
         private void ListContainer_SelectionChanged(object sender, SelectionChangedEventArgs e)

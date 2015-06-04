@@ -30,7 +30,6 @@ namespace StoreApp
                         Title = "No stock available!",
                         ShowInTaskbar = false,
                         ResizeMode = ResizeMode.NoResize,
-                        Topmost = true,
                         Owner = this
                     };
 
@@ -39,9 +38,13 @@ namespace StoreApp
                         MessageBox.Show("You said: " + dialog.WillSend);
                         if (dialog.WillSend)
                         {
-                              new FrontEndService().AddOrder(new Order(book.Title, 1, dialog.User.Id), _token.ToString());
+                            new FrontEndService().AddOrder(new Order(book.Title, 1, dialog.User.Id), _token.ToString());
                         }
                     }
+                }
+                else
+                {
+                    //Print receipt
                 }
             }
             else

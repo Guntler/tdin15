@@ -3,9 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Landing" Height="300" Width="300">
     <Grid>
-        <Button Content="Purchase" HorizontalAlignment="Left" Margin="10,65,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_Purchase"/>
-        <Button Content="Logout" HorizontalAlignment="Left" Margin="207,10,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_Logout"/>
-        <Button Content="Notifications" HorizontalAlignment="Left" Margin="207,65,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_Notifications"/>
+        <Button Content="Purchase" HorizontalAlignment="Left" Margin="84,62,0,0" VerticalAlignment="Top" Width="121" Click="Button_Click_Purchase" Height="73"/>
+        <Button Content="Notifications" HorizontalAlignment="Left" Margin="207,10,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_Notifications"/>
         <TextBlock Name="WelcomeBox" HorizontalAlignment="Left" Margin="10,12,0,0" TextWrapping="Wrap" Text="Welcome, " VerticalAlignment="Top"/>
     </Grid>
 </Window>
