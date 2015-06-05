@@ -5,6 +5,10 @@ using MongoDB.Bson;
 namespace Common
 {
     [DataContract]
+    [KnownType(typeof(Book))]
+    [KnownType(typeof(int))]
+    [KnownType(typeof(Client))]
+    [KnownType(typeof(StateEnum.State))]
     public class Order
     {
         [DataMember (Name = "id")]

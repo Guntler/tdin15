@@ -28,8 +28,8 @@ namespace StoreApp
         {
             InitializeComponent();
             this.DataContext = this;
-            
-            foreach(var m in FrontEndService.ReceivedMessages)
+            var list = FrontEndService.GetMessages();
+            foreach(var m in list)
             {
                 messages.Add(new MessageItem() { Book=m.Book.Title,Amount=m.Amount });
             }
@@ -50,11 +50,16 @@ namespace StoreApp
         private void AddButton(object sender, RoutedEventArgs e)
         {
             Button button = sender as Button;
-            Book aux = new FrontEndService().GetBook(button.Tag.ToString());
-            aux.Quantity = messages.Find(c => c.Book == button.Tag.ToString()).Amount;
-            new FrontEndService().UpdateBook(aux);
-            var m = FrontEndService.ReceivedMessages.Find(c => c.Book.Title == button.Tag.ToString());
-            FrontEndService.ReceivedMessages.Remove(m);
+            Book aux = FrontEndService.GetBook(button.Tag.ToString());
+            aux.Quantity += messages.Find(c => c.Book == button.Tag.ToString()).Amount;
+            FrontEndService.UpdateBook(aux);
+            var m = FrontEndService.GetMessages().Find(c => c.Book.Title == button.Tag.ToString());
+            FrontEndService.DeleteWarehouseMessage(m.Id);
+            var orders = FrontEndService.FindIncompleteOrdersByBook(aux.Title);
+            foreach (var order in orders)
+            {
+                FrontEndService.UpdateOrder(order);
+            }
             var d = messages.Find(c => c.Book == button.Tag.ToString());
             messages.Remove(d);
             DialogResult = true;

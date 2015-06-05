@@ -58,7 +58,10 @@ namespace StoreApp
                     {
                         if (dialog.WillSend)
                         {
-                            new FrontEndService().printReceipt(new Order(book.Title, amount, new Client(dialog.user,"asdfgh","","").Id));
+                            Order x = new Order(book.Title, amount, new Client(dialog.user, "asdfgh", "", "").Id);
+                            x.State.CurrentState = StateEnum.State.Dispatched;
+                            x.State.Date = DateTime.Today;
+                            FrontEndService.PrintReceipt(x);
                         }
                     }
                 }

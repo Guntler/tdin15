@@ -39,6 +39,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Flurl">
+      <HintPath>..\packages\Flurl.1.0.7\lib\portable-net40+sl50+win+wpa81+wp80+MonoAndroid10+MonoTouch10\Flurl.dll</HintPath>
+    </Reference>
+    <Reference Include="Flurl.Http">
+      <HintPath>..\packages\Flurl.Http.0.6.0\lib\net45\Flurl.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="Mandrill">
+      <HintPath>..\packages\Mandrill.2.0.3.0\lib\net45\Mandrill.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="MongoDB.Bson, Version=2.0.0.828, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

@@ -18,7 +18,7 @@ namespace Common
         [DataMember(Name = "Password")]
         public string Password { get; set; }
 
-        public Client(string username, string password, string address = "", string email = "")
+        public Client(string username, string password, string address , string email)
         {
             var random = new Random();
             var timestamp = DateTime.UtcNow;

@@ -10,6 +10,9 @@ using Common;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using Store.WarehouseService;
+using Mandrill;
+using Mandrill.Models;
+using Mandrill.Requests.Messages;
 
 namespace Store
 {
@@ -71,7 +74,7 @@ namespace Store
             throw new Exception("Invalid token");
         }
 
-        public Book GetBook(string title)
+        public static Book GetBook(string title)
         {
             DatabaseConnector client = new DatabaseConnector("mongodb://tdin:tdin@ds031942.mongolab.com:31942/", "store");
             var collection = client.Database.GetCollection<Book>("books");
@@ -196,7 +199,7 @@ namespace Store
                 if (list.Result.Count > 0)
                     throw new Exception("User already exists");
 
-                Client aux = new Client(cliente.Username, cliente.Password);
+                Client aux = new Client(cliente.Username, cliente.Password, cliente.Address, cliente.Email);
                 var queryResult = collection.InsertOneAsync(aux);
                 queryResult.Wait();
                 if (queryResult.IsCompleted)
@@ -317,20 +320,15 @@ namespace Store
                 WebOperationContext.Current.OutgoingResponse.ContentType = "application/json; charset=utf-8";
             return new MemoryStream(Encoding.UTF8.GetBytes(result));
         }
-      
-        public Stream UpdateBook(Book newBook)
+
+        public Stream RequestUpdateBook(Book newBook)
         {
             _result = new Dictionary<string, object>();
             try
             {
-                Console.WriteLine("In updateBook: "+newBook);
-                DatabaseConnector client = new DatabaseConnector("mongodb://tdin:tdin@ds031942.mongolab.com:31942/", "store");
-                var collection = client.Database.GetCollection<Book>("books");
-                var task = collection.ReplaceOneAsync(o => o.Title == newBook.Title, newBook);
-                task.Wait();
-                var list = collection.Find(x => x.Title == newBook.Title).ToListAsync();
-                list.Wait();
-                _result.Add("updated book", list.Result);
+                Console.WriteLine("In updateBook: " + newBook);
+                var updateresult = UpdateBook(newBook);
+                _result.Add("updated book", updateresult);
             }
             catch (Exception e)
             {
@@ -362,11 +360,10 @@ namespace Store
                     var random = new Random();
                     var timestamp = DateTime.UtcNow;
                     var machine = random.Next(0, 16777215);
-                    var pid = (short) random.Next(0, 32768);
+                    var pid = (short)random.Next(0, 32768);
                     var increment = random.Next(0, 16777215);
                     order.Id = new ObjectId(timestamp, machine, pid, increment).ToString();
-                    order.State = new StateEnum();
-                    order.State.CurrentState = StateEnum.State.Dispatched;
+                    order.State = new StateEnum { CurrentState = StateEnum.State.Dispatched };
                     order.State.Date = DateTime.Now.AddDays(1);
                     var query = collection.InsertOneAsync(order);
                     query.Wait();
@@ -376,6 +373,7 @@ namespace Store
                         _result.Add("Data", order);
                         book.Quantity -= order.Quantity;
                         UpdateBook(book);
+                        NotifyClient(order);
                     }
                     else
                     {
@@ -384,7 +382,7 @@ namespace Store
                 }
                 else //send to mq
                 {
-                    var msg = new Message("restock", order.Quantity*10, book);
+                    var msg = new Message("restock", order.Quantity * 10, book);
                     Console.WriteLine(msg.ToString());
                     try
                     {
@@ -397,7 +395,7 @@ namespace Store
                         Debug.WriteLine(e.StackTrace);
                         throw;
                     }
-                   
+
                     var random = new Random();
                     var timestamp = DateTime.UtcNow;
                     var machine = random.Next(0, 16777215);
@@ -530,9 +528,10 @@ namespace Store
 
         public Stream ReceiveFromWarehouse(Message order)
         {
-            ReceivedMessages.Add(order);
-            Console.WriteLine(ReceivedMessages.ToArray().ToString());
-            _result = new Dictionary<string, object> {{"Success", ""}};
+            AddWarehouseMesage(order);
+            Console.WriteLine(order.ToString());
+            Console.WriteLine("ReceivedMessages: " + GetMessages().Count);
+            _result = new Dictionary<string, object> { { "Success", "" } };
             string result = s.Serialize(_result);
 
             if (WebOperationContext.Current != null)
@@ -545,32 +544,129 @@ namespace Store
             return new MemoryStream(Encoding.UTF8.GetBytes(result));
         }
 
-        public void printReceipt(Order ord)
+        public static List<Message> GetMessages()
+        {
+            DatabaseConnector client = new DatabaseConnector("mongodb://tdin:tdin@ds031942.mongolab.com:31942/", "store");
+            var collection = client.Database.GetCollection<Message>("messages");
+            var list = collection.Find(m => m.Id != "").ToListAsync();
+            list.Wait();
+            return list.Result;
+        }
+
+        public static void AddWarehouseMesage(Message order)
+        {
+            DatabaseConnector client = new DatabaseConnector("mongodb://tdin:tdin@ds031942.mongolab.com:31942/", "store");
+            var collection = client.Database.GetCollection<Message>("messages");
+            var task = collection.InsertOneAsync(order);
+            task.Wait();
+        }
+
+        public static void DeleteWarehouseMessage(string messageId)
+        {
+            DatabaseConnector client = new DatabaseConnector("mongodb://tdin:tdin@ds031942.mongolab.com:31942/", "store");
+            var collection = client.Database.GetCollection<Message>("messages");
+            var task = collection.DeleteOneAsync(o => o.Id.Equals(messageId));
+            task.Wait();
+        }
+
+        public static List<Order> FindIncompleteOrdersByBook(string title)
+        {
+            DatabaseConnector client = new DatabaseConnector("mongodb://tdin:tdin@ds031942.mongolab.com:31942/", "store");
+            var collection = client.Database.GetCollection<Order>("orders");
+            var list = collection.Find(m => m.Title == title && m.State.CurrentState == StateEnum.State.WaitingDispatch).ToListAsync();
+            list.Wait();
+            return list.Result;
+        }
+
+        public static void UpdateOrder(Order order)
+        {
+            var book = GetBook(order.Title);
+            DatabaseConnector client = new DatabaseConnector("mongodb://tdin:tdin@ds031942.mongolab.com:31942/", "store");
+            var collection = client.Database.GetCollection<Order>("orders");
+            if (book.Quantity >= order.Quantity)
+            {
+                order.State.CurrentState = StateEnum.State.Dispatched;
+                order.State.Date = DateTime.Today;
+                var task = collection.ReplaceOneAsync(o => o.Id.Equals(order.Id), order);
+                task.Wait();
+                book.Quantity -= order.Quantity;
+                UpdateBook(book);
+                Debug.WriteLine(order.ToString());
+                NotifyClient(order);
+            }
+        }
+
+        private static async void NotifyClient(Order ord)
+        {
+            var cliente = getClient(ord.ClientId);
+            DatabaseConnector client = new DatabaseConnector("mongodb://tdin:tdin@ds031942.mongolab.com:31942/", "store");
+            var collection = client.Database.GetCollection<Client>("clients");
+            var list = collection.Find(x => x.Username.Equals(cliente.Username)).ToListAsync();
+            list.Wait();
+            if (list.Result.Count > 0)
+            {
+                MandrillApi api = new MandrillApi("9jetNeue5BSpjgF1DKotSQ");
+
+                var mandrillRecipients = new List<EmailAddress>();
+                mandrillRecipients.Add(new EmailAddress(cliente.Email));
+                // add recipents to the mandrillRecipientsList
+                var email = new EmailMessage
+                {
+                    To = mandrillRecipients,
+                    FromEmail = "bookStore@tdin.com",
+                    FromName = "Book Store Support",
+                    Subject = "Estado de encomenda",
+                    Text = "A sua encomenda foi atualizada\n" + ord.ToString(),
+                    RawMessage = "A sua encomenda foi atualizada\n" + ord.ToString()
+                };
+
+                await api.SendMessage(new SendMessageRequest(email));
+            }
+            else
+            {
+                Debug.WriteLine("Could not find user: " + cliente.Username);
+            }
+        }
+
+        public static Book UpdateBook(Book newBook)
+        {
+            DatabaseConnector client = new DatabaseConnector("mongodb://tdin:tdin@ds031942.mongolab.com:31942/", "store");
+            var collection = client.Database.GetCollection<Book>("books");
+            var task = collection.ReplaceOneAsync(o => o.Title == newBook.Title, newBook);
+            task.Wait();
+            var list = collection.Find(x => x.Title == newBook.Title).ToListAsync();
+            list.Wait();
+            return list.Result[0];
+
+        }
+
+        public static void PrintReceipt(Order ord)
         {
             var orderClient = getClient(ord.ClientId);
             var orderBook = GetBook(ord.Title);
-            Console.WriteLine("New receipt for order\n");
-            Console.WriteLine("\tId: " + ord.Id + "\n");
-            Console.WriteLine("\tState: " + ord.State.CurrentState + "\n");
-            Console.WriteLine("\tDate: " + ord.State.Date + "\n");
-            Console.WriteLine("\tFor client: \n");
-            Console.WriteLine("\t\tId:" + orderClient.Id + "\n");
-            Console.WriteLine("\t\tUsername:" + orderClient.Username + "\n");
-            Console.WriteLine("\t\tEmail:" + orderClient.Email + "\n");
-            Console.WriteLine("\t\tAddress:" + orderClient.Address + "\n");
-            Console.WriteLine("\tBook information: \n");
-            Console.WriteLine("\t\tTitle: " + orderBook.Title + "\n");
-            Console.WriteLine("\t\tAuthor: " + orderBook.Author + "\n");
-            Console.WriteLine("\t\tPrice per unit: " + orderBook.Price + "\n");
-            Console.WriteLine("\tQuantity: " + ord.Quantity + "\n");
-            Console.WriteLine("\tTotal price: " + ord.Quantity * orderBook.Price + "\n");
-            Console.WriteLine("\n\n");
+            Debug.WriteLine("New receipt for order\n");
+            Debug.WriteLine("\tId: " + ord.Id + "\n");
+            Debug.WriteLine("\tState: " + ord.State.CurrentState + "\n");
+            Debug.WriteLine("\tDate: " + ord.State.Date + "\n");
+            Debug.WriteLine("\tFor client: \n");
+            Debug.WriteLine("\t\tId:" + orderClient.Id + "\n");
+            Debug.WriteLine("\t\tUsername:" + orderClient.Username + "\n");
+            Debug.WriteLine("\t\tEmail:" + orderClient.Email + "\n");
+            Debug.WriteLine("\t\tAddress:" + orderClient.Address + "\n");
+            Debug.WriteLine("\tBook information: \n");
+            Debug.WriteLine("\t\tTitle: " + orderBook.Title + "\n");
+            Debug.WriteLine("\t\tAuthor: " + orderBook.Author + "\n");
+            Debug.WriteLine("\t\tPrice per unit: " + orderBook.Price + "\n");
+            Debug.WriteLine("\tQuantity: " + ord.Quantity + "\n");
+            Debug.WriteLine("\tTotal price: " + ord.Quantity * orderBook.Price + "\n");
+            Debug.WriteLine("\n\n");
         }
 
-        private Client getClient(string id)
+        private static Client getClient(string id)
         {
             DatabaseConnector client = new DatabaseConnector("mongodb://tdin:tdin@ds031942.mongolab.com:31942/", "store");
             var collection = client.Database.GetCollection<Client>("clients");
+            Console.WriteLine("trying to find user of id:"+id);
             var task = collection.Find(cli => cli.Id.Equals(id)).ToListAsync();
             task.Wait();
             if (task.IsCompleted)
@@ -584,6 +680,6 @@ namespace Store
             }
             return null;
         }
-    
+
     }
 }
