@@ -44,12 +44,12 @@ namespace StoreApp
                 }
                 else
                 {
-                    throw new Exception("Invalid credentials");
+                    CredentialsError.Text = "Invalid credentials.";
                 }
             }
             else
             {
-                throw new Exception("No match found");
+                CredentialsError.Text = "No match found.";
             }
         }
     }
