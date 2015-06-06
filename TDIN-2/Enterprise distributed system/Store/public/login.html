@@ -69,15 +69,11 @@
 				},
 				data: json,
 				success: function(xhr,result) {
-					console.log("SUCCESS");
-					console.log(xhr.Client);
-					console.log(result);
 					sessvars.sessionInfo = xhr.Client;
 					sessvars.sessionToken = xhr.Token;
 					window.location.replace("index.html");
 				},
 				error: function(jqXHR, textStatus, errorThrown) {
-					console.log("login error: "+JSON.stringify(jqXHR)+" "+textStatus+" "+errorThrown );
 					$("#loginAlert").html($('<div class="alert alert-danger" id="loginAlert" role="alert">').text(jqXHR.responseJSON.Reason));
 				}
 			});

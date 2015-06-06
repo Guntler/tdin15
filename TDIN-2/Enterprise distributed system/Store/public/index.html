@@ -60,18 +60,12 @@
 	</script>
 	<script type="text/javascript">
 		$( document ).ready(function() {
-		console.log(window);
 			var body = {};
 			var json = JSON.stringify(body);
-			console.log(sessvars.sessionInfo);
-			console.log(sessvars.sessionToken);
 			$.ajax({
 				method: "GET",
 				url: "api/books/"+sessvars.sessionToken,
 				success: function(xhr,result) {
-					console.log("SUCCESS");
-					console.log(xhr);
-					console.log(result);
 					for(var b in xhr.Books) {
 						$("#bookArray").append(
 						$('<tr><td max="'+ xhr.Books[b].Quantity +
@@ -81,7 +75,6 @@
 					
 				},
 				error: function(jqXHR, textStatus, errorThrown) {
-					console.log("get books error: "+JSON.stringify(jqXHR)+" "+textStatus+" "+errorThrown );
 					$("#siteAlert").html($('<div id="alert" class="alert alert-danger" role="alert">').text(jqXHR.responseJSON.Reason));
 				}
 			});
@@ -99,7 +92,6 @@
 					window.location.replace("login.html");
 				},
 				error: function(jqXHR, textStatus, errorThrown) {
-					console.log("get books error: "+JSON.stringify(jqXHR)+" "+textStatus+" "+errorThrown );
 					$("#siteAlert").html($('<div id="alert" class="alert alert-danger" role="alert">').text(jqXHR.responseJSON.Reason));
 				}
 			});
@@ -107,10 +99,8 @@
 	</script>
 	<script type="text/javascript">
 		var submitOrder = function(book) {
-			console.log("HERE");
 			$("#alert").remove();
 		
-			console.log(book.val());
 		  
 			var body = {};
 			body['Title'] = book.val();
@@ -126,23 +116,18 @@
 				},
 				data: json,
 				success: function(xhr,result) {
-					console.log(xhr);
-					console.log("Submitted an order");
 				},
 				error: function(jqXHR, textStatus, errorThrown) {
-					console.log("login error: "+JSON.stringify(jqXHR)+" "+textStatus+" "+errorThrown );
 					$("#loginAlert").html($('<div class="alert alert-danger" id="loginAlert" role="alert">').text(jqXHR.responseJSON.Reason));
 				}
 			});
 		};
 		$("#submitButton").click(function() {
-			console.log("click!");
 			if($('input[name="chk[]"]:checked').length > 0) {
 				$.when(
 					$.each($('input[name="chk[]"]:checked'), function() {submitOrder($(this))})
 							).done(
 							function(atxArgs, greenlingArgs, momandpopsArgs){
-								console.log("All orders submitted!");
 								location.reload();
 						});
 			}

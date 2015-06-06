@@ -79,14 +79,10 @@
 				},
 				data: json,
 				success: function(xhr,result) {
-					console.log("SUCCESS");
-					console.log(xhr);
-					console.log(result);
 					window.location.replace("login.html");
 					$("#loginAlert").html($('<div class="alert alert-success" id="loginAlert" role="alert">').text(xhr.Text));
 				},
 				error: function(jqXHR, textStatus, errorThrown) {
-					console.log("login error: "+JSON.stringify(jqXHR)+" "+textStatus+" "+errorThrown );
 					$("#loginAlert").html($('<div class="alert alert-danger" id="loginAlert" role="alert">').text(jqXHR.responseJSON.Reason));
 				}
 			});
